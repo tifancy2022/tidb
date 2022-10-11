@@ -77,6 +77,7 @@ import (
 	ticdcserver "github.com/pingcap/tiflow/cdc/server"
 	ticdcconfig "github.com/pingcap/tiflow/pkg/config"
 	ticdcutil "github.com/pingcap/tiflow/pkg/util"
+	ticdcversion "github.com/pingcap/tiflow/pkg/version"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
 	"github.com/tikv/client-go/v2/tikv"
@@ -764,8 +765,13 @@ func createTiCDCServer() ticdcserver.Server {
 	if cfg.Store != "tikv" {
 		log.Fatal("CDC only supports TiKV storage")
 	}
+	if ticdcversion.ReleaseVersion == "None" {
+		ticdcversion.ReleaseVersion = "v6.3.0-master"
+	}
 
 	ticdcCfg := ticdcconfig.GetDefaultServerConfig()
+	ticdcCfg.Addr = "127.0.0.1:8300"
+	ticdcCfg.AdvertiseAddr = "127.0.0.1:8300"
 	ticdcconfig.StoreGlobalServerConfig(ticdcCfg)
 
 	tz, err := ticdcutil.GetTimezone(ticdcCfg.TZ)
