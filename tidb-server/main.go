@@ -73,6 +73,10 @@ import (
 	"github.com/pingcap/tidb/util/systimemon"
 	"github.com/pingcap/tidb/util/topsql"
 	"github.com/pingcap/tidb/util/versioninfo"
+	"github.com/pingcap/tiflow/cdc/contextutil"
+	ticdcserver "github.com/pingcap/tiflow/cdc/server"
+	ticdcconfig "github.com/pingcap/tiflow/pkg/config"
+	ticdcutil "github.com/pingcap/tiflow/pkg/util"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
 	"github.com/tikv/client-go/v2/tikv"
@@ -208,6 +212,9 @@ func main() {
 	setupGCTuner()
 	storage, dom := createStoreAndDomain()
 	svr := createServer(storage, dom)
+
+	ticdcSvr := createTiCDCServer()
+	go ticdcSvr.Run(context.Background())
 
 	// Register error API is not thread-safe, the caller MUST NOT register errors after initialization.
 	// To prevent misuse, set a flag to indicate that register new error will panic immediately.
@@ -749,6 +756,33 @@ func createServer(storage kv.Storage, dom *domain.Domain) *server.Server {
 	go dom.ExpensiveQueryHandle().SetSessionManager(svr).Run()
 	go dom.ServerMemoryLimitHandle().SetSessionManager(svr).Run()
 	dom.InfoSyncer().SetSessionManager(svr)
+	return svr
+}
+
+func createTiCDCServer() ticdcserver.Server {
+	cfg := config.GetGlobalConfig()
+	if cfg.Store != "tikv" {
+		log.Fatal("CDC only supports TiKV storage")
+	}
+
+	ticdcCfg := ticdcconfig.GetDefaultServerConfig()
+	ticdcconfig.StoreGlobalServerConfig(ticdcCfg)
+
+	tz, err := ticdcutil.GetTimezone(ticdcCfg.TZ)
+	if err != nil {
+		log.Fatal("failed to get timezone", zap.Error(err))
+	}
+	ctx := contextutil.PutTimezoneInCtx(context.Background(), tz)
+	ctx = contextutil.PutCaptureAddrInCtx(ctx, ticdcCfg.AdvertiseAddr)
+
+	pdEndpoint := cfg.Path
+	if !strings.HasPrefix("http://", pdEndpoint) && !strings.HasPrefix("https://", pdEndpoint) {
+		pdEndpoint = "http://" + pdEndpoint
+	}
+	svr, err := ticdcserver.New([]string{pdEndpoint})
+	if err != nil {
+		log.Fatal("failed to create the cdc server", zap.Error(err))
+	}
 	return svr
 }
 
