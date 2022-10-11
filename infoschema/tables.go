@@ -184,6 +184,8 @@ const (
 	TableTrxSummary = "TRX_SUMMARY"
 	// TableVariablesInfo is the string constant of variables_info table.
 	TableVariablesInfo = "VARIABLES_INFO"
+
+	TableStmtCached = "STATEMENT_CACHED"
 )
 
 const (
@@ -285,6 +287,7 @@ var tableIDMap = map[string]int64{
 	TableTrxSummary:                      autoid.InformationSchemaDBID + 80,
 	ClusterTableTrxSummary:               autoid.InformationSchemaDBID + 81,
 	TableVariablesInfo:                   autoid.InformationSchemaDBID + 82,
+	TableStmtCached:                      autoid.InformationSchemaDBID + 83,
 }
 
 // columnInfo represents the basic column information of all kinds of INFORMATION_SCHEMA tables
@@ -1536,6 +1539,12 @@ var tableVariablesInfoCols = []columnInfo{
 	{name: "IS_NOOP", tp: mysql.TypeVarchar, size: 64, flag: mysql.NotNullFlag},
 }
 
+var tableStmtCachedCols = []columnInfo{
+	{name: "START", tp: mysql.TypeTimestamp, size: 26, decimal: 6, flag: mysql.NotNullFlag},
+	{name: "SCHEMA_NAME", tp: mysql.TypeVarchar, size: 64, flag: mysql.NotNullFlag},
+	{name: "QUERY", tp: mysql.TypeLongBlob, size: types.UnspecifiedLength},
+}
+
 // GetShardingInfo returns a nil or description string for the sharding information of given TableInfo.
 // The returned description string may be:
 //   - "NOT_SHARDED": for tables that SHARD_ROW_ID_BITS is not specified.
@@ -1995,6 +2004,7 @@ var tableNameToColumns = map[string][]columnInfo{
 	TablePlacementPolicies:                  tablePlacementPoliciesCols,
 	TableTrxSummary:                         tableTrxSummaryCols,
 	TableVariablesInfo:                      tableVariablesInfoCols,
+	TableStmtCached:                         tableStmtCachedCols,
 }
 
 func createInfoSchemaTable(_ autoid.Allocators, meta *model.TableInfo) (table.Table, error) {

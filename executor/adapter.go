@@ -48,6 +48,7 @@ import (
 	"github.com/pingcap/tidb/sessionctx/variable"
 	"github.com/pingcap/tidb/sessiontxn"
 	"github.com/pingcap/tidb/sessiontxn/staleread"
+	"github.com/pingcap/tidb/stmtcache"
 	"github.com/pingcap/tidb/types"
 	"github.com/pingcap/tidb/util/breakpoint"
 	"github.com/pingcap/tidb/util/chunk"
@@ -1234,6 +1235,7 @@ func (a *ExecStmt) FinishExecuteStmt(txnTS uint64, err error, hasMoreResults boo
 	// `LowSlowQuery` and `SummaryStmt` must be called before recording `PrevStmt`.
 	a.LogSlowQuery(txnTS, succ, hasMoreResults)
 	a.SummaryStmt(succ)
+	a.TryCacheStmt(succ)
 	a.observeStmtFinishedForTopSQL()
 	if sessVars.StmtCtx.IsTiFlash.Load() {
 		if succ {
@@ -1660,6 +1662,39 @@ func (a *ExecStmt) SummaryStmt(succ bool) {
 		stmtExecInfo.ExecRetryTime = costTime - sessVars.DurationParse - sessVars.DurationCompile - time.Since(a.retryStartTime)
 	}
 	stmtsummary.StmtSummaryByDigestMap.AddStatement(stmtExecInfo)
+}
+
+var cacheMinProcessKeys int64 = 10000
+
+func (a *ExecStmt) TryCacheStmt(succ bool) {
+	if !succ {
+		return
+	}
+	sessVars := a.Ctx.GetSessionVars()
+	if sessVars.User == nil {
+		return
+	}
+	switch a.Plan.(type) {
+	case *plannercore.Insert, *plannercore.Update, *plannercore.Delete, *plannercore.Explain:
+		return
+	}
+	stmtCtx := sessVars.StmtCtx
+	resultRows := GetResultRowsCount(stmtCtx, a.Plan)
+	if resultRows > 100 || resultRows == 0 {
+		return
+	}
+	// unistore doesn't return processkeys info.
+	//execDetail := stmtCtx.GetExecDetails()
+	//if execDetail.ScanDetail == nil || execDetail.ScanDetail.ProcessedKeys < cacheMinProcessKeys {
+	//	return
+	//}
+	query := sessVars.StmtCtx.OriginalSQL + sessVars.PreparedParams.String()
+
+	stmt := &stmtcache.StmtElement{
+		SchemaName: sessVars.CurrentDB,
+		SQL:        query,
+	}
+	stmtcache.StmtCache.AddStatement(stmt)
 }
 
 // GetTextToLog return the query text to log.
