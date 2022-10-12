@@ -38,7 +38,7 @@ type stmtCache struct {
 	cache *kvcache.SimpleLRUCache
 }
 
-func (sc *stmtCache) AddStatement(stmt *StmtElement) {
+func (sc *stmtCache) AddStatement(stmt *StmtElement) bool {
 	stmt.ts = time.Now().Unix()
 	stmt.Hash()
 
@@ -49,6 +49,7 @@ func (sc *stmtCache) AddStatement(stmt *StmtElement) {
 	if !ok {
 		sc.cache.Put(stmt, stmt)
 	}
+	return !ok
 }
 
 func (sc *stmtCache) Size() int {

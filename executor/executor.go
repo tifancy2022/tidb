@@ -256,6 +256,10 @@ func (e *baseExecutor) updateDeltaForTableID(id int64) {
 	txnCtx.UpdateDeltaForTable(id, 0, 0, map[int64]int64{})
 }
 
+func (e *baseExecutor) CloneState(Executor) error {
+	return errors.Errorf("Executor_%v doesn't implement clone state method", e.id)
+}
+
 func newBaseExecutor(ctx sessionctx.Context, schema *expression.Schema, id int, children ...Executor) baseExecutor {
 	e := baseExecutor{
 		children:     children,
@@ -297,6 +301,7 @@ type Executor interface {
 	Next(ctx context.Context, req *chunk.Chunk) error
 	Close() error
 	Schema() *expression.Schema
+	CloneState(Executor) error
 }
 
 // Next is a wrapper function on e.Next(), it handles some common codes.

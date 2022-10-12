@@ -181,7 +181,14 @@ func (a *recordSet) NewChunk(alloc chunk.Allocator) *chunk.Chunk {
 }
 
 func (a *recordSet) Close() error {
-	err := a.executor.Close()
+	var err error
+	cached := a.stmt.TryCacheStmt(a.lastErr == nil)
+	if !cached {
+		err = a.executor.Close()
+	} else {
+		// todo: cached executor execution
+		_ = a.executor
+	}
 	a.stmt.CloseRecordSet(a.txnStartTS, a.lastErr)
 	return err
 }
@@ -1236,7 +1243,6 @@ func (a *ExecStmt) FinishExecuteStmt(txnTS uint64, err error, hasMoreResults boo
 	// `LowSlowQuery` and `SummaryStmt` must be called before recording `PrevStmt`.
 	a.LogSlowQuery(txnTS, succ, hasMoreResults)
 	a.SummaryStmt(succ)
-	a.TryCacheStmt(succ)
 	a.observeStmtFinishedForTopSQL()
 	if sessVars.StmtCtx.IsTiFlash.Load() {
 		if succ {
@@ -1667,22 +1673,22 @@ func (a *ExecStmt) SummaryStmt(succ bool) {
 
 var CacheMinProcessKeys int64 = 10000
 
-func (a *ExecStmt) TryCacheStmt(succ bool) {
+func (a *ExecStmt) TryCacheStmt(succ bool) bool {
 	if !succ {
-		return
+		return false
 	}
 	sessVars := a.Ctx.GetSessionVars()
 	physicalPlan, ok := a.Plan.(plannercore.PhysicalPlan)
 	if !ok {
-		return
+		return false
 	}
 	if sessVars.User == nil || isNoResultPlan(a.Plan) || !isPlanContainAgg(physicalPlan) || isPlanContainSystemTableReader(physicalPlan) {
-		return
+		return false
 	}
 	stmtCtx := sessVars.StmtCtx
 	resultRows := GetResultRowsCount(stmtCtx, a.Plan)
 	if resultRows > 100 || resultRows == 0 {
-		return
+		return false
 	}
 	// unistore doesn't return processkeys info.
 	//execDetail := stmtCtx.GetExecDetails()
@@ -1694,7 +1700,14 @@ func (a *ExecStmt) TryCacheStmt(succ bool) {
 		SchemaName: sessVars.CurrentDB,
 		SQL:        query,
 	}
-	stmtcache.StmtCache.AddStatement(stmt)
+	cached := stmtcache.StmtCache.AddStatement(stmt)
+	if !cached {
+		return cached
+	}
+
+
+
+	return cached
 }
 
 func isPlanContainAgg(p plannercore.PhysicalPlan) bool {
