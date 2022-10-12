@@ -19,6 +19,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/pingcap/tidb/executor"
 	"github.com/pingcap/tidb/parser/auth"
 	"github.com/pingcap/tidb/stmtcache"
 	"github.com/pingcap/tidb/testkit"
@@ -36,12 +37,14 @@ func TestStmtCache(t *testing.T) {
 	require.NotNil(t, tk.Session().GetSessionVars().User)
 
 	tk.MustExec("create table t1 (a int, b int, index(a))")
-	cnt := 1001
+	cnt := int(executor.CacheMinProcessKeys) + 1
 	for i := 0; i < cnt; i++ {
 		tk.MustExec(fmt.Sprintf("insert into t1 values (%v, %v)", i, i))
 	}
 	tk.MustQuery("select count(*) from t1").Check(testkit.Rows(strconv.Itoa(cnt)))
 	require.Equal(t, 1, stmtcache.StmtCache.Size())
 
+	tk.MustQuery("select count(*) from INFORMATION_SCHEMA.tables").Check(testkit.Rows("789"))
+	tk.MustQuery("select schema_name, query from INFORMATION_SCHEMA.statement_cached").Check(testkit.RowsWithSep("|", "test|select count(*) from t1"))
 	tk.MustQuery("select schema_name, query from INFORMATION_SCHEMA.statement_cached").Check(testkit.RowsWithSep("|", "test|select count(*) from t1"))
 }

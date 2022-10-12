@@ -53,6 +53,7 @@ import (
 	"github.com/pingcap/tidb/util/breakpoint"
 	"github.com/pingcap/tidb/util/chunk"
 	"github.com/pingcap/tidb/util/execdetails"
+	"github.com/pingcap/tidb/util/filter"
 	"github.com/pingcap/tidb/util/hint"
 	"github.com/pingcap/tidb/util/logutil"
 	"github.com/pingcap/tidb/util/mathutil"
@@ -1664,18 +1665,18 @@ func (a *ExecStmt) SummaryStmt(succ bool) {
 	stmtsummary.StmtSummaryByDigestMap.AddStatement(stmtExecInfo)
 }
 
-var cacheMinProcessKeys int64 = 10000
+var CacheMinProcessKeys int64 = 10000
 
 func (a *ExecStmt) TryCacheStmt(succ bool) {
 	if !succ {
 		return
 	}
 	sessVars := a.Ctx.GetSessionVars()
-	if sessVars.User == nil {
+	physicalPlan, ok := a.Plan.(plannercore.PhysicalPlan)
+	if !ok {
 		return
 	}
-	switch a.Plan.(type) {
-	case *plannercore.Insert, *plannercore.Update, *plannercore.Delete, *plannercore.Explain:
+	if sessVars.User == nil || isNoResultPlan(a.Plan) || !isPlanContainAgg(physicalPlan) || isPlanContainSystemTableReader(physicalPlan) {
 		return
 	}
 	stmtCtx := sessVars.StmtCtx
@@ -1685,16 +1686,61 @@ func (a *ExecStmt) TryCacheStmt(succ bool) {
 	}
 	// unistore doesn't return processkeys info.
 	//execDetail := stmtCtx.GetExecDetails()
-	//if execDetail.ScanDetail == nil || execDetail.ScanDetail.ProcessedKeys < cacheMinProcessKeys {
+	//if execDetail.ScanDetail == nil || execDetail.ScanDetail.ProcessedKeys < CacheMinProcessKeys {
 	//	return
 	//}
 	query := sessVars.StmtCtx.OriginalSQL + sessVars.PreparedParams.String()
-
 	stmt := &stmtcache.StmtElement{
 		SchemaName: sessVars.CurrentDB,
 		SQL:        query,
 	}
 	stmtcache.StmtCache.AddStatement(stmt)
+}
+
+func isPlanContainAgg(p plannercore.PhysicalPlan) bool {
+	switch p.(type) {
+	case *plannercore.PhysicalStreamAgg, *plannercore.PhysicalHashAgg:
+		return true
+	default:
+		children := p.Children()
+		for _, child := range children {
+			ok := isPlanContainAgg(child)
+			if ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isPlanContainSystemTableReader(p plannercore.PhysicalPlan) bool {
+	var db string
+	switch v := p.(type) {
+	case *plannercore.PhysicalTableReader:
+		tableScan := v.TablePlans[0].(*plannercore.PhysicalTableScan)
+		db = tableScan.DBName.O
+	case *plannercore.PhysicalIndexReader:
+		indexScan := v.IndexPlans[0].(*plannercore.PhysicalIndexScan)
+		db = indexScan.DBName.O
+	case *plannercore.PhysicalIndexLookUpReader:
+		ts := v.TablePlans[0].(*plannercore.PhysicalTableScan)
+		db = ts.DBName.O
+	case *plannercore.PhysicalMemTable:
+		return true
+	default:
+		children := p.Children()
+		for _, child := range children {
+			ok := isPlanContainSystemTableReader(child)
+			if ok {
+				return true
+			}
+		}
+		return false
+	}
+	if filter.IsSystemSchema(db) {
+		return true
+	}
+	return false
 }
 
 // GetTextToLog return the query text to log.
