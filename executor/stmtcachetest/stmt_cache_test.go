@@ -46,7 +46,6 @@ func TestStmtCache(t *testing.T) {
 	}
 	tk.MustQuery("select count(*) from t1").Check(testkit.Rows(strconv.Itoa(cnt)))
 	require.Equal(t, 1, stmtcache.StmtCache.Size())
-
 	tk.MustQuery("select count(*) from INFORMATION_SCHEMA.tables").Check(testkit.Rows("789"))
 	tk.MustQuery("select schema_name, query from INFORMATION_SCHEMA.statement_cached").Check(testkit.RowsWithSep("|", "test|select count(*) from t1"))
 	tk.MustQuery("select schema_name, query from INFORMATION_SCHEMA.statement_cached").Check(testkit.RowsWithSep("|", "test|select count(*) from t1"))

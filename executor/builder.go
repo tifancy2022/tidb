@@ -305,6 +305,8 @@ func (b *executorBuilder) build(p plannercore.Plan) Executor {
 		return b.buildCTETableReader(v)
 	case *plannercore.CompactTable:
 		return b.buildCompactTable(v)
+	case *plannercore.PhysicalTableScanSinker:
+		return b.buildTableScanSinker(v)
 	default:
 		if mp, ok := p.(MockPhysicalPlan); ok {
 			return mp.GetExecutor()
@@ -3329,6 +3331,15 @@ func (b *executorBuilder) buildMPPGather(v *plannercore.PhysicalTableReader) Exe
 		startTS:      startTs,
 	}
 	return gather
+}
+
+func (b *executorBuilder) buildTableScanSinker(v *plannercore.PhysicalTableScanSinker) Executor {
+	e := &TableScanSinker{
+		baseExecutor: newBaseExecutor(b.ctx, v.Schema(), v.ID()),
+		dbInfo:       v.DBInfo,
+		tbl:          v.Table,
+	}
+	return e
 }
 
 // buildTableReader builds a table reader executor. It first build a no range table reader,

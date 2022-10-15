@@ -311,7 +311,7 @@ type Executor interface {
 	Next(ctx context.Context, req *chunk.Chunk) error
 	Close() error
 	Schema() *expression.Schema
-	CloneState(Executor) error
+	//CloneState(Executor) error
 	Reset() error
 }
 

@@ -186,12 +186,14 @@ func (a *recordSet) NewChunk(alloc chunk.Allocator) *chunk.Chunk {
 
 func (a *recordSet) Close() error {
 	var err error
-	cached := a.stmt.TryCacheStmt(a.lastErr == nil)
+	digest, cached := a.stmt.TryCacheStmt(a.lastErr == nil)
 	if !cached {
 		err = a.executor.Close()
 	} else {
-		// todo: cached executor execution
-		_ = a.executor
+		err = StmtCacheExecManager.addStmtCacheExecutor(digest, a.executor, a)
+		if err != nil {
+			return err
+		}
 	}
 	a.stmt.CloseRecordSet(a.txnStartTS, a.lastErr)
 	return err
@@ -1677,22 +1679,22 @@ func (a *ExecStmt) SummaryStmt(succ bool) {
 
 var CacheMinProcessKeys int64 = 10000
 
-func (a *ExecStmt) TryCacheStmt(succ bool) bool {
+func (a *ExecStmt) TryCacheStmt(succ bool) ([]byte, bool) {
 	if !succ {
-		return false
+		return nil, false
 	}
 	sessVars := a.Ctx.GetSessionVars()
 	physicalPlan, ok := a.Plan.(plannercore.PhysicalPlan)
 	if !ok {
-		return false
+		return nil, false
 	}
 	if sessVars.User == nil || isNoResultPlan(a.Plan) || !isPlanContainAgg(physicalPlan) || isPlanContainSystemTableReader(physicalPlan) {
-		return false
+		return nil, false
 	}
 	stmtCtx := sessVars.StmtCtx
 	resultRows := GetResultRowsCount(stmtCtx, a.Plan)
 	if resultRows > 100 || resultRows == 0 {
-		return false
+		return nil, false
 	}
 	// unistore doesn't return processkeys info.
 	//execDetail := stmtCtx.GetExecDetails()
@@ -1704,12 +1706,8 @@ func (a *ExecStmt) TryCacheStmt(succ bool) bool {
 		SchemaName: sessVars.CurrentDB,
 		SQL:        query,
 	}
-	cached := stmtcache.StmtCache.AddStatement(stmt)
-	if !cached {
-		return cached
-	}
-
-	return cached
+	digestByte, cached := stmtcache.StmtCache.AddStatement(stmt)
+	return digestByte, cached
 }
 
 func isPlanContainAgg(p plannercore.PhysicalPlan) bool {
