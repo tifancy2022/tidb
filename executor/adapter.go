@@ -170,6 +170,10 @@ func (a *recordSet) Next(ctx context.Context, req *chunk.Chunk) (err error) {
 	return nil
 }
 
+func (a *recordSet) Reset() error {
+	return a.executor.Reset()
+}
+
 // NewChunk create a chunk base on top-level executor's newFirstChunk().
 func (a *recordSet) NewChunk(alloc chunk.Allocator) *chunk.Chunk {
 	if alloc == nil {
@@ -1704,8 +1708,6 @@ func (a *ExecStmt) TryCacheStmt(succ bool) bool {
 	if !cached {
 		return cached
 	}
-
-
 
 	return cached
 }

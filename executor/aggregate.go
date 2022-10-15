@@ -1295,6 +1295,11 @@ func (e *StreamAggExec) Open(ctx context.Context) error {
 	return nil
 }
 
+func (e *StreamAggExec) Reset() error {
+	e.executed = false
+	return nil
+}
+
 // Close implements the Executor Close interface.
 func (e *StreamAggExec) Close() error {
 	if e.childResult != nil {
@@ -1362,7 +1367,7 @@ func (e *StreamAggExec) consumeOneGroup(ctx context.Context, chk *chunk.Chunk) (
 		return err
 	}
 
-	return e.appendResult2Chunk(chk)
+	return e.appendResult2Chunk(chk, true)
 }
 
 func (e *StreamAggExec) consumeGroupRows() error {
@@ -1402,7 +1407,7 @@ func (e *StreamAggExec) consumeCurGroupRowsAndFetchChild(ctx context.Context, ch
 	// No more data.
 	if e.childResult.NumRows() == 0 {
 		if !e.isChildReturnEmpty {
-			err = e.appendResult2Chunk(chk)
+			err = e.appendResult2Chunk(chk, false)
 		} else if e.defaultVal != nil {
 			chk.Append(e.defaultVal, 0, 1)
 		}
@@ -1417,13 +1422,15 @@ func (e *StreamAggExec) consumeCurGroupRowsAndFetchChild(ctx context.Context, ch
 
 // appendResult2Chunk appends result of all the aggregation functions to the
 // result chunk, and reset the evaluation context for each aggregation.
-func (e *StreamAggExec) appendResult2Chunk(chk *chunk.Chunk) error {
+func (e *StreamAggExec) appendResult2Chunk(chk *chunk.Chunk, reset bool) error {
 	for i, aggFunc := range e.aggFuncs {
 		err := aggFunc.AppendFinalResult2Chunk(e.ctx, e.partialResults[i], chk)
 		if err != nil {
 			return err
 		}
-		aggFunc.ResetPartialResult(e.partialResults[i])
+		if reset {
+			aggFunc.ResetPartialResult(e.partialResults[i])
+		}
 	}
 	failpoint.Inject("ConsumeRandomPanic", nil)
 	// All partial results have been reset, so reset the memory usage.

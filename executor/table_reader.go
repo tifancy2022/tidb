@@ -275,6 +275,10 @@ func (e *TableReaderExecutor) Close() error {
 	return err
 }
 
+func (e *TableReaderExecutor) Reset() error {
+	return nil
+}
+
 // buildResp first builds request and sends it to tikv using distsql.Select. It uses SelectResult returned by the callee
 // to fetch all results.
 func (e *TableReaderExecutor) buildResp(ctx context.Context, ranges []*ranger.Range) (distsql.SelectResult, error) {
@@ -513,31 +517,4 @@ func (tr *tableResultHandler) Close() error {
 	err := closeAll(tr.optionalResult, tr.result)
 	tr.optionalResult, tr.result = nil, nil
 	return err
-}
-
-type TableSinkerExecutor struct {
-	baseExecutor
-
-	table table.Table
-
-	ranges  []*ranger.Range
-	dagPB   *tipb.DAGRequest
-	startTS uint64
-
-	//sinker interface{}
-}
-
-func NewTableSinkerExecutor(src *TableReaderExecutor) *TableSinkerExecutor {
-	return &TableSinkerExecutor{
-		baseExecutor: newBaseExecutor(src.ctx, src.schema, src.id, src.children...),
-		table:        src.table,
-		ranges:       src.ranges,
-		dagPB:        src.dagPB,
-		startTS:      src.startTS,
-	}
-}
-
-func (e *TableSinkerExecutor) Next(ctx context.Context, req *chunk.Chunk) error {
-	req.Reset()
-	return nil
 }

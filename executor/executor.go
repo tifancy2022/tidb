@@ -260,6 +260,16 @@ func (e *baseExecutor) CloneState(Executor) error {
 	return errors.Errorf("Executor_%v doesn't implement clone state method", e.id)
 }
 
+func (e *baseExecutor) Reset() error {
+	for _, child := range e.children {
+		err := child.Reset()
+		if err != nil {
+			return err
+		}
+	}
+	return errors.Errorf("Executor_%v doesn't implement reset method", e.id)
+}
+
 func newBaseExecutor(ctx sessionctx.Context, schema *expression.Schema, id int, children ...Executor) baseExecutor {
 	e := baseExecutor{
 		children:     children,
@@ -302,6 +312,7 @@ type Executor interface {
 	Close() error
 	Schema() *expression.Schema
 	CloneState(Executor) error
+	Reset() error
 }
 
 // Next is a wrapper function on e.Next(), it handles some common codes.
