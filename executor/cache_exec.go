@@ -18,20 +18,20 @@ var StmtCacheExecManager = newStmtCacheExecutorManager()
 
 type StmtCacheExecutorManager struct {
 	sync.Mutex
-	cacheRs map[string]*cacheStmtRecordSet
+	cacheRs map[string]*CacheStmtRecordSet
 }
 
-type cacheStmtRecordSet struct {
+type CacheStmtRecordSet struct {
 	*recordSet
 }
 
 func newStmtCacheExecutorManager() *StmtCacheExecutorManager {
 	return &StmtCacheExecutorManager{
-		cacheRs: make(map[string]*cacheStmtRecordSet),
+		cacheRs: make(map[string]*CacheStmtRecordSet),
 	}
 }
 
-func (rs *cacheStmtRecordSet) Close() error {
+func (rs *CacheStmtRecordSet) Close() error {
 	return nil
 }
 
@@ -48,8 +48,20 @@ func (sc *StmtCacheExecutorManager) addStmtCacheExecutor(digest []byte, e Execut
 
 	sc.Lock()
 	defer sc.Unlock()
-	sc.cacheRs[string(digest)] = &cacheStmtRecordSet{rs}
+	sc.cacheRs[string(digest)] = &CacheStmtRecordSet{rs}
 	return nil
+}
+
+func (sc *StmtCacheExecutorManager) GetStmtCacheExecutor(digest string) (*CacheStmtRecordSet, error) {
+	sc.Lock()
+	defer sc.Unlock()
+	rs := sc.cacheRs[digest]
+	err := rs.Reset()
+	return rs, err
+}
+
+func (sc *StmtCacheExecutorManager) GetAllStmtCacheExecutor() map[string]*CacheStmtRecordSet {
+	return sc.cacheRs
 }
 
 func (sc *StmtCacheExecutorManager) replaceTableReader(e Executor) (Executor, error) {

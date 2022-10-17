@@ -24,8 +24,6 @@ import (
 	"github.com/pingcap/tidb/parser/auth"
 	"github.com/pingcap/tidb/stmtcache"
 	"github.com/pingcap/tidb/testkit"
-	"github.com/pingcap/tidb/util/chunk"
-	"github.com/pingcap/tidb/util/sqlexec"
 	"github.com/stretchr/testify/require"
 )
 
@@ -62,41 +60,58 @@ func TestStmtCacheExecutor(t *testing.T) {
 	require.NotNil(t, tk.Session().GetSessionVars().User)
 
 	tk.MustExec("create table t1 (a int, b int)")
-	totalRows := int64(10000)
+	totalRows := int64(100)
 	for i := int64(0); i < totalRows; i += 2 {
 		tk.MustExec(fmt.Sprintf("insert into t1 values (%[1]v, %[1]v), (%[2]v, %[2]v)", i, i+1))
 	}
-
-	ctx := context.Background()
-	sql := "select count(*) from t1"
-	se := tk.Session()
-	stmts, err := se.Parse(ctx, sql)
-	require.NoError(t, err)
-	require.Equal(t, 1, len(stmts))
-	rs, err := tk.Session().ExecuteStmt(ctx, stmts[0])
-	require.NoError(t, err)
-	req := rs.NewChunk(nil)
-
-	for {
-		err := rs.Next(ctx, req)
-		require.NoError(t, err)
-		if req.NumRows() == 0 {
-			break
-		}
-		iter := chunk.NewIterator4Chunk(req.CopyConstruct())
-		for row := iter.Begin(); row != iter.End(); row = iter.Next() {
-			cnt := row.GetInt64(0)
-			require.Equal(t, totalRows, cnt)
-		}
+	tk.MustQuery("select count(*) from t1").Check(testkit.Rows(strconv.FormatInt(totalRows, 10)))
+	cachedResults := executor.StmtCacheExecManager.GetAllStmtCacheExecutor()
+	require.Equal(t, 1, len(cachedResults))
+	var key string
+	for k := range cachedResults {
+		key = k
+		break
 	}
-
-	irs, ok := rs.(sqlexec.IncrementRecordSet)
-	require.True(t, ok)
-	err = irs.Reset()
-	require.Nil(t, err)
-
+	rs, err := executor.StmtCacheExecManager.GetStmtCacheExecutor(key)
+	require.NoError(t, err)
+	ctx := context.Background()
+	req := rs.NewChunk(nil)
 	err = rs.Next(ctx, req)
 	require.NoError(t, err)
 	require.Equal(t, 1, req.NumRows())
 	require.Equal(t, totalRows, req.GetRow(0).GetInt64(0))
+
+	//
+	//ctx := context.Background()
+	//sql := "select count(*) from t1"
+	//se := tk.Session()
+	//stmts, err := se.Parse(ctx, sql)
+	//require.NoError(t, err)
+	//require.Equal(t, 1, len(stmts))
+	//rs, err := tk.Session().ExecuteStmt(ctx, stmts[0])
+	//require.NoError(t, err)
+	//req := rs.NewChunk(nil)
+	//
+	//for {
+	//	err := rs.Next(ctx, req)
+	//	require.NoError(t, err)
+	//	if req.NumRows() == 0 {
+	//		break
+	//	}
+	//	iter := chunk.NewIterator4Chunk(req.CopyConstruct())
+	//	for row := iter.Begin(); row != iter.End(); row = iter.Next() {
+	//		cnt := row.GetInt64(0)
+	//		require.Equal(t, totalRows, cnt)
+	//	}
+	//}
+	//
+	//irs, ok := rs.(sqlexec.IncrementRecordSet)
+	//require.True(t, ok)
+	//err = irs.Reset()
+	//require.Nil(t, err)
+	//
+	//err = rs.Next(ctx, req)
+	//require.NoError(t, err)
+	//require.Equal(t, 1, req.NumRows())
+	//require.Equal(t, totalRows, req.GetRow(0).GetInt64(0))
 }
