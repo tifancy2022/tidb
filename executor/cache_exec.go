@@ -109,6 +109,10 @@ func BuildTableSinkerExecutor(src *TableReaderExecutor) (*IncrementTableReaderEx
 	if err != nil {
 		return nil, err
 	}
+	err = copExec.Open(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	ts.children = append(ts.children, copExec)
 	return ts, err
 }
