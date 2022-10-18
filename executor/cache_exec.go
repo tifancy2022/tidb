@@ -6,6 +6,7 @@ import (
 	"github.com/pingcap/tidb/parser/model"
 	"github.com/pingcap/tidb/sessionctx"
 	"github.com/pingcap/tidb/sessiontxn"
+	"github.com/pingcap/tidb/types"
 	"sync"
 
 	"github.com/pingcap/tidb/table"
@@ -52,10 +53,13 @@ func (sc *StmtCacheExecutorManager) addStmtCacheExecutor(digest []byte, e Execut
 	return nil
 }
 
-func (sc *StmtCacheExecutorManager) GetStmtCacheExecutor(digest string) (*CacheStmtRecordSet, error) {
+func (sc *StmtCacheExecutorManager) GetStmtCacheExecutorByDigest(digest string) (*CacheStmtRecordSet, error) {
 	sc.Lock()
 	defer sc.Unlock()
 	rs := sc.cacheRs[digest]
+	if rs == nil {
+		return nil, nil
+	}
 	err := rs.Reset()
 	return rs, err
 }
@@ -130,11 +134,34 @@ func (e *IncrementTableReaderExecutor) Next(ctx context.Context, req *chunk.Chun
 
 type TableScanSinker struct {
 	baseExecutor
-	dbInfo *model.DBInfo
-	tbl    *model.TableInfo
+	dbInfo  *model.DBInfo
+	tbl     *model.TableInfo
+	columns []*model.ColumnInfo
+
+	seq      int
+	executed bool
 }
 
 func (e *TableScanSinker) Next(ctx context.Context, req *chunk.Chunk) error {
 	req.Reset()
+	if e.executed {
+		return nil
+	}
+	e.executed = true
+	sc := e.ctx.GetSessionVars().StmtCtx
+	for idx, col := range e.columns {
+		v := types.NewDatum(e.seq)
+		v1, err := v.ConvertTo(sc, &col.FieldType)
+		if err != nil {
+			return err
+		}
+		req.AppendDatum(idx, &v1)
+		e.seq += 1
+	}
+	return nil
+}
+
+func (e *TableScanSinker) Reset() error {
+	e.executed = false
 	return nil
 }

@@ -88,6 +88,7 @@ func newStmtSummaryByDigestMap() *stmtCache {
 type StmtElement struct {
 	SchemaName string
 	SQL        string
+	Params     string
 	ts         int64
 	hash       []byte
 }
@@ -102,6 +103,7 @@ func (key *StmtElement) Hash() []byte {
 		}()
 		d.buf.WriteString(key.SchemaName)
 		d.buf.WriteString(key.SQL)
+		d.buf.WriteString(key.Params)
 		d.hasher.Write(d.buf.Bytes())
 		key.hash = d.hasher.Sum(nil)
 	}

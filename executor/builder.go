@@ -3338,6 +3338,7 @@ func (b *executorBuilder) buildTableScanSinker(v *plannercore.PhysicalTableScanS
 		baseExecutor: newBaseExecutor(b.ctx, v.Schema(), v.ID()),
 		dbInfo:       v.DBInfo,
 		tbl:          v.Table,
+		columns:      v.Columns,
 	}
 	return e
 }

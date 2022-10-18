@@ -65,6 +65,7 @@ func TestStmtCacheExecutor(t *testing.T) {
 		tk.MustExec(fmt.Sprintf("insert into t1 values (%[1]v, %[1]v), (%[2]v, %[2]v)", i, i+1))
 	}
 	tk.MustQuery("select count(*) from t1").Check(testkit.Rows(strconv.FormatInt(totalRows, 10)))
+	tk.MustQuery("select count(*) from t1").Check(testkit.Rows(strconv.FormatInt(totalRows, 10)))
 	cachedResults := executor.StmtCacheExecManager.GetAllStmtCacheExecutor()
 	require.Equal(t, 1, len(cachedResults))
 	var key string
@@ -72,7 +73,7 @@ func TestStmtCacheExecutor(t *testing.T) {
 		key = k
 		break
 	}
-	rs, err := executor.StmtCacheExecManager.GetStmtCacheExecutor(key)
+	rs, err := executor.StmtCacheExecManager.GetStmtCacheExecutorByDigest(key)
 	require.NoError(t, err)
 	ctx := context.Background()
 	req := rs.NewChunk(nil)

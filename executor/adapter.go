@@ -497,6 +497,20 @@ func (a *ExecStmt) Exec(ctx context.Context) (_ sqlexec.RecordSet, err error) {
 		sctx.GetSessionVars().StmtCtx.MemTracker.SetBytesLimit(sctx.GetSessionVars().StmtCtx.MemQuotaQuery)
 	}
 
+	sessVars := a.Ctx.GetSessionVars()
+	stmt := &stmtcache.StmtElement{
+		SchemaName: sessVars.CurrentDB,
+		SQL:        sessVars.StmtCtx.OriginalSQL,
+		Params:     sessVars.PreparedParams.String(),
+	}
+	cacheResult, err := StmtCacheExecManager.GetStmtCacheExecutorByDigest(string(stmt.Hash()))
+	if err != nil {
+		return nil, err
+	}
+	if cacheResult != nil {
+		return cacheResult, nil
+	}
+
 	e, err := a.buildExecutor()
 	if err != nil {
 		return nil, err
@@ -1701,10 +1715,10 @@ func (a *ExecStmt) TryCacheStmt(succ bool) ([]byte, bool) {
 	//if execDetail.ScanDetail == nil || execDetail.ScanDetail.ProcessedKeys < CacheMinProcessKeys {
 	//	return
 	//}
-	query := sessVars.StmtCtx.OriginalSQL + sessVars.PreparedParams.String()
 	stmt := &stmtcache.StmtElement{
 		SchemaName: sessVars.CurrentDB,
-		SQL:        query,
+		SQL:        sessVars.StmtCtx.OriginalSQL,
+		Params:     sessVars.PreparedParams.String(),
 	}
 	digestByte, cached := stmtcache.StmtCache.AddStatement(stmt)
 	return digestByte, cached
