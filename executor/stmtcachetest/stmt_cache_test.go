@@ -89,7 +89,10 @@ func TestStmtCacheExecutor(t *testing.T) {
 	tk.MustQuery("select sum(a+b) from t1").Check(testkit.Rows("9902"))
 
 	// test agg with group by.
+	tk.MustQuery("select c, count(*) from t1 group by c").Check(testkit.Rows("0 34", "1 33", "2 33"))
+	tk.MustQuery("select c, count(*) from t1 group by c").Check(testkit.Rows("0 34", "1 34", "2 33"))
+	tk.MustQuery("select c, count(*) from t1 group by c").Check(testkit.Rows("0 34", "1 34", "2 34"))
+
 	tk.MustQuery("select c, count(*) from t1 group by c order by c").Check(testkit.Rows("0 34", "1 33", "2 33"))
-	// todo: fix me(HashAggExec)
-	//tk.MustQuery("select c, count(*) from t1 group by c order by c").Check(testkit.Rows("0 34", "1 33", "2 33"))
+	tk.MustQuery("select c, count(*) from t1 group by c order by c").Check(testkit.Rows("0 34", "1 34", "2 33"))
 }

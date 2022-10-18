@@ -292,6 +292,7 @@ func (e *HashAggExec) Close() error {
 func (e *HashAggExec) Reset() error {
 	e.executed = false
 	e.isChildDrained = false
+	e.cursor4GroupKey = 0
 	for _, child := range e.children {
 		err := child.Reset()
 		if err != nil {
@@ -304,6 +305,7 @@ func (e *HashAggExec) Reset() error {
 func (e *HashAggExec) ResetAndClean() error {
 	e.executed = false
 	e.isChildDrained = false
+	e.cursor4GroupKey = 0
 	for _, child := range e.children {
 		copExec, ok := child.(CopExecutor)
 		if !ok {
@@ -1004,10 +1006,10 @@ func (e *HashAggExec) unparallelExec(ctx context.Context, chk *chunk.Chunk) erro
 }
 
 func (e *HashAggExec) resetSpillMode() {
-	e.cursor4GroupKey, e.groupKeys = 0, e.groupKeys[:0]
+	//e.cursor4GroupKey, e.groupKeys = 0, e.groupKeys[:0]
 	var setSize int64
-	e.groupSet, setSize = set.NewStringSetWithMemoryUsage()
-	e.partialResultMap = make(aggPartialResultMapper)
+	//e.groupSet, setSize = set.NewStringSetWithMemoryUsage()
+	//e.partialResultMap = make(aggPartialResultMapper)
 	e.bInMap = 0
 	e.prepared = false
 	e.executed = e.numOfSpilledChks == e.listInDisk.NumChunks() // No data is spilling again, all data have been processed.
