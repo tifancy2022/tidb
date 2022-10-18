@@ -15,7 +15,6 @@
 package stmtcachetest
 
 import (
-	"context"
 	"fmt"
 	"strconv"
 	"testing"
@@ -52,67 +51,45 @@ func TestStmtCache(t *testing.T) {
 func TestStmtCacheExecutor(t *testing.T) {
 	store := testkit.CreateMockStore(t)
 	tk := testkit.NewTestKit(t, store)
-	tk.MustExec("use test")
+	tk.MustExec("create database test2")
+	tk.MustExec("use test2")
 	tk.MustExec("create user 'u1'@'%' identified by '';")
 	tk.MustExec("grant all privileges on *.* to 'u1'@'%';")
 	err := tk.Session().Auth(&auth.UserIdentity{Username: "u1", Hostname: "localhost", CurrentUser: true, AuthUsername: "u1", AuthHostname: "%"}, nil, []byte("012345678901234567890"))
 	require.NoError(t, err)
 	require.NotNil(t, tk.Session().GetSessionVars().User)
 
-	tk.MustExec("create table t1 (a int, b int)")
+	tk.MustExec("create table t1 (a int, b int, c int)")
 	totalRows := int64(100)
-	for i := int64(0); i < totalRows; i += 2 {
-		tk.MustExec(fmt.Sprintf("insert into t1 values (%[1]v, %[1]v), (%[2]v, %[2]v)", i, i+1))
+	for i := int64(0); i < totalRows; i += 1 {
+		tk.MustExec(fmt.Sprintf("insert into t1 values (%[1]v, %[1]v, %[2]v)", i, i%3))
 	}
 	tk.MustQuery("select count(*) from t1").Check(testkit.Rows(strconv.FormatInt(totalRows, 10)))
-	tk.MustQuery("select count(*) from t1").Check(testkit.Rows(strconv.FormatInt(totalRows, 10)))
-	cachedResults := executor.StmtCacheExecManager.GetAllStmtCacheExecutor()
-	require.Equal(t, 1, len(cachedResults))
-	var key string
-	for k := range cachedResults {
-		key = k
-		break
-	}
-	rs, err := executor.StmtCacheExecManager.GetStmtCacheExecutorByDigest(key)
-	require.NoError(t, err)
-	ctx := context.Background()
-	req := rs.NewChunk(nil)
-	err = rs.Next(ctx, req)
-	require.NoError(t, err)
-	require.Equal(t, 1, req.NumRows())
-	require.Equal(t, totalRows, req.GetRow(0).GetInt64(0))
+	tk.MustQuery("select count(*) from t1").Check(testkit.Rows(strconv.FormatInt(totalRows+1, 10)))
+	tk.MustQuery("select count(*) from t1").Check(testkit.Rows(strconv.FormatInt(totalRows+2, 10)))
 
-	//
-	//ctx := context.Background()
-	//sql := "select count(*) from t1"
-	//se := tk.Session()
-	//stmts, err := se.Parse(ctx, sql)
-	//require.NoError(t, err)
-	//require.Equal(t, 1, len(stmts))
-	//rs, err := tk.Session().ExecuteStmt(ctx, stmts[0])
-	//require.NoError(t, err)
-	//req := rs.NewChunk(nil)
-	//
-	//for {
-	//	err := rs.Next(ctx, req)
-	//	require.NoError(t, err)
-	//	if req.NumRows() == 0 {
-	//		break
-	//	}
-	//	iter := chunk.NewIterator4Chunk(req.CopyConstruct())
-	//	for row := iter.Begin(); row != iter.End(); row = iter.Next() {
-	//		cnt := row.GetInt64(0)
-	//		require.Equal(t, totalRows, cnt)
-	//	}
-	//}
-	//
-	//irs, ok := rs.(sqlexec.IncrementRecordSet)
-	//require.True(t, ok)
-	//err = irs.Reset()
-	//require.Nil(t, err)
-	//
-	//err = rs.Next(ctx, req)
-	//require.NoError(t, err)
-	//require.Equal(t, 1, req.NumRows())
-	//require.Equal(t, totalRows, req.GetRow(0).GetInt64(0))
+	tk.MustQuery("select avg(a) from t1").Check(testkit.Rows("49.5000"))
+	tk.MustQuery("select avg(a) from t1").Check(testkit.Rows("49.0198")) //  ((49.5*100)+1)/101 = 49.01980198019802
+
+	tk.MustQuery("select sum(a) from t1").Check(testkit.Rows("4950"))
+	tk.MustQuery("select sum(a) from t1").Check(testkit.Rows("4951"))
+
+	tk.MustQuery("select min(a) from t1").Check(testkit.Rows("0"))
+	tk.MustQuery("select min(a) from t1").Check(testkit.Rows("0"))
+
+	tk.MustQuery("select max(a) from t1").Check(testkit.Rows("99"))
+	tk.MustQuery("select max(a) from t1").Check(testkit.Rows("99"))
+	for i := 1; i < 99; i++ {
+		tk.MustQuery("select max(a) from t1").Check(testkit.Rows("99"))
+	}
+	tk.MustQuery("select max(a) from t1").Check(testkit.Rows("100"))
+	tk.MustQuery("select max(a) from t1").Check(testkit.Rows("101"))
+
+	tk.MustQuery("select sum(a+b) from t1").Check(testkit.Rows("9900"))
+	tk.MustQuery("select sum(a+b) from t1").Check(testkit.Rows("9902"))
+
+	// test agg with group by.
+	tk.MustQuery("select c, count(*) from t1 group by c order by c").Check(testkit.Rows("0 34", "1 33", "2 33"))
+	// todo: fix me(HashAggExec)
+	//tk.MustQuery("select c, count(*) from t1 group by c order by c").Check(testkit.Rows("0 34", "1 33", "2 33"))
 }

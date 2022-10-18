@@ -145,18 +145,13 @@ func (b *PBPlanBuilder) pbToTableScanSinker(dbInfo *model.DBInfo, tbl table.Tabl
 
 func (b *PBPlanBuilder) buildTableScanSchema(tblInfo *model.TableInfo, columns []*model.ColumnInfo) *expression.Schema {
 	schema := expression.NewSchema(make([]*expression.Column, 0, len(columns))...)
-	for _, col := range tblInfo.Columns {
-		for _, colInfo := range columns {
-			if col.ID != colInfo.ID {
-				continue
-			}
-			newCol := &expression.Column{
-				UniqueID: b.sctx.GetSessionVars().AllocPlanColumnID(),
-				ID:       col.ID,
-				RetType:  &col.FieldType,
-			}
-			schema.Append(newCol)
+	for _, colInfo := range columns {
+		newCol := &expression.Column{
+			UniqueID: b.sctx.GetSessionVars().AllocPlanColumnID(),
+			ID:       colInfo.ID,
+			RetType:  &colInfo.FieldType,
 		}
+		schema.Append(newCol)
 	}
 	return schema
 }

@@ -289,6 +289,35 @@ func (e *HashAggExec) Close() error {
 	return e.baseExecutor.Close()
 }
 
+func (e *HashAggExec) Reset() error {
+	e.executed = false
+	e.isChildDrained = false
+	for _, child := range e.children {
+		err := child.Reset()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (e *HashAggExec) ResetAndClean() error {
+	e.executed = false
+	e.isChildDrained = false
+	for _, child := range e.children {
+		copExec, ok := child.(CopExecutor)
+		if !ok {
+			msg := fmt.Sprintf("%#v is not cop executor", child)
+			panic(msg)
+		}
+		err := copExec.ResetAndClean()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // Open implements the Executor Open interface.
 func (e *HashAggExec) Open(ctx context.Context) error {
 	failpoint.Inject("mockHashAggExecBaseExecutorOpenReturnedError", func(val failpoint.Value) {
@@ -1297,6 +1326,31 @@ func (e *StreamAggExec) Open(ctx context.Context) error {
 
 func (e *StreamAggExec) Reset() error {
 	e.executed = false
+	for _, child := range e.children {
+		err := child.Reset()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (e *StreamAggExec) ResetAndClean() error {
+	for i, aggFunc := range e.aggFuncs {
+		aggFunc.ResetPartialResult(e.partialResults[i])
+	}
+	e.executed = false
+	for _, child := range e.children {
+		copExec, ok := child.(CopExecutor)
+		if !ok {
+			msg := fmt.Sprintf("%#v is not cop executor", child)
+			panic(msg)
+		}
+		err := copExec.ResetAndClean()
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

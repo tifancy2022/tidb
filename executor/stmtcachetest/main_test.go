@@ -15,12 +15,12 @@
 package stmtcachetest
 
 import (
+	"go.uber.org/goleak"
 	"testing"
 
 	"github.com/pingcap/tidb/config"
 	"github.com/pingcap/tidb/meta/autoid"
 	"github.com/tikv/client-go/v2/tikv"
-	"go.uber.org/goleak"
 )
 
 func TestMain(m *testing.M) {

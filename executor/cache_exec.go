@@ -2,6 +2,7 @@ package executor
 
 import (
 	"context"
+	"fmt"
 	"github.com/pingcap/kvproto/pkg/coprocessor"
 	"github.com/pingcap/tidb/parser/model"
 	"github.com/pingcap/tidb/sessionctx"
@@ -132,6 +133,21 @@ func (e *IncrementTableReaderExecutor) Next(ctx context.Context, req *chunk.Chun
 	return Next(ctx, e.children[0], req)
 }
 
+func (e *IncrementTableReaderExecutor) Reset() error {
+	for _, child := range e.children {
+		copExec, ok := child.(CopExecutor)
+		if !ok {
+			msg := fmt.Sprintf("%#v is not cop executor", child)
+			panic(msg)
+		}
+		err := copExec.ResetAndClean()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 type TableScanSinker struct {
 	baseExecutor
 	dbInfo  *model.DBInfo
@@ -148,6 +164,7 @@ func (e *TableScanSinker) Next(ctx context.Context, req *chunk.Chunk) error {
 		return nil
 	}
 	e.executed = true
+	e.seq += 1
 	sc := e.ctx.GetSessionVars().StmtCtx
 	for idx, col := range e.columns {
 		v := types.NewDatum(e.seq)
@@ -156,12 +173,16 @@ func (e *TableScanSinker) Next(ctx context.Context, req *chunk.Chunk) error {
 			return err
 		}
 		req.AppendDatum(idx, &v1)
-		e.seq += 1
 	}
 	return nil
 }
 
 func (e *TableScanSinker) Reset() error {
+	e.executed = false
+	return nil
+}
+
+func (e *TableScanSinker) ResetAndClean() error {
 	e.executed = false
 	return nil
 }

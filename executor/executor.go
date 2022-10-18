@@ -270,6 +270,21 @@ func (e *baseExecutor) Reset() error {
 	return errors.Errorf("Executor_%v doesn't implement reset method", e.id)
 }
 
+func (e *baseExecutor) ResetAndClean() error {
+	for _, child := range e.children {
+		copExec, ok := child.(CopExecutor)
+		if !ok {
+			msg := fmt.Sprintf("%#v is not cop executor", child)
+			panic(msg)
+		}
+		err := copExec.ResetAndClean()
+		if err != nil {
+			return err
+		}
+	}
+	return errors.Errorf("Executor_%v doesn't implement ResetAndClean method", e.id)
+}
+
 func newBaseExecutor(ctx sessionctx.Context, schema *expression.Schema, id int, children ...Executor) baseExecutor {
 	e := baseExecutor{
 		children:     children,
@@ -313,6 +328,11 @@ type Executor interface {
 	Schema() *expression.Schema
 	//CloneState(Executor) error
 	Reset() error
+}
+
+type CopExecutor interface {
+	Executor
+	ResetAndClean() error
 }
 
 // Next is a wrapper function on e.Next(), it handles some common codes.
@@ -1550,6 +1570,31 @@ func (e *SelectionExec) Close() error {
 	}
 	e.selected = nil
 	return e.baseExecutor.Close()
+}
+
+func (e *SelectionExec) Reset() error {
+	for _, child := range e.children {
+		err := child.Reset()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (e *SelectionExec) ResetAndClean() error {
+	for _, child := range e.children {
+		copExec, ok := child.(CopExecutor)
+		if !ok {
+			msg := fmt.Sprintf("%#v is not cop executor", child)
+			panic(msg)
+		}
+		err := copExec.ResetAndClean()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Next implements the Executor Next interface.

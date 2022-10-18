@@ -1509,10 +1509,11 @@ func (b *executorBuilder) buildHashAgg(v *plannercore.PhysicalHashAgg) Executor 
 	}
 	sessionVars := b.ctx.GetSessionVars()
 	e := &HashAggExec{
-		baseExecutor:    newBaseExecutor(b.ctx, v.Schema(), v.ID(), src),
-		sc:              sessionVars.StmtCtx,
-		PartialAggFuncs: make([]aggfuncs.AggFunc, 0, len(v.AggFuncs)),
-		GroupByItems:    v.GroupByItems,
+		baseExecutor:     newBaseExecutor(b.ctx, v.Schema(), v.ID(), src),
+		sc:               sessionVars.StmtCtx,
+		PartialAggFuncs:  make([]aggfuncs.AggFunc, 0, len(v.AggFuncs)),
+		GroupByItems:     v.GroupByItems,
+		isUnparallelExec: true,
 	}
 	// We take `create table t(a int, b int);` as example.
 	//
@@ -1634,8 +1635,9 @@ func (b *executorBuilder) buildProjection(v *plannercore.PhysicalProjection) Exe
 		return nil
 	}
 	e := &ProjectionExec{
-		baseExecutor:     newBaseExecutor(b.ctx, v.Schema(), v.ID(), childExec),
-		numWorkers:       int64(b.ctx.GetSessionVars().ProjectionConcurrency()),
+		baseExecutor: newBaseExecutor(b.ctx, v.Schema(), v.ID(), childExec),
+		//numWorkers:       int64(b.ctx.GetSessionVars().ProjectionConcurrency()),
+		numWorkers:       0,
 		evaluatorSuit:    expression.NewEvaluatorSuite(v.Exprs, v.AvoidColumnEvaluator),
 		calculateNoDelay: v.CalculateNoDelay,
 	}
