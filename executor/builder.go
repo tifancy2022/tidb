@@ -3336,12 +3336,18 @@ func (b *executorBuilder) buildMPPGather(v *plannercore.PhysicalTableReader) Exe
 }
 
 func (b *executorBuilder) buildTableScanSinker(v *plannercore.PhysicalTableScanSinker) Executor {
-	e := &TableScanSinker{
-		baseExecutor: newBaseExecutor(b.ctx, v.Schema(), v.ID()),
-		dbInfo:       v.DBInfo,
-		tbl:          v.Table,
-		columns:      v.Columns,
+	store := b.ctx.GetStore()
+	_, ok := store.(kv.EtcdBackend)
+	if !ok {
+		return &MockTableScanSinker{
+			baseExecutor: newBaseExecutor(b.ctx, v.Schema(), v.ID()),
+			dbInfo:       v.DBInfo,
+			tbl:          v.Table,
+			columns:      v.Columns,
+		}
 	}
+	var e Executor
+	e, b.err = BuildTableScanSinker(b.ctx, v)
 	return e
 }
 

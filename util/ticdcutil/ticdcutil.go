@@ -167,6 +167,8 @@ func (c *Changefeed) Next(ctx context.Context) (*RowChangeEvent, error) {
 		default:
 			panic(fmt.Sprintf("cannot infer event type, event: %+v", event))
 		}
+	default:
+		return nil, nil
 	}
 }
 

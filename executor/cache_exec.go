@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"github.com/pingcap/kvproto/pkg/coprocessor"
 	"github.com/pingcap/tidb/parser/model"
+	plannercore "github.com/pingcap/tidb/planner/core"
 	"github.com/pingcap/tidb/sessionctx"
 	"github.com/pingcap/tidb/sessiontxn"
 	"github.com/pingcap/tidb/types"
+	"github.com/pingcap/tidb/util/ticdcutil"
 	"sync"
 
 	"github.com/pingcap/tidb/table"
@@ -72,6 +74,10 @@ func (sc *StmtCacheExecutorManager) GetAllStmtCacheExecutor() map[string]*CacheS
 func (sc *StmtCacheExecutorManager) replaceTableReader(e Executor) (Executor, error) {
 	switch v := e.(type) {
 	case *TableReaderExecutor:
+		err := v.Close()
+		if err != nil {
+			return nil, err
+		}
 		return BuildTableSinkerExecutor(v)
 	}
 	for i, child := range e.base().children {
@@ -153,12 +159,74 @@ type TableScanSinker struct {
 	dbInfo  *model.DBInfo
 	tbl     *model.TableInfo
 	columns []*model.ColumnInfo
+	sinker  *ticdcutil.Changefeed
+}
+
+func BuildTableScanSinker(ctx sessionctx.Context, v *plannercore.PhysicalTableScanSinker) (*TableScanSinker, error) {
+	txn, err := ctx.Txn(false)
+	if err != nil {
+		return nil, err
+	}
+	e := &TableScanSinker{
+		baseExecutor: newBaseExecutor(ctx, v.Schema(), v.ID()),
+		dbInfo:       v.DBInfo,
+		tbl:          v.Table,
+		columns:      v.Columns,
+	}
+	e.sinker, err = ticdcutil.NewChangfeed(context.Background(), txn.StartTS(), v.DBInfo.Name.L, v.Table.Name.L)
+	if err != nil {
+		return nil, err
+	}
+
+	return e, nil
+}
+
+func (e *TableScanSinker) Next(ctx context.Context, req *chunk.Chunk) error {
+	req.Reset()
+	sc := e.ctx.GetSessionVars().StmtCtx
+	for {
+		event, err := e.sinker.Next()
+		if err != nil || event == nil {
+			return nil
+		}
+		switch event.Tp {
+		case ticdcutil.EventTypeInsert:
+			for idx, col := range e.columns {
+				if col.Offset >= len(event.Columns) {
+					return fmt.Errorf("column offset %v more than event data len %v", col.Offset, len(event.Columns))
+				}
+				v, err := event.Columns[col.Offset].ConvertTo(sc, &col.FieldType)
+				if err != nil {
+					return err
+				}
+				req.AppendDatum(idx, &v)
+			}
+		}
+		if req.IsFull() {
+			return nil
+		}
+	}
+}
+
+func (e *TableScanSinker) Reset() error {
+	return nil
+}
+
+func (e *TableScanSinker) ResetAndClean() error {
+	return nil
+}
+
+type MockTableScanSinker struct {
+	baseExecutor
+	dbInfo  *model.DBInfo
+	tbl     *model.TableInfo
+	columns []*model.ColumnInfo
 
 	seq      int
 	executed bool
 }
 
-func (e *TableScanSinker) Next(ctx context.Context, req *chunk.Chunk) error {
+func (e *MockTableScanSinker) Next(ctx context.Context, req *chunk.Chunk) error {
 	req.Reset()
 	if e.executed {
 		return nil
@@ -177,12 +245,12 @@ func (e *TableScanSinker) Next(ctx context.Context, req *chunk.Chunk) error {
 	return nil
 }
 
-func (e *TableScanSinker) Reset() error {
+func (e *MockTableScanSinker) Reset() error {
 	e.executed = false
 	return nil
 }
 
-func (e *TableScanSinker) ResetAndClean() error {
+func (e *MockTableScanSinker) ResetAndClean() error {
 	e.executed = false
 	return nil
 }
