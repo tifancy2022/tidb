@@ -58,6 +58,7 @@ require (
 	github.com/klauspost/compress v1.15.9
 	github.com/kyoh86/exportloopref v0.1.8
 	github.com/mgechev/revive v1.2.4
+	github.com/ngaut/log v0.0.0-20210830112240-0124ec040aeb
 	github.com/ngaut/pools v0.0.0-20180318154953-b7bc8c42aac7
 	github.com/nishanths/predeclared v0.2.2
 	github.com/opentracing/basictracer-go v1.1.0
