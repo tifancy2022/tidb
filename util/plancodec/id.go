@@ -126,7 +126,8 @@ const (
 	// TypeCTE is the type of CTEFullScan.
 	TypeCTE = "CTEFullScan"
 	// TypeCTEDefinition is the type of CTE definition
-	TypeCTEDefinition = "CTE"
+	TypeCTEDefinition   = "CTE"
+	TypeTableScanSinker = "TableScanSinker"
 )
 
 // plan id.
@@ -187,6 +188,7 @@ const (
 	typePartitionUnionID      int = 53
 	typeShuffleID             int = 54
 	typeShuffleReceiverID     int = 55
+	typeTableScanSinker           = 56
 )
 
 // TypeStringToPhysicalID converts the plan type string to plan id.
@@ -302,6 +304,8 @@ func TypeStringToPhysicalID(tp string) int {
 		return typeCTEDefinitionID
 	case TypeCTETable:
 		return typeCTETableID
+	case TypeTableScanSinker:
+		return typeTableScanSinker
 	}
 	// Should never reach here.
 	return 0
@@ -420,6 +424,8 @@ func PhysicalIDToTypeString(id int) string {
 		return TypeCTEDefinition
 	case typeCTETableID:
 		return TypeCTETable
+	case typeTableScanSinker:
+		return TypeTableScanSinker
 	}
 
 	// Should never reach here.

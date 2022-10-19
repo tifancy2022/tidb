@@ -2274,6 +2274,14 @@ func (rs *execStmtResult) Close() error {
 	return finishStmt(context.Background(), se, nil, rs.sql)
 }
 
+func (rs *execStmtResult) Reset() error {
+	irs, ok := rs.RecordSet.(sqlexec.IncrementRecordSet)
+	if !ok {
+		return nil
+	}
+	return irs.Reset()
+}
+
 func resetCTEStorageMap(se *session) error {
 	tmp := se.GetSessionVars().StmtCtx.CTEStorageMap
 	if tmp == nil {

@@ -161,9 +161,13 @@ func (h *CoprocessorDAGHandler) buildDAGExecutor(req *coprocessor.Request) (Exec
 	}
 	h.dagReq = dagReq
 	is := h.sctx.GetInfoSchema().(infoschema.InfoSchema)
+	return h.buildCopExecutor(is, req.Ranges, dagReq)
+}
+
+func (h *CoprocessorDAGHandler) buildCopExecutor(is infoschema.InfoSchema, ranges []*coprocessor.KeyRange, dag *tipb.DAGRequest) (Executor, error) {
 	// Build physical plan.
-	bp := core.NewPBPlanBuilder(h.sctx, is, req.Ranges)
-	plan, err := bp.Build(dagReq.Executors)
+	bp := core.NewPBPlanBuilder(h.sctx, is, ranges)
+	plan, err := bp.Build(dag.Executors)
 	if err != nil {
 		return nil, errors.Trace(err)
 	}

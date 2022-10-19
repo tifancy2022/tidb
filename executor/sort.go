@@ -18,6 +18,7 @@ import (
 	"container/heap"
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/pingcap/failpoint"
 	"github.com/pingcap/tidb/expression"
@@ -82,6 +83,45 @@ func (e *SortExec) Close() error {
 	}
 	e.spillAction = nil
 	return e.children[0].Close()
+}
+
+func (e *SortExec) Reset() error {
+	e.Idx = 0
+	e.fetched = false
+	e.partitionList = e.partitionList[:0]
+	err := e.rowChunks.Reset()
+	if err != nil {
+		return err
+	}
+	for _, child := range e.children {
+		err := child.Reset()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (e *SortExec) ResetAndClean() error {
+	e.Idx = 0
+	e.fetched = false
+	e.partitionList = e.partitionList[:0]
+	err := e.rowChunks.Reset()
+	if err != nil {
+		return err
+	}
+	for _, child := range e.children {
+		copExec, ok := child.(CopExecutor)
+		if !ok {
+			msg := fmt.Sprintf("%#v is not cop executor", child)
+			panic(msg)
+		}
+		err := copExec.ResetAndClean()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Open implements the Executor Open interface.
@@ -510,5 +550,32 @@ func (e *TopNExec) doCompaction() error {
 	e.memTracker.Consume(int64(-8 * len(e.rowPtrs)))
 	e.memTracker.Consume(int64(8 * len(newRowPtrs)))
 	e.rowPtrs = newRowPtrs
+	return nil
+}
+
+func (e *TopNExec) Reset() error {
+	e.fetched = false
+	for _, child := range e.children {
+		err := child.Reset()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (e *TopNExec) ResetAndClean() error {
+	e.fetched = false
+	for _, child := range e.children {
+		copExec, ok := child.(CopExecutor)
+		if !ok {
+			msg := fmt.Sprintf("%#v is not cop executor", child)
+			panic(msg)
+		}
+		err := copExec.ResetAndClean()
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }

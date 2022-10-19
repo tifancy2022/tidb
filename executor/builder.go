@@ -305,6 +305,8 @@ func (b *executorBuilder) build(p plannercore.Plan) Executor {
 		return b.buildCTETableReader(v)
 	case *plannercore.CompactTable:
 		return b.buildCompactTable(v)
+	case *plannercore.PhysicalTableScanSinker:
+		return b.buildTableScanSinker(v)
 	default:
 		if mp, ok := p.(MockPhysicalPlan); ok {
 			return mp.GetExecutor()
@@ -1507,10 +1509,11 @@ func (b *executorBuilder) buildHashAgg(v *plannercore.PhysicalHashAgg) Executor 
 	}
 	sessionVars := b.ctx.GetSessionVars()
 	e := &HashAggExec{
-		baseExecutor:    newBaseExecutor(b.ctx, v.Schema(), v.ID(), src),
-		sc:              sessionVars.StmtCtx,
-		PartialAggFuncs: make([]aggfuncs.AggFunc, 0, len(v.AggFuncs)),
-		GroupByItems:    v.GroupByItems,
+		baseExecutor:     newBaseExecutor(b.ctx, v.Schema(), v.ID(), src),
+		sc:               sessionVars.StmtCtx,
+		PartialAggFuncs:  make([]aggfuncs.AggFunc, 0, len(v.AggFuncs)),
+		GroupByItems:     v.GroupByItems,
+		isUnparallelExec: true,
 	}
 	// We take `create table t(a int, b int);` as example.
 	//
@@ -1632,8 +1635,9 @@ func (b *executorBuilder) buildProjection(v *plannercore.PhysicalProjection) Exe
 		return nil
 	}
 	e := &ProjectionExec{
-		baseExecutor:     newBaseExecutor(b.ctx, v.Schema(), v.ID(), childExec),
-		numWorkers:       int64(b.ctx.GetSessionVars().ProjectionConcurrency()),
+		baseExecutor: newBaseExecutor(b.ctx, v.Schema(), v.ID(), childExec),
+		//numWorkers:       int64(b.ctx.GetSessionVars().ProjectionConcurrency()),
+		numWorkers:       0,
 		evaluatorSuit:    expression.NewEvaluatorSuite(v.Exprs, v.AvoidColumnEvaluator),
 		calculateNoDelay: v.CalculateNoDelay,
 	}
@@ -1869,7 +1873,8 @@ func (b *executorBuilder) buildMemTable(v *plannercore.PhysicalMemTable) Executo
 			strings.ToLower(infoschema.TablePlacementPolicies),
 			strings.ToLower(infoschema.TableTrxSummary),
 			strings.ToLower(infoschema.TableVariablesInfo),
-			strings.ToLower(infoschema.ClusterTableTrxSummary):
+			strings.ToLower(infoschema.ClusterTableTrxSummary),
+			strings.ToLower(infoschema.TableStmtCached):
 			return &MemTableReaderExec{
 				baseExecutor: newBaseExecutor(b.ctx, v.Schema(), v.ID()),
 				table:        v.Table,
@@ -3328,6 +3333,16 @@ func (b *executorBuilder) buildMPPGather(v *plannercore.PhysicalTableReader) Exe
 		startTS:      startTs,
 	}
 	return gather
+}
+
+func (b *executorBuilder) buildTableScanSinker(v *plannercore.PhysicalTableScanSinker) Executor {
+	e := &TableScanSinker{
+		baseExecutor: newBaseExecutor(b.ctx, v.Schema(), v.ID()),
+		dbInfo:       v.DBInfo,
+		tbl:          v.Table,
+		columns:      v.Columns,
+	}
+	return e
 }
 
 // buildTableReader builds a table reader executor. It first build a no range table reader,

@@ -275,6 +275,10 @@ func (e *TableReaderExecutor) Close() error {
 	return err
 }
 
+func (e *TableReaderExecutor) Reset() error {
+	return nil
+}
+
 // buildResp first builds request and sends it to tikv using distsql.Select. It uses SelectResult returned by the callee
 // to fetch all results.
 func (e *TableReaderExecutor) buildResp(ctx context.Context, ranges []*ranger.Range) (distsql.SelectResult, error) {
