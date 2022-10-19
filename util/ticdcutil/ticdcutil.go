@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"github.com/ngaut/log"
+	"github.com/pingcap/tidb/sessionctx/stmtctx"
 	"github.com/pingcap/tidb/types"
 	apiv2 "github.com/pingcap/tiflow/cdc/api/v2"
 	"github.com/pingcap/tiflow/cdc/model"
@@ -70,6 +71,7 @@ func NewChangfeed(
 		SinkURI: memory.MakeSinkURI(changefeedID),
 		StartTs: startTS,
 		ReplicaConfig: &apiv2.ReplicaConfig{
+			EnableOldValue: true,
 			Filter: &apiv2.FilterConfig{
 				Rules: []string{fmt.Sprintf("%s.%s", dbName, tableName)},
 			},
@@ -117,20 +119,51 @@ func (c *Changefeed) Next(ctx context.Context) (*RowChangeEvent, error) {
 		}
 		switch {
 		case event.IsInsert():
-			return &RowChangeEvent{
+			result := &RowChangeEvent{
 				Tp:       EventTypeInsert,
 				CommitTS: event.CommitTs,
-			}, nil
+			}
+			for i := 0; i < len(event.Columns); i++ {
+				datum, err := column2Datum(event.ColInfos[i].Ft, event.Columns[i])
+				if err != nil {
+					return nil, err
+				}
+				result.Columns = append(result.Columns, datum)
+			}
+			return result, nil
 		case event.IsUpdate():
-			return &RowChangeEvent{
+			result := &RowChangeEvent{
 				Tp:       EventTypUpdate,
 				CommitTS: event.CommitTs,
-			}, nil
+			}
+			for i := 0; i < len(event.Columns); i++ {
+				datum, err := column2Datum(event.ColInfos[i].Ft, event.Columns[i])
+				if err != nil {
+					return nil, err
+				}
+				result.Columns = append(result.Columns, datum)
+			}
+			for i := 0; i < len(event.PreColumns); i++ {
+				datum, err := column2Datum(event.ColInfos[i].Ft, event.PreColumns[i])
+				if err != nil {
+					return nil, err
+				}
+				result.PreColumns = append(result.PreColumns, datum)
+			}
+			return result, nil
 		case event.IsDelete():
-			return &RowChangeEvent{
+			result := &RowChangeEvent{
 				Tp:       EventTypeDelete,
 				CommitTS: event.CommitTs,
-			}, nil
+			}
+			for i := 0; i < len(event.PreColumns); i++ {
+				datum, err := column2Datum(event.ColInfos[i].Ft, event.PreColumns[i])
+				if err != nil {
+					return nil, err
+				}
+				result.PreColumns = append(result.PreColumns, datum)
+			}
+			return result, nil
 		default:
 			panic(fmt.Sprintf("cannot infer event type, event: %+v", event))
 		}
@@ -158,4 +191,10 @@ func removeChangefeed(ctx context.Context, id string) error {
 	ctx, cancel := context.WithTimeout(ctx, 10)
 	defer cancel()
 	return apiv1Client.Changefeeds().Delete(ctx, id)
+}
+
+func column2Datum(ft *types.FieldType, column *model.Column) (types.Datum, error) {
+	sc := &stmtctx.StatementContext{TimeZone: time.UTC}
+	rawDatum := types.NewStringDatum(model.ColumnValueString(column.Value))
+	return rawDatum.ConvertTo(sc, ft)
 }
