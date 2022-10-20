@@ -306,6 +306,9 @@ func (e *HashAggExec) ResetAndClean() error {
 	e.executed = false
 	e.isChildDrained = false
 	e.cursor4GroupKey = 0
+	e.groupKeys = e.groupKeys[:0]
+	e.groupSet, _ = set.NewStringSetWithMemoryUsage()
+	e.partialResultMap = make(aggPartialResultMapper)
 	for _, child := range e.children {
 		copExec, ok := child.(CopExecutor)
 		if !ok {
