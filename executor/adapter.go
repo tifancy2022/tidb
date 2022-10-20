@@ -498,17 +498,19 @@ func (a *ExecStmt) Exec(ctx context.Context) (_ sqlexec.RecordSet, err error) {
 	}
 
 	sessVars := a.Ctx.GetSessionVars()
-	stmt := &stmtcache.StmtElement{
-		SchemaName: sessVars.CurrentDB,
-		SQL:        sessVars.StmtCtx.OriginalSQL,
-		Params:     sessVars.PreparedParams.String(),
-	}
-	cacheResult, err := StmtCacheExecManager.GetStmtCacheExecutorByDigest(string(stmt.Hash()))
-	if err != nil {
-		return nil, err
-	}
-	if cacheResult != nil {
-		return cacheResult, nil
+	if sessVars.EnableCacheStmt {
+		stmt := &stmtcache.StmtElement{
+			SchemaName: sessVars.CurrentDB,
+			SQL:        sessVars.StmtCtx.OriginalSQL,
+			Params:     sessVars.PreparedParams.String(),
+		}
+		cacheResult, err := StmtCacheExecManager.GetStmtCacheExecutorByDigest(string(stmt.Hash()))
+		if err != nil {
+			return nil, err
+		}
+		if cacheResult != nil {
+			return cacheResult, nil
+		}
 	}
 
 	e, err := a.buildExecutor()
