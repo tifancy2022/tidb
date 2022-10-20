@@ -9,6 +9,7 @@ import (
 	"github.com/pingcap/tidb/sessionctx"
 	"github.com/pingcap/tidb/sessiontxn"
 	"github.com/pingcap/tidb/types"
+	"github.com/pingcap/tidb/util/logutil"
 	"github.com/pingcap/tidb/util/ticdcutil"
 	"sync"
 
@@ -159,7 +160,7 @@ type TableScanSinker struct {
 	dbInfo  *model.DBInfo
 	tbl     *model.TableInfo
 	columns []*model.ColumnInfo
-	sinker  *ticdcutil.Changefeed
+	sinker  ticdcutil.Changefeed
 }
 
 func BuildTableScanSinker(ctx sessionctx.Context, v *plannercore.PhysicalTableScanSinker) (*TableScanSinker, error) {
@@ -173,7 +174,7 @@ func BuildTableScanSinker(ctx sessionctx.Context, v *plannercore.PhysicalTableSc
 		tbl:          v.Table,
 		columns:      v.Columns,
 	}
-	e.sinker, err = ticdcutil.NewChangfeed(context.Background(), txn.StartTS(), v.DBInfo.Name.L, v.Table.Name.L)
+	e.sinker, err = ticdcutil.NewChangefeed(context.Background(), txn.StartTS(), v.DBInfo.Name.L, v.Table.Name.L)
 	if err != nil {
 		return nil, err
 	}
@@ -183,9 +184,10 @@ func BuildTableScanSinker(ctx sessionctx.Context, v *plannercore.PhysicalTableSc
 
 func (e *TableScanSinker) Next(ctx context.Context, req *chunk.Chunk) error {
 	req.Reset()
+	logutil.BgLogger().Warn("use table scan sinker -----")
 	sc := e.ctx.GetSessionVars().StmtCtx
 	for {
-		event, err := e.sinker.Next()
+		event, err := e.sinker.Next(ctx)
 		if err != nil || event == nil {
 			return nil
 		}

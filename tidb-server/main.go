@@ -71,6 +71,7 @@ import (
 	"github.com/pingcap/tidb/util/sys/linux"
 	storageSys "github.com/pingcap/tidb/util/sys/storage"
 	"github.com/pingcap/tidb/util/systimemon"
+	_ "github.com/pingcap/tidb/util/ticdcutil/changefeed"
 	"github.com/pingcap/tidb/util/topsql"
 	"github.com/pingcap/tidb/util/versioninfo"
 	"github.com/pingcap/tiflow/cdc/contextutil"
