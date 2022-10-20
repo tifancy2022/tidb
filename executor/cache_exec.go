@@ -28,6 +28,7 @@ type StmtCacheExecutorManager struct {
 }
 
 type CacheStmtRecordSet struct {
+	mu sync.Mutex
 	*recordSet
 }
 
@@ -37,7 +38,12 @@ func newStmtCacheExecutorManager() *StmtCacheExecutorManager {
 	}
 }
 
+func (rs *CacheStmtRecordSet) Begin() {
+	rs.mu.Lock()
+}
+
 func (rs *CacheStmtRecordSet) Close() error {
+	rs.mu.Unlock()
 	return nil
 }
 
@@ -54,7 +60,7 @@ func (sc *StmtCacheExecutorManager) addStmtCacheExecutor(digest []byte, e Execut
 
 	sc.Lock()
 	defer sc.Unlock()
-	sc.cacheRs[string(digest)] = &CacheStmtRecordSet{rs}
+	sc.cacheRs[string(digest)] = &CacheStmtRecordSet{recordSet: rs}
 	return nil
 }
 
@@ -66,6 +72,7 @@ func (sc *StmtCacheExecutorManager) GetStmtCacheExecutorByDigest(digest string) 
 		return nil, nil
 	}
 	err := rs.Reset()
+	rs.Begin()
 	return rs, err
 }
 
@@ -198,7 +205,7 @@ func (e *TableScanSinker) Next(ctx context.Context, req *chunk.Chunk) error {
 	req.Reset()
 	//sc := e.ctx.GetSessionVars().StmtCtx
 	defer func() {
-		logutil.BgLogger().Info("table scan sinker next-----", zap.Int("rows", req.NumRows()))
+		logutil.BgLogger().Debug("table scan sinker next-----", zap.Int("rows", req.NumRows()))
 	}()
 	for {
 		event, err := e.sinker.Next(ctx)
