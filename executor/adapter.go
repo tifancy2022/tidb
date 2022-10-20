@@ -1698,6 +1698,9 @@ func (a *ExecStmt) TryCacheStmt(succ bool) ([]byte, bool) {
 		return nil, false
 	}
 	sessVars := a.Ctx.GetSessionVars()
+	if !sessVars.EnableCacheStmt {
+		return nil, false
+	}
 	physicalPlan, ok := a.Plan.(plannercore.PhysicalPlan)
 	if !ok {
 		return nil, false

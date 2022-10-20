@@ -1,24 +1,23 @@
 package executor
 
 import (
-	"bytes"
 	"context"
 	"fmt"
+	"sync"
+
 	"github.com/pingcap/kvproto/pkg/coprocessor"
 	"github.com/pingcap/tidb/parser/model"
 	plannercore "github.com/pingcap/tidb/planner/core"
 	"github.com/pingcap/tidb/sessionctx"
 	"github.com/pingcap/tidb/sessiontxn"
-	"github.com/pingcap/tidb/types"
-	"github.com/pingcap/tidb/util/logutil"
-	"github.com/pingcap/tidb/util/ticdcutil"
-	"go.uber.org/zap"
-	"sync"
-
 	"github.com/pingcap/tidb/table"
+	"github.com/pingcap/tidb/types"
 	"github.com/pingcap/tidb/util/chunk"
+	"github.com/pingcap/tidb/util/logutil"
 	"github.com/pingcap/tidb/util/ranger"
+	"github.com/pingcap/tidb/util/ticdcutil"
 	"github.com/pingcap/tipb/go-tipb"
+	"go.uber.org/zap"
 )
 
 var StmtCacheExecManager = newStmtCacheExecutorManager()
@@ -72,6 +71,18 @@ func (sc *StmtCacheExecutorManager) GetStmtCacheExecutorByDigest(digest string) 
 
 func (sc *StmtCacheExecutorManager) GetAllStmtCacheExecutor() map[string]*CacheStmtRecordSet {
 	return sc.cacheRs
+}
+
+func (sc *StmtCacheExecutorManager) Close() {
+	sc.Lock()
+	defer sc.Unlock()
+	for _, rs := range sc.cacheRs {
+		err := rs.executor.Close()
+		if err != nil {
+			logutil.BgLogger().Info("close stmt cache executor failed", zap.String("error", err.Error()))
+		}
+	}
+	logutil.BgLogger().Info("stmt cache manager closed---")
 }
 
 func (sc *StmtCacheExecutorManager) replaceTableReader(e Executor) (Executor, error) {
@@ -180,13 +191,15 @@ func BuildTableScanSinker(ctx sessionctx.Context, v *plannercore.PhysicalTableSc
 	if err != nil {
 		return nil, err
 	}
-
 	return e, nil
 }
 
 func (e *TableScanSinker) Next(ctx context.Context, req *chunk.Chunk) error {
 	req.Reset()
-	sc := e.ctx.GetSessionVars().StmtCtx
+	//sc := e.ctx.GetSessionVars().StmtCtx
+	defer func() {
+		logutil.BgLogger().Info("table scan sinker next-----", zap.Int("rows", req.NumRows()))
+	}()
 	for {
 		event, err := e.sinker.Next(ctx)
 		if err != nil || event == nil {
@@ -194,34 +207,39 @@ func (e *TableScanSinker) Next(ctx context.Context, req *chunk.Chunk) error {
 		}
 		switch event.Tp {
 		case ticdcutil.EventTypeInsert:
-			buf := bytes.NewBuffer(nil)
-			for i, v := range event.Columns {
-				s, err := v.ToString()
-				if err != nil {
-					return err
-				}
-				if i > 0 {
-					buf.WriteString(", ")
-				}
-				buf.WriteString(s)
-			}
-			logutil.BgLogger().Info("sinker receive change feed", zap.String("table", e.tbl.Name.L), zap.String("row", buf.String()))
+			//buf := bytes.NewBuffer(nil)
+			//for i, v := range event.Columns {
+			//	s, err := v.ToString()
+			//	if err != nil {
+			//		return err
+			//	}
+			//	if i > 0 {
+			//		buf.WriteString(", ")
+			//	}
+			//	buf.WriteString(s)
+			//}
+			//logutil.BgLogger().Info("sinker receive change feed", zap.String("table", e.tbl.Name.L), zap.String("row", buf.String()))
 			for idx, col := range e.columns {
 				if col.Offset >= len(event.Columns) {
 					return fmt.Errorf("column offset %v more than event data len %v", col.Offset, len(event.Columns))
 				}
-				v, err := event.Columns[col.Offset].ConvertTo(sc, &col.FieldType)
-				if err != nil {
-					return err
-				}
-				//req.AppendDatum(idx, &event.Columns[col.Offset])
-				req.AppendDatum(idx, &v)
+				//v, err := event.Columns[col.Offset].ConvertTo(sc, &col.FieldType)
+				//if err != nil {
+				//	return err
+				//}
+				req.AppendDatum(idx, &event.Columns[col.Offset])
+				//req.AppendDatum(idx, &v)
 			}
 		}
 		if req.IsFull() {
 			return nil
 		}
 	}
+}
+
+func (e *TableScanSinker) Close() error {
+	logutil.BgLogger().Info("close table scan sinker", zap.String("table", e.tbl.Name.L))
+	return e.sinker.Close()
 }
 
 func (e *TableScanSinker) Reset() error {
