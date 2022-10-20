@@ -238,6 +238,20 @@ func (b *PBPlanBuilder) getAggInfo(executor *tipb.Executor) ([]*aggregation.AggF
 	if err != nil {
 		return nil, nil, errors.Trace(err)
 	}
+	for _, gp := range executor.Aggregation.GetGroupBy() {
+		mode := tipb.AggFunctionMode_Partial1Mode
+		firstRowAgg := &tipb.Expr{
+			Tp:          tipb.ExprType_First,
+			Children:    []*tipb.Expr{gp},
+			FieldType:   gp.GetFieldType(),
+			AggFuncMode: &mode,
+		}
+		aggFunc, err := aggregation.PBExprToAggFuncDesc(b.sctx, firstRowAgg, b.tps)
+		if err != nil {
+			return nil, nil, errors.Trace(err)
+		}
+		aggFuncs = append(aggFuncs, aggFunc)
+	}
 	return aggFuncs, groupBys, nil
 }
 

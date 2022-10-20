@@ -1,6 +1,7 @@
 package executor
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"github.com/pingcap/kvproto/pkg/coprocessor"
@@ -11,6 +12,7 @@ import (
 	"github.com/pingcap/tidb/types"
 	"github.com/pingcap/tidb/util/logutil"
 	"github.com/pingcap/tidb/util/ticdcutil"
+	"go.uber.org/zap"
 	"sync"
 
 	"github.com/pingcap/tidb/table"
@@ -192,6 +194,18 @@ func (e *TableScanSinker) Next(ctx context.Context, req *chunk.Chunk) error {
 		}
 		switch event.Tp {
 		case ticdcutil.EventTypeInsert:
+			buf := bytes.NewBuffer(nil)
+			for i, v := range event.Columns {
+				s, err := v.ToString()
+				if err != nil {
+					return err
+				}
+				if i > 0 {
+					buf.WriteString(", ")
+				}
+				buf.WriteString(s)
+			}
+			logutil.BgLogger().Info("sinker receive change feed", zap.String("table", e.tbl.Name.L), zap.String("row", buf.String()))
 			for idx, col := range e.columns {
 				if col.Offset >= len(event.Columns) {
 					return fmt.Errorf("column offset %v more than event data len %v", col.Offset, len(event.Columns))
@@ -200,6 +214,7 @@ func (e *TableScanSinker) Next(ctx context.Context, req *chunk.Chunk) error {
 				if err != nil {
 					return err
 				}
+				//req.AppendDatum(idx, &event.Columns[col.Offset])
 				req.AppendDatum(idx, &v)
 			}
 		}

@@ -96,3 +96,23 @@ func TestStmtCacheExecutor(t *testing.T) {
 	tk.MustQuery("select c, count(*) from t1 group by c order by c").Check(testkit.Rows("0 34", "1 33", "2 33"))
 	tk.MustQuery("select c, count(*) from t1 group by c order by c").Check(testkit.Rows("0 34", "1 34", "2 33"))
 }
+
+func TestStmtCacheExecutor2(t *testing.T) {
+	store := testkit.CreateMockStore(t)
+	tk := testkit.NewTestKit(t, store)
+	tk.MustExec("create database test2")
+	tk.MustExec("use test2")
+	tk.MustExec("create user 'u1'@'%' identified by '';")
+	tk.MustExec("grant all privileges on *.* to 'u1'@'%';")
+	err := tk.Session().Auth(&auth.UserIdentity{Username: "u1", Hostname: "localhost", CurrentUser: true, AuthUsername: "u1", AuthHostname: "%"}, nil, []byte("012345678901234567890"))
+	require.NoError(t, err)
+	require.NotNil(t, tk.Session().GetSessionVars().User)
+
+	tk.MustExec("create table t1 (a int key, b int, c int)")
+	totalRows := int64(100)
+	for i := int64(0); i < totalRows; i += 1 {
+		tk.MustExec(fmt.Sprintf("insert into t1 values (%[1]v, %[1]v, %[2]v)", i, 1))
+	}
+	tk.MustQuery("select count(*) from t1 group by c").Check(testkit.Rows("100"))
+	tk.MustQuery("select count(*) from t1 group by c").Check(testkit.Rows("101"))
+}
