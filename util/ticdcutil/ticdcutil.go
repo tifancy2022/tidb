@@ -16,23 +16,10 @@ package ticdcutil
 
 import (
 	"context"
-	"crypto/rand"
-	"fmt"
-	"io"
-	"time"
+	"errors"
 
-	"github.com/ngaut/log"
-	"github.com/pingcap/tidb/sessionctx/stmtctx"
 	"github.com/pingcap/tidb/types"
-	apiv2 "github.com/pingcap/tiflow/cdc/api/v2"
-	"github.com/pingcap/tiflow/cdc/model"
-	"github.com/pingcap/tiflow/cdc/sinkv2/eventsink/memory"
-	apiv1client "github.com/pingcap/tiflow/pkg/api/v1"
-	apiv2client "github.com/pingcap/tiflow/pkg/api/v2"
-	"go.uber.org/zap"
 )
-
-const serverAddr = "127.0.0.1:8300"
 
 type EventType string
 
@@ -43,158 +30,24 @@ const (
 )
 
 type RowChangeEvent struct {
-	Tp         EventType
-	CommitTS   uint64
-	Columns    []types.Datum
+	Tp       EventType
+	CommitTS uint64
+	Columns  []types.Datum
+	// PreColumns is the old value of the row, only available when EventType is update or delete.
 	PreColumns []types.Datum
 }
 
-type Changefeed struct {
-	id      string
-	eventCh <-chan *model.RowChangedEvent
+type Changefeed interface {
+	// Next returns the next RowChangeEvent. If there is no new event, it will
+	// be blocked until ctx is canceled or changefeed is finished or closed.
+	// On changefeed finished or closed, it will return io.EOF.
+	Next(ctx context.Context) (*RowChangeEvent, error)
+	// Close closes the changefeed.
+	Close() error
 }
 
-func NewChangfeed(
-	ctx context.Context,
-	startTS uint64,
-	dbName string,
-	tableName string,
-) (*Changefeed, error) {
-	apiv2Client, err := apiv2client.NewAPIClient(serverAddr, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	changefeedID := generateChangefeedID(dbName, tableName)
-	changefeedConfig := &apiv2.ChangefeedConfig{
-		ID:      changefeedID,
-		SinkURI: memory.MakeSinkURI(changefeedID),
-		StartTs: startTS,
-		ReplicaConfig: &apiv2.ReplicaConfig{
-			EnableOldValue: true,
-			Filter: &apiv2.FilterConfig{
-				Rules: []string{fmt.Sprintf("%s.%s", dbName, tableName)},
-			},
-		},
-	}
-
-	if _, err := apiv2Client.Changefeeds().Create(ctx, changefeedConfig); err != nil {
-		return nil, err
-	}
-
-	// Wait for the memory sink to be ready.
-	var eventCh <-chan *model.RowChangedEvent
-loop:
-	for {
-		select {
-		case <-ctx.Done():
-			if err := removeChangefeed(context.Background(), changefeedID); err != nil {
-				log.Warn("failed to remove changefeed, please remove the changefeed manually", zap.String("id", changefeedID), zap.Error(err))
-			}
-			return nil, ctx.Err()
-		case <-time.After(time.Millisecond):
-			var ok bool
-			eventCh, ok = memory.ConsumeEvents(changefeedID)
-			if ok {
-				break loop
-			}
-		}
-	}
-	return &Changefeed{
-		id:      changefeedID,
-		eventCh: eventCh,
-	}, nil
-
-}
-
-// Next returns the next RowChangeEvent. If there is no new event, it will
-// be blocked until ctx is canceled or changefeed is finished or closed.
-func (c *Changefeed) Next(ctx context.Context) (*RowChangeEvent, error) {
-	select {
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	case event, ok := <-c.eventCh:
-		if !ok {
-			return nil, io.EOF
-		}
-		switch {
-		case event.IsInsert():
-			result := &RowChangeEvent{
-				Tp:       EventTypeInsert,
-				CommitTS: event.CommitTs,
-			}
-			for i := 0; i < len(event.Columns); i++ {
-				datum, err := column2Datum(event.ColInfos[i].Ft, event.Columns[i])
-				if err != nil {
-					return nil, err
-				}
-				result.Columns = append(result.Columns, datum)
-			}
-			return result, nil
-		case event.IsUpdate():
-			result := &RowChangeEvent{
-				Tp:       EventTypUpdate,
-				CommitTS: event.CommitTs,
-			}
-			for i := 0; i < len(event.Columns); i++ {
-				datum, err := column2Datum(event.ColInfos[i].Ft, event.Columns[i])
-				if err != nil {
-					return nil, err
-				}
-				result.Columns = append(result.Columns, datum)
-			}
-			for i := 0; i < len(event.PreColumns); i++ {
-				datum, err := column2Datum(event.ColInfos[i].Ft, event.PreColumns[i])
-				if err != nil {
-					return nil, err
-				}
-				result.PreColumns = append(result.PreColumns, datum)
-			}
-			return result, nil
-		case event.IsDelete():
-			result := &RowChangeEvent{
-				Tp:       EventTypeDelete,
-				CommitTS: event.CommitTs,
-			}
-			for i := 0; i < len(event.PreColumns); i++ {
-				datum, err := column2Datum(event.ColInfos[i].Ft, event.PreColumns[i])
-				if err != nil {
-					return nil, err
-				}
-				result.PreColumns = append(result.PreColumns, datum)
-			}
-			return result, nil
-		default:
-			panic(fmt.Sprintf("cannot infer event type, event: %+v", event))
-		}
-	}
-}
-
-// Close closes the changefeed.
-func (c *Changefeed) Close() error {
-	return removeChangefeed(context.Background(), c.id)
-}
-
-func generateChangefeedID(dbName, tableName string) string {
-	var buf [4]byte
-	if _, err := rand.Read(buf[:]); err != nil {
-		panic(err)
-	}
-	return fmt.Sprintf("changefeed-%s-%s-%x", dbName, tableName, buf)
-}
-
-func removeChangefeed(ctx context.Context, id string) error {
-	apiv1Client, err := apiv1client.NewAPIClient(serverAddr, nil)
-	if err != nil {
-		return err
-	}
-	ctx, cancel := context.WithTimeout(ctx, 10)
-	defer cancel()
-	return apiv1Client.Changefeeds().Delete(ctx, id)
-}
-
-func column2Datum(ft *types.FieldType, column *model.Column) (types.Datum, error) {
-	sc := &stmtctx.StatementContext{TimeZone: time.UTC}
-	rawDatum := types.NewStringDatum(model.ColumnValueString(column.Value))
-	return rawDatum.ConvertTo(sc, ft)
+// NewChangefeed creates a new changefeed.
+// Must import github.com/pingcap/tidb/util/ticdcutil/changefeed to initialize this function before using it.
+var NewChangefeed = func(ctx context.Context, startTS uint64, dbName string, tableName string) (Changefeed, error) {
+	return nil, errors.New("function NewChangeFeed is not initialized, please import github.com/pingcap/tidb/util/ticdcutil/changefeed to initialize it")
 }
