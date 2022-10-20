@@ -184,7 +184,6 @@ func BuildTableScanSinker(ctx sessionctx.Context, v *plannercore.PhysicalTableSc
 
 func (e *TableScanSinker) Next(ctx context.Context, req *chunk.Chunk) error {
 	req.Reset()
-	logutil.BgLogger().Warn("use table scan sinker -----")
 	sc := e.ctx.GetSessionVars().StmtCtx
 	for {
 		event, err := e.sinker.Next(ctx)

@@ -3337,8 +3337,15 @@ func (b *executorBuilder) buildMPPGather(v *plannercore.PhysicalTableReader) Exe
 
 func (b *executorBuilder) buildTableScanSinker(v *plannercore.PhysicalTableScanSinker) Executor {
 	store := b.ctx.GetStore()
-	_, ok := store.(kv.EtcdBackend)
-	if !ok {
+	etcd, ok := store.(kv.EtcdBackend)
+	isMock := true
+	if ok {
+		addr, err := etcd.EtcdAddrs()
+		if err == nil && len(addr) > 0 {
+			isMock = false
+		}
+	}
+	if isMock {
 		return &MockTableScanSinker{
 			baseExecutor: newBaseExecutor(b.ctx, v.Schema(), v.ID()),
 			dbInfo:       v.DBInfo,
