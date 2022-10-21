@@ -49,6 +49,7 @@ import (
 	"github.com/pingcap/tidb/sessionctx"
 	"github.com/pingcap/tidb/sessionctx/variable"
 	"github.com/pingcap/tidb/sessiontxn"
+	"github.com/pingcap/tidb/stmtcache"
 	"github.com/pingcap/tidb/store/helper"
 	"github.com/pingcap/tidb/table"
 	"github.com/pingcap/tidb/tablecodec"
@@ -172,6 +173,8 @@ func (e *memtableRetriever) retrieve(ctx context.Context, sctx sessionctx.Contex
 			err = e.setDataForClusterTrxSummary(sctx)
 		case infoschema.TableVariablesInfo:
 			err = e.setDataForVariablesInfo(sctx)
+		case infoschema.TableStmtCached:
+			err = e.setDataForStmtCached(sctx)
 		}
 		if err != nil {
 			return nil, err
@@ -435,6 +438,10 @@ func (e *memtableRetriever) setDataForVariablesInfo(ctx sessionctx.Context) erro
 	return nil
 }
 
+func (e *memtableRetriever) setDataForStmtCached(ctx sessionctx.Context) error {
+	e.rows = stmtcache.StmtCache.GetAllStmtCached()
+	return nil
+}
 func (e *memtableRetriever) setDataFromSchemata(ctx sessionctx.Context, schemas []*model.DBInfo) {
 	checker := privilege.GetPrivilegeManager(ctx)
 	rows := make([][]types.Datum, 0, len(schemas))

@@ -48,10 +48,12 @@ import (
 	"github.com/pingcap/tidb/sessionctx/variable"
 	"github.com/pingcap/tidb/sessiontxn"
 	"github.com/pingcap/tidb/sessiontxn/staleread"
+	"github.com/pingcap/tidb/stmtcache"
 	"github.com/pingcap/tidb/types"
 	"github.com/pingcap/tidb/util/breakpoint"
 	"github.com/pingcap/tidb/util/chunk"
 	"github.com/pingcap/tidb/util/execdetails"
+	"github.com/pingcap/tidb/util/filter"
 	"github.com/pingcap/tidb/util/hint"
 	"github.com/pingcap/tidb/util/logutil"
 	"github.com/pingcap/tidb/util/mathutil"
@@ -168,6 +170,10 @@ func (a *recordSet) Next(ctx context.Context, req *chunk.Chunk) (err error) {
 	return nil
 }
 
+func (a *recordSet) Reset() error {
+	return a.executor.Reset()
+}
+
 // NewChunk create a chunk base on top-level executor's newFirstChunk().
 func (a *recordSet) NewChunk(alloc chunk.Allocator) *chunk.Chunk {
 	if alloc == nil {
@@ -179,7 +185,16 @@ func (a *recordSet) NewChunk(alloc chunk.Allocator) *chunk.Chunk {
 }
 
 func (a *recordSet) Close() error {
-	err := a.executor.Close()
+	var err error
+	digest, cached := a.stmt.TryCacheStmt(a.lastErr == nil)
+	if !cached {
+		err = a.executor.Close()
+	} else {
+		err = StmtCacheExecManager.addStmtCacheExecutor(digest, a.executor, a)
+		if err != nil {
+			return err
+		}
+	}
 	a.stmt.CloseRecordSet(a.txnStartTS, a.lastErr)
 	return err
 }
@@ -480,6 +495,22 @@ func (a *ExecStmt) Exec(ctx context.Context) (_ sqlexec.RecordSet, err error) {
 
 	if sctx.GetSessionVars().StmtCtx.HasMemQuotaHint {
 		sctx.GetSessionVars().StmtCtx.MemTracker.SetBytesLimit(sctx.GetSessionVars().StmtCtx.MemQuotaQuery)
+	}
+
+	sessVars := a.Ctx.GetSessionVars()
+	if sessVars.EnableCacheStmt {
+		stmt := &stmtcache.StmtElement{
+			SchemaName: sessVars.CurrentDB,
+			SQL:        sessVars.StmtCtx.OriginalSQL,
+			Params:     sessVars.PreparedParams.String(),
+		}
+		cacheResult, err := StmtCacheExecManager.GetStmtCacheExecutorByDigest(string(stmt.Hash()))
+		if err != nil {
+			return nil, err
+		}
+		if cacheResult != nil {
+			return cacheResult, nil
+		}
 	}
 
 	e, err := a.buildExecutor()
@@ -1660,6 +1691,88 @@ func (a *ExecStmt) SummaryStmt(succ bool) {
 		stmtExecInfo.ExecRetryTime = costTime - sessVars.DurationParse - sessVars.DurationCompile - time.Since(a.retryStartTime)
 	}
 	stmtsummary.StmtSummaryByDigestMap.AddStatement(stmtExecInfo)
+}
+
+var CacheMinProcessKeys int64 = 10000
+
+func (a *ExecStmt) TryCacheStmt(succ bool) ([]byte, bool) {
+	if !succ {
+		return nil, false
+	}
+	sessVars := a.Ctx.GetSessionVars()
+	if !sessVars.EnableCacheStmt {
+		return nil, false
+	}
+	physicalPlan, ok := a.Plan.(plannercore.PhysicalPlan)
+	if !ok {
+		return nil, false
+	}
+	if sessVars.User == nil || isNoResultPlan(a.Plan) || !isPlanContainAgg(physicalPlan) || isPlanContainSystemTableReader(physicalPlan) {
+		return nil, false
+	}
+	stmtCtx := sessVars.StmtCtx
+	resultRows := GetResultRowsCount(stmtCtx, a.Plan)
+	if resultRows > 100 || resultRows == 0 {
+		return nil, false
+	}
+	// unistore doesn't return processkeys info.
+	//execDetail := stmtCtx.GetExecDetails()
+	//if execDetail.ScanDetail == nil || execDetail.ScanDetail.ProcessedKeys < CacheMinProcessKeys {
+	//	return
+	//}
+	stmt := &stmtcache.StmtElement{
+		SchemaName: sessVars.CurrentDB,
+		SQL:        sessVars.StmtCtx.OriginalSQL,
+		Params:     sessVars.PreparedParams.String(),
+	}
+	digestByte, cached := stmtcache.StmtCache.AddStatement(stmt)
+	return digestByte, cached
+}
+
+func isPlanContainAgg(p plannercore.PhysicalPlan) bool {
+	switch p.(type) {
+	case *plannercore.PhysicalStreamAgg, *plannercore.PhysicalHashAgg:
+		return true
+	default:
+		children := p.Children()
+		for _, child := range children {
+			ok := isPlanContainAgg(child)
+			if ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isPlanContainSystemTableReader(p plannercore.PhysicalPlan) bool {
+	var db string
+	switch v := p.(type) {
+	case *plannercore.PhysicalTableReader:
+		tableScan := v.TablePlans[0].(*plannercore.PhysicalTableScan)
+		db = tableScan.DBName.O
+	case *plannercore.PhysicalIndexReader:
+		indexScan := v.IndexPlans[0].(*plannercore.PhysicalIndexScan)
+		db = indexScan.DBName.O
+	case *plannercore.PhysicalIndexLookUpReader:
+		ts := v.TablePlans[0].(*plannercore.PhysicalTableScan)
+		db = ts.DBName.O
+	case *plannercore.PhysicalMemTable:
+		return true
+	default:
+		children := p.Children()
+		for _, child := range children {
+			ok := isPlanContainSystemTableReader(child)
+			if ok {
+				return true
+			}
+		}
+		return false
+	}
+	if filter.IsSystemSchema(db) {
+		return true
+	}
+	return false
 }
 
 // GetTextToLog return the query text to log.

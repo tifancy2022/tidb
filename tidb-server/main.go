@@ -71,8 +71,14 @@ import (
 	"github.com/pingcap/tidb/util/sys/linux"
 	storageSys "github.com/pingcap/tidb/util/sys/storage"
 	"github.com/pingcap/tidb/util/systimemon"
+	_ "github.com/pingcap/tidb/util/ticdcutil/changefeed"
 	"github.com/pingcap/tidb/util/topsql"
 	"github.com/pingcap/tidb/util/versioninfo"
+	"github.com/pingcap/tiflow/cdc/contextutil"
+	ticdcserver "github.com/pingcap/tiflow/cdc/server"
+	ticdcconfig "github.com/pingcap/tiflow/pkg/config"
+	ticdcutil "github.com/pingcap/tiflow/pkg/util"
+	ticdcversion "github.com/pingcap/tiflow/pkg/version"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
 	"github.com/tikv/client-go/v2/tikv"
@@ -208,6 +214,9 @@ func main() {
 	setupGCTuner()
 	storage, dom := createStoreAndDomain()
 	svr := createServer(storage, dom)
+
+	ticdcSvr := createTiCDCServer()
+	go ticdcSvr.Run(context.Background())
 
 	// Register error API is not thread-safe, the caller MUST NOT register errors after initialization.
 	// To prevent misuse, set a flag to indicate that register new error will panic immediately.
@@ -751,6 +760,38 @@ func createServer(storage kv.Storage, dom *domain.Domain) *server.Server {
 	return svr
 }
 
+func createTiCDCServer() ticdcserver.Server {
+	cfg := config.GetGlobalConfig()
+	if cfg.Store != "tikv" {
+		log.Fatal("CDC only supports TiKV storage")
+	}
+	if ticdcversion.ReleaseVersion == "None" {
+		ticdcversion.ReleaseVersion = "v6.3.0-master"
+	}
+
+	ticdcCfg := ticdcconfig.GetDefaultServerConfig()
+	ticdcCfg.Addr = "127.0.0.1:8300"
+	ticdcCfg.AdvertiseAddr = "127.0.0.1:8300"
+	ticdcconfig.StoreGlobalServerConfig(ticdcCfg)
+
+	tz, err := ticdcutil.GetTimezone(ticdcCfg.TZ)
+	if err != nil {
+		log.Fatal("failed to get timezone", zap.Error(err))
+	}
+	ctx := contextutil.PutTimezoneInCtx(context.Background(), tz)
+	ctx = contextutil.PutCaptureAddrInCtx(ctx, ticdcCfg.AdvertiseAddr)
+
+	pdEndpoint := cfg.Path
+	if !strings.HasPrefix("http://", pdEndpoint) && !strings.HasPrefix("https://", pdEndpoint) {
+		pdEndpoint = "http://" + pdEndpoint
+	}
+	svr, err := ticdcserver.New([]string{pdEndpoint})
+	if err != nil {
+		log.Fatal("failed to create the cdc server", zap.Error(err))
+	}
+	return svr
+}
+
 func setupMetrics() {
 	cfg := config.GetGlobalConfig()
 	// Enable the mutex profile, 1/10 of mutex blocking event sampling.
@@ -810,6 +851,7 @@ func cleanup(svr *server.Server, storage kv.Storage, dom *domain.Domain, gracefu
 	closeDomainAndStorage(storage, dom)
 	disk.CleanUp()
 	topsql.Close()
+	executor.StmtCacheExecManager.Close()
 }
 
 func stringToList(repairString string) []string {

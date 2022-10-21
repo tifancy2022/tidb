@@ -15,6 +15,8 @@
 package core
 
 import (
+	"github.com/pingcap/tidb/parser/mysql"
+	"github.com/pingcap/tidb/table"
 	"strings"
 
 	"github.com/pingcap/errors"
@@ -96,7 +98,7 @@ func (b *PBPlanBuilder) pbToTableScan(e *tipb.Executor) (PhysicalPlan, error) {
 	}
 	// Currently only support cluster table.
 	if !tbl.Type().IsClusterTable() {
-		return nil, errors.Errorf("table %s is not a cluster table", tbl.Meta().Name.L)
+		return b.pbToTableScanSinker(dbInfo, tbl, tblScan)
 	}
 	columns, err := b.convertColumnInfo(tbl.Meta(), tblScan.Columns)
 	if err != nil {
@@ -126,20 +128,30 @@ func (b *PBPlanBuilder) pbToTableScan(e *tipb.Executor) (PhysicalPlan, error) {
 	return p, nil
 }
 
+func (b *PBPlanBuilder) pbToTableScanSinker(dbInfo *model.DBInfo, tbl table.Table, tblScan *tipb.TableScan) (PhysicalPlan, error) {
+	columns, err := b.convertColumnInfo(tbl.Meta(), tblScan.Columns)
+	if err != nil {
+		return nil, err
+	}
+	schema := b.buildTableScanSchema(tbl.Meta(), columns)
+	p := PhysicalTableScanSinker{
+		DBInfo:  dbInfo,
+		Table:   tbl.Meta(),
+		Columns: columns,
+	}.Init(b.sctx, &property.StatsInfo{}, 0)
+	p.SetSchema(schema)
+	return p, nil
+}
+
 func (b *PBPlanBuilder) buildTableScanSchema(tblInfo *model.TableInfo, columns []*model.ColumnInfo) *expression.Schema {
 	schema := expression.NewSchema(make([]*expression.Column, 0, len(columns))...)
-	for _, col := range tblInfo.Columns {
-		for _, colInfo := range columns {
-			if col.ID != colInfo.ID {
-				continue
-			}
-			newCol := &expression.Column{
-				UniqueID: b.sctx.GetSessionVars().AllocPlanColumnID(),
-				ID:       col.ID,
-				RetType:  &col.FieldType,
-			}
-			schema.Append(newCol)
+	for _, colInfo := range columns {
+		newCol := &expression.Column{
+			UniqueID: b.sctx.GetSessionVars().AllocPlanColumnID(),
+			ID:       colInfo.ID,
+			RetType:  &colInfo.FieldType,
 		}
+		schema.Append(newCol)
 	}
 	return schema
 }
@@ -226,6 +238,20 @@ func (b *PBPlanBuilder) getAggInfo(executor *tipb.Executor) ([]*aggregation.AggF
 	if err != nil {
 		return nil, nil, errors.Trace(err)
 	}
+	for _, gp := range executor.Aggregation.GetGroupBy() {
+		mode := tipb.AggFunctionMode_Partial1Mode
+		firstRowAgg := &tipb.Expr{
+			Tp:          tipb.ExprType_First,
+			Children:    []*tipb.Expr{gp},
+			FieldType:   gp.GetFieldType(),
+			AggFuncMode: &mode,
+		}
+		aggFunc, err := aggregation.PBExprToAggFuncDesc(b.sctx, firstRowAgg, b.tps)
+		if err != nil {
+			return nil, nil, errors.Trace(err)
+		}
+		aggFuncs = append(aggFuncs, aggFunc)
+	}
 	return aggFuncs, groupBys, nil
 }
 
@@ -233,6 +259,18 @@ func (b *PBPlanBuilder) convertColumnInfo(tblInfo *model.TableInfo, pbColumns []
 	columns := make([]*model.ColumnInfo, 0, len(pbColumns))
 	tps := make([]*types.FieldType, 0, len(pbColumns))
 	for _, col := range pbColumns {
+		// _tidb_rowid
+		if col.ColumnId == -1 {
+			tp := types.NewFieldType(mysql.TypeLonglong)
+			columns = append(columns, &model.ColumnInfo{
+				ID:        model.ExtraHandleID,
+				Name:      model.ExtraHandleName,
+				Offset:    len(tblInfo.Columns),
+				FieldType: *tp,
+			})
+			tps = append(tps, tp)
+			continue
+		}
 		found := false
 		for _, colInfo := range tblInfo.Columns {
 			if col.ColumnId == colInfo.ID {

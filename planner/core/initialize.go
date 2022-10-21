@@ -318,6 +318,12 @@ func (p PhysicalMemTable) Init(ctx sessionctx.Context, stats *property.StatsInfo
 	return &p
 }
 
+func (p PhysicalTableScanSinker) Init(ctx sessionctx.Context, stats *property.StatsInfo, offset int) *PhysicalTableScanSinker {
+	p.basePhysicalPlan = newBasePhysicalPlan(ctx, plancodec.TypeTableScanSinker, &p, offset)
+	p.stats = stats
+	return &p
+}
+
 // Init initializes PhysicalHashJoin.
 func (p PhysicalHashJoin) Init(ctx sessionctx.Context, stats *property.StatsInfo, offset int, props ...*property.PhysicalProperty) *PhysicalHashJoin {
 	tp := plancodec.TypeHashJoin

@@ -749,6 +749,8 @@ const (
 	// ranges would exceed the limit, it chooses less accurate ranges such as full range. 0 indicates that there is no memory
 	// limit for ranges.
 	TiDBOptRangeMaxSize = "tidb_opt_range_max_size"
+
+	TiDBEnableCacheStmt = "tidb_enable_cache_stmt"
 )
 
 // TiDB vars that have only global scope

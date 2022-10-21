@@ -203,6 +203,11 @@ type RecordSet interface {
 	Close() error
 }
 
+type IncrementRecordSet interface {
+	RecordSet
+	Reset() error
+}
+
 // MultiQueryNoDelayResult is an interface for one no-delay result for one statement in multi-queries.
 type MultiQueryNoDelayResult interface {
 	// AffectedRows return affected row for one statement in multi-queries.

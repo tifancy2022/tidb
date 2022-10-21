@@ -330,6 +330,31 @@ func (e *ProjectionExec) Close() error {
 	return e.baseExecutor.Close()
 }
 
+func (e *ProjectionExec) Reset() error {
+	for _, child := range e.children {
+		err := child.Reset()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (e *ProjectionExec) ResetAndClean() error {
+	for _, child := range e.children {
+		copExec, ok := child.(CopExecutor)
+		if !ok {
+			msg := fmt.Sprintf("%#v is not cop executor", child)
+			panic(msg)
+		}
+		err := copExec.ResetAndClean()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 type projectionInputFetcher struct {
 	proj           *ProjectionExec
 	child          Executor
