@@ -1,1 +1,134 @@
-<html></html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TiFancy Demo</title>
+</head>
+
+<body>
+<div class="container">
+    <div id="stats-panel" style="width: 100%;height:600px;"></div>
+    <div id="app">
+        <div class="info-panel">
+            <div class="stats-count">{{count}}</div>
+            <div class="stats-latency">{{latency}}ms</div>
+        </div>
+        <div class="rate-panel">
+            <div class="random-rate">
+                <button @click="onRate(true)">Random Rate</button>
+
+            </div>
+            <div class="rate-team">
+                <select name="team" id="team" v-model="selectedTeamName">
+                    <option v-for="team in teams" :value="team">{{ team}}</option>
+                </select>
+                <button @click="onRate(false)" :disabled="selectedTeamName === ''">Rate Team</button>
+            </div>
+        </div>
+        <div class="events">
+            <ul>
+                <li v-for="event in events">Rate team: {{ event.team_name }} with score {{ event.score }}</li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+<script src="https://unpkg.com/vue@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.0/dist/echarts.min.js"></script>
+<script>
+    // EChart
+    var statsPanel = echarts.init(document.getElementById('stats-panel'));
+
+    // Vue initialization
+    const {createApp} = Vue
+    createApp({
+        data() {
+            return {
+                stats: [],
+                teams: [],
+                events: [],
+                count: 0,
+                latency: 0,
+                selectedTeamName: '',
+            }
+        },
+        methods: {
+            onRate: function (random) {
+                let self = this;
+                let payload = {};
+                if (!random) {
+                    payload.team_name = self.selectedTeamName;
+                }
+                axios.post('/api/v1/rate', payload)
+                    .then(function (response) {
+                        const count = 10
+                        self.events.splice(0, 0, response.data)
+                        if (self.events.length > count) {
+                            self.events.splice(count)
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log("Rate failed", error);
+                    });
+            },
+            fetchStats: function () {
+                let self = this;
+                axios.get('/api/v1/stats').then(res => {
+                    // Specify the configuration items and data for the chart
+                    var option = {
+                        title: {
+                            text: 'Team Score'
+                        },
+                        animation: false,
+                        xAxis: {
+                            data: []
+                        },
+                        yAxis: {
+                            type: 'value'
+                        },
+                        series: [
+                            {
+                                name: 'score',
+                                type: 'bar',
+                                data: []
+                            }
+                        ]
+                    };
+
+                    res.data.teams.sort((a, b) => {
+                        if (a.team_name === b.team_name) {
+                            return 0
+                        }
+                        if (a.team_name < b.team_name) {
+                            return -1
+                        }
+                        if (a.team_name > b.team_name) {
+                            return 1
+                        }
+                    });
+                    res.data.teams.forEach(team => {
+                        option.xAxis.data.push(team.team_name);
+                        option.series[0].data.push(team.total_score);
+                    })
+
+                    // Display the chart using the configuration items and data just specified.
+                    statsPanel.setOption(option);
+
+                    self.teams = option.xAxis.data;
+                    self.count = res.data.count;
+                    self.latency = res.data.latency;
+                }).catch(err => {
+                    console.log("Fetch stats failed", err)
+                })
+            },
+        },
+        mounted: function () {
+            this.fetchStats();
+            window.setInterval(this.fetchStats, 200);
+        }
+    }).mount('#app')
+</script>
+
+</html>

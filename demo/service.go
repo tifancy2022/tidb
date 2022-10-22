@@ -80,18 +80,21 @@ func (s *service) serve() error {
 	}
 	s.db = db
 
+	fmt.Println("Connected to TiDB successfully")
+
 	if err := s.initData(s.opt.Record, s.opt.BatchSize); err != nil {
 		return err
 	}
 
-	fmt.Println("Connected to TiDB successfully")
-
 	router := mux.NewRouter()
-	router.Handle("/", s.homepage())
+	router.Handle("/", s.homepageEmbed())
 	router.Handle("/api/v1/rate", fn.Wrap(s.Rate)).Methods(http.MethodPost)
 	router.Handle("/api/v1/stats", fn.Wrap(s.Stats)).Methods(http.MethodGet)
 
-	return http.ListenAndServe(fmt.Sprintf(":%d", s.opt.Port), router)
+	addr := fmt.Sprintf(":%d", s.opt.Port)
+	fmt.Println("Serve HTTP:", addr)
+
+	return http.ListenAndServe(addr, router)
 }
 
 func (s *service) initData(record, batchSize int) error {
@@ -101,7 +104,7 @@ func (s *service) initData(record, batchSize int) error {
 		    id BIGINT NOT NULL AUTO_RANDOM PRIMARY KEY,
 		    team_name VARCHAR(64),
 		    score BIGINT DEFAULT 0,
-		    created_at DATETIME DEFAULT NOW(),
+		    created_at DATETIME DEFAULT NOW()
 		);
 `)
 	if err != nil {
@@ -127,17 +130,26 @@ func (s *service) initData(record, batchSize int) error {
 		}
 		batchRecords = batchRecords[:0]
 		for j := 0; j < count; j++ {
-			batchRecords = append(batchRecords, fmt.Sprintf("(%s, 1)", s.randomTeam()))
+			batchRecords = append(batchRecords, fmt.Sprintf(`("%s"", 1)`, s.randomTeam()))
 		}
 		_, err := s.db.Exec("INSERT INTO rate_records(team_name, score) VALUES " + strings.Join(batchRecords, ","))
 		if err != nil {
 			return err
 		}
 	}
+
+	fmt.Println("Initialize data successfully")
+
 	return nil
 }
 
 func (s *service) homepage() http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		http.ServeFile(writer, request, "app.html")
+	}
+}
+
+func (s *service) homepageEmbed() http.HandlerFunc {
 	startTime := time.Now()
 	return func(writer http.ResponseWriter, request *http.Request) {
 		http.ServeContent(writer, request, "app.html", startTime, bytes.NewReader(appHtml))
@@ -151,16 +163,15 @@ func (s *service) randomTeam() string {
 type (
 	RateRequest struct {
 		TeamName string `json:"team_name"`
-		Score    int64  `json:"score"`
 	}
 
-	RateResponse struct{}
+	RateResponse struct {
+		TeamName string `json:"team_name"`
+		Score    int64  `json:"score"`
+	}
 )
 
 func (s *service) Rate(r *RateRequest) (*RateResponse, error) {
-	if r.Score < 0 {
-		return nil, fmt.Errorf("illegal score in request")
-	}
 	i := sort.SearchStrings(teamNames, strings.TrimSpace(r.TeamName))
 	if i < 0 {
 		return nil, fmt.Errorf("illegal team name in request")
@@ -168,14 +179,13 @@ func (s *service) Rate(r *RateRequest) (*RateResponse, error) {
 	if r.TeamName == "" {
 		r.TeamName = s.randomTeam()
 	}
-	if r.Score == 0 {
-		r.Score = int64(rand.Intn(100000))
-	}
-	_, err := s.db.Exec("INSERT INTO rate_records(team_name, score) VALUES (?, ?)", r.TeamName, r.Score)
+	score := int64(rand.Intn(100000))
+	_, err := s.db.Exec("INSERT INTO rate_records(team_name, score) VALUES (?, ?)", r.TeamName, score)
 	if err != nil {
 		return nil, ErrServerInternal
 	}
-	return nil, nil
+	res := &RateResponse{TeamName: r.TeamName, Score: score}
+	return res, nil
 }
 
 type (
@@ -184,20 +194,29 @@ type (
 		TotalScore int64  `json:"total_score"`
 	}
 	StatsResponse struct {
-		Teams []StatsItem `json:"teams"`
+		Teams   []StatsItem `json:"teams"`
+		Count   int64       `json:"count"`
+		Latency int64       `json:"latency"`
 	}
 )
 
 func (s *service) Stats() (*StatsResponse, error) {
+	var response StatsResponse
+	startTime := time.Now()
+	err := s.db.QueryRow("SELECT COUNT(*) FROM rate_records").Scan(&response.Count)
+	if err != nil {
+		return nil, ErrServerInternal
+	}
+	response.Latency = time.Since(startTime).Milliseconds()
+
 	r, err := s.db.Query("SELECT team_name, SUM(score) FROM rate_records GROUP BY team_name")
 	if err != nil {
 		return nil, ErrServerInternal
 	}
-	var response StatsResponse
 	for r.Next() {
 		var teamName string
 		var totalScore int64
-		if err := r.Scan(&teamName, totalScore); err != nil {
+		if err := r.Scan(&teamName, &totalScore); err != nil {
 			return nil, ErrServerInternal
 		}
 		response.Teams = append(response.Teams, StatsItem{
@@ -205,5 +224,6 @@ func (s *service) Stats() (*StatsResponse, error) {
 			TotalScore: totalScore,
 		})
 	}
-	return nil, nil
+
+	return &response, nil
 }
