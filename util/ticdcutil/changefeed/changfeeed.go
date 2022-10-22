@@ -19,9 +19,10 @@ import (
 	"crypto/rand"
 	"fmt"
 	"io"
+	"sync"
 	"time"
 
-	"github.com/ngaut/log"
+	"github.com/pingcap/log"
 	"github.com/pingcap/tidb/sessionctx/stmtctx"
 	"github.com/pingcap/tidb/types"
 	"github.com/pingcap/tidb/util/ticdcutil"
@@ -39,6 +40,8 @@ func init() {
 	ticdcutil.NewChangefeed = newChangfeed
 }
 
+var cleanupChangefeedsOnce sync.Once
+
 type changefeed struct {
 	id      string
 	eventCh <-chan *model.RowChangedEvent
@@ -50,6 +53,12 @@ func newChangfeed(
 	dbName string,
 	tableName string,
 ) (ticdcutil.Changefeed, error) {
+	cleanupChangefeedsOnce.Do(func() {
+		if err := removeAllChangefeeds(ctx); err != nil {
+			log.Warn("failed to cleanup orphan changefeeds", zap.Error(err))
+		}
+	})
+
 	apiv2Client, err := apiv2client.NewAPIClient(serverAddr, nil)
 	if err != nil {
 		return nil, err
@@ -178,9 +187,30 @@ func removeChangefeed(ctx context.Context, id string) error {
 	if err != nil {
 		return err
 	}
-	ctx, cancel := context.WithTimeout(ctx, 10)
+	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
 	defer cancel()
 	return apiv1Client.Changefeeds().Delete(ctx, id)
+}
+
+func removeAllChangefeeds(ctx context.Context) error {
+	apiv1Client, err := apiv1client.NewAPIClient(serverAddr, nil)
+	if err != nil {
+		return err
+	}
+	ctx, cancel := context.WithTimeout(ctx, time.Minute)
+	defer cancel()
+
+	changefeeds, err := apiv1Client.Changefeeds().List(ctx, "all")
+	if err != nil {
+		return err
+	}
+
+	for _, cf := range *changefeeds {
+		if err := apiv1Client.Changefeeds().Delete(ctx, cf.ID); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func column2Datum(ft *types.FieldType, column *model.Column) (types.Datum, error) {
