@@ -4,31 +4,114 @@
 <head>
     <meta charset="UTF-8">
     <title>TiFancy Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            height: 100%;
+            width: 100%;
+            bottom: 0;
+            position: absolute;
+        }
+
+        #stats-panel {
+            width: 80%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            background: #fafbfb;
+        }
+
+        #app {
+            width: 20%;
+            height: 100%;
+            position: absolute;
+            right: 0;
+            overflow: hidden;
+            font-family: monospace;
+        }
+
+        .stats-count, .stats-latency {
+            margin: 10px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgb(34,193,195);
+            background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(45,185,253,1) 100%);
+        }
+        .info-title {
+            color: aliceblue;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .info-number {
+            color: white;
+            font-size: 30px;
+        }
+
+        .random-rate {
+            margin: 10px;
+        }
+        .random-rate button{
+            width: 100%;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 0;
+            border-radius: 10px;
+            color: white;
+            background-image: linear-gradient(to right top, #d16ba5, #c777b9, #ba83ca, #aa8fd8, #9a9ae1, #8aa7ec, #79b3f4, #69bff8, #52cffe, #41dfff, #46eefa, #5ffbf1);
+            font-size: 18px;
+        }
+        .random-rate button input {
+            margin-right: 10px;
+        }
+        .events {
+            margin: 10px;
+            font-size: 14px;
+            padding-left: 5px;
+        }
+        .events ul {
+            list-style: none;
+            color: #555;
+        }
+        .events ul li {
+            margin-bottom: 5px;
+        }
+        .event-score {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body>
 <div class="container">
-    <div id="stats-panel" style="width: 100%;height:600px;"></div>
+    <div id="stats-panel"></div>
     <div id="app">
         <div class="info-panel">
-            <div class="stats-count">{{count}}</div>
-            <div class="stats-latency">{{latency}}ms</div>
+            <div class="stats-count">
+                <div class="info-title">Current Records</div>
+                <div class="info-number">{{count}}</div>
+            </div>
+            <div class="stats-latency">
+                <div class="info-title">Current Latency</div>
+                <div class="info-number">{{latency}}ms</div>
+            </div>
         </div>
         <div class="rate-panel">
             <div class="random-rate">
-                <button @click="onRate(true)">Random Rate</button>
-
-            </div>
-            <div class="rate-team">
-                <select name="team" id="team" v-model="selectedTeamName">
-                    <option v-for="team in teams" :value="team">{{ team}}</option>
-                </select>
-                <button @click="onRate(false)" :disabled="selectedTeamName === ''">Rate Team</button>
+                <button @click="onAutoRandom">
+                    <input type="checkbox" :checked="randomTimer !== 0">
+                    <span>Random Rate</span></button>
             </div>
         </div>
         <div class="events">
             <ul>
-                <li v-for="event in events">Rate team: {{ event.team_name }} with score {{ event.score }}</li>
+                <li v-for="event in events">{{ event.team_name }} <span class="event-score">+{{ event.score }}</span></li>
             </ul>
         </div>
     </div>
@@ -40,6 +123,51 @@
 <script>
     // EChart
     var statsPanel = echarts.init(document.getElementById('stats-panel'));
+    // Specify the configuration items and data for the chart
+    var statsPanelOption = {
+        title: {
+            text: 'Team Score',
+            subtext: "Click the bar to rate the score for the team",
+            left: 'center',
+            padding: [20, 0],
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        grid: {
+            top: 100,
+            bottom: 200
+        },
+        animation: false,
+        xAxis: {
+            axisTick: {
+                alignWithLabel: true
+            },
+            type: 'category',
+            axisLabel: {
+                interval: 0,
+                rotate: 45,
+                hideOverlap: false,
+                showMaxLabel: true,
+            },
+            data: []
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [
+            {
+                name: 'score',
+                type: 'bar',
+                data: []
+            }
+        ]
+    };
+
+    statsPanel.setOption(statsPanelOption);
 
     // Vue initialization
     const {createApp} = Vue
@@ -51,19 +179,18 @@
                 events: [],
                 count: 0,
                 latency: 0,
-                selectedTeamName: '',
+                randomTimer: 0,
             }
         },
         methods: {
-            onRate: function (random) {
+            onRate: function (name) {
                 let self = this;
-                let payload = {};
-                if (!random) {
-                    payload.team_name = self.selectedTeamName;
-                }
+                let payload = {
+                    team_name: name
+                };
                 axios.post('/api/v1/rate', payload)
                     .then(function (response) {
-                        const count = 10
+                        const count = 20
                         self.events.splice(0, 0, response.data)
                         if (self.events.length > count) {
                             self.events.splice(count)
@@ -73,20 +200,21 @@
                         console.log("Rate failed", error);
                     });
             },
+            onAutoRandom: function (){
+                if (this.randomTimer !== 0) {
+                    window.clearInterval(this.randomTimer)
+                    this.randomTimer = 0
+                } else {
+                    this.randomTimer = window.setInterval(() => this.onRate(''), 200)
+                }
+            },
             fetchStats: function () {
                 let self = this;
                 axios.get('/api/v1/stats').then(res => {
                     // Specify the configuration items and data for the chart
-                    var option = {
-                        title: {
-                            text: 'Team Score'
-                        },
-                        animation: false,
+                    var statsPanelOption = {
                         xAxis: {
                             data: []
-                        },
-                        yAxis: {
-                            type: 'value'
                         },
                         series: [
                             {
@@ -109,14 +237,14 @@
                         }
                     });
                     res.data.teams.forEach(team => {
-                        option.xAxis.data.push(team.team_name);
-                        option.series[0].data.push(team.total_score);
+                        statsPanelOption.xAxis.data.push(team.team_name);
+                        statsPanelOption.series[0].data.push(team.total_score);
                     })
 
                     // Display the chart using the configuration items and data just specified.
-                    statsPanel.setOption(option);
+                    statsPanel.setOption(statsPanelOption);
 
-                    self.teams = option.xAxis.data;
+                    self.teams = statsPanelOption.xAxis.data;
                     self.count = res.data.count;
                     self.latency = res.data.latency;
                 }).catch(err => {
@@ -125,6 +253,10 @@
             },
         },
         mounted: function () {
+            let self = this;
+            statsPanel.on("click", function (event) {
+               self.onRate(event.name)
+            });
             this.fetchStats();
             window.setInterval(this.fetchStats, 200);
         }
