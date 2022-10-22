@@ -87,7 +87,7 @@ func (s *service) serve() error {
 	}
 
 	router := mux.NewRouter()
-	router.Handle("/", s.homepage())
+	router.Handle("/", s.homepageEmbed())
 	router.Handle("/api/v1/rate", fn.Wrap(s.Rate)).Methods(http.MethodPost)
 	router.Handle("/api/v1/stats", fn.Wrap(s.Stats)).Methods(http.MethodGet)
 
