@@ -3,6 +3,8 @@ package executor
 import (
 	"context"
 	"fmt"
+	"github.com/pingcap/errors"
+	"github.com/pingcap/tidb/util/execdetails"
 	"sync"
 
 	"github.com/pingcap/kvproto/pkg/coprocessor"
@@ -184,6 +186,22 @@ func (e *IncrementTableReaderExecutor) Reset() error {
 	return nil
 }
 
+func (e *IncrementTableReaderExecutor) ResetCtx(ctx sessionctx.Context, p plannercore.PhysicalPlan) error {
+	e.id = p.ID()
+	e.ctx = ctx
+	if ctx.GetSessionVars().StmtCtx.RuntimeStatsColl != nil {
+		if e.id > 0 {
+			e.runtimeStats = &execdetails.BasicRuntimeStats{}
+			e.ctx.GetSessionVars().StmtCtx.RuntimeStatsColl.RegisterStats(e.id, e.runtimeStats)
+		}
+	}
+	tableReader, ok := p.(*plannercore.PhysicalTableReader)
+	if !ok {
+		return errors.Errorf("the expected plan is table reader")
+	}
+	return e.children[0].ResetCtx(ctx, tableReader.GetTablePlan())
+}
+
 type TableScanSinker struct {
 	baseExecutor
 	dbInfo  *model.DBInfo
@@ -262,6 +280,18 @@ func (e *TableScanSinker) Reset() error {
 	return nil
 }
 
+func (e *TableScanSinker) ResetCtx(ctx sessionctx.Context, p plannercore.PhysicalPlan) error {
+	e.id = p.ID()
+	e.ctx = ctx
+	if ctx.GetSessionVars().StmtCtx.RuntimeStatsColl != nil {
+		if e.id > 0 {
+			e.runtimeStats = &execdetails.BasicRuntimeStats{}
+			e.ctx.GetSessionVars().StmtCtx.RuntimeStatsColl.RegisterStats(e.id, e.runtimeStats)
+		}
+	}
+	return nil
+}
+
 func (e *TableScanSinker) ResetAndClean() error {
 	return nil
 }
@@ -302,5 +332,17 @@ func (e *MockTableScanSinker) Reset() error {
 
 func (e *MockTableScanSinker) ResetAndClean() error {
 	e.executed = false
+	return nil
+}
+
+func (e *MockTableScanSinker) ResetCtx(ctx sessionctx.Context, p plannercore.PhysicalPlan) error {
+	e.id = p.ID()
+	e.ctx = ctx
+	if ctx.GetSessionVars().StmtCtx.RuntimeStatsColl != nil {
+		if e.id > 0 {
+			e.runtimeStats = &execdetails.BasicRuntimeStats{}
+			e.ctx.GetSessionVars().StmtCtx.RuntimeStatsColl.RegisterStats(e.id, e.runtimeStats)
+		}
+	}
 	return nil
 }

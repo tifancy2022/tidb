@@ -165,7 +165,7 @@ func (b *executorBuilder) build(p plannercore.Plan) Executor {
 		physicalPlan, ok := p.(plannercore.PhysicalPlan)
 		if b.ctx.GetSessionVars().EnableCacheStmt && ok {
 			_, planHash := GetPlanTreeHash(physicalPlan)
-			e, err := CacheExecManager.GetCacheExecutorByDigest(string(planHash))
+			e, err := CacheExecManager.GetCacheExecutorByDigest(string(planHash), b.ctx, physicalPlan)
 			if err == nil && e != nil {
 				logutil.BgLogger().Info("get cached executor success -------------cs-----------")
 				physicalPlan.MarkCached()

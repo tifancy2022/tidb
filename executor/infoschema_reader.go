@@ -443,6 +443,7 @@ func (e *memtableRetriever) setDataForStmtCached(ctx sessionctx.Context) error {
 	if !config.GetGlobalConfig().EnableCacheStmt {
 		stmtcache.StmtCache.Reset()
 		StmtCacheExecManager.Reset()
+		CacheExecManager.Reset()
 	}
 	e.rows = stmtcache.StmtCache.GetAllStmtCached()
 	return nil

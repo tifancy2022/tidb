@@ -16,6 +16,7 @@ package stmtcachetest
 
 import (
 	"fmt"
+	//_ "net/http/pprof"
 	"strconv"
 	"testing"
 
@@ -52,6 +53,9 @@ func TestCacheExecutor(t *testing.T) {
 }
 
 func TestCacheExecutor2(t *testing.T) {
+	//go func() {
+	//	log.Println(http.ListenAndServe("localhost:6060", nil))
+	//}()
 	store := testkit.CreateMockStore(t)
 	tk := testkit.NewTestKit(t, store)
 	tk.MustExec("create database test2")

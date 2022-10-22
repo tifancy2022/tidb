@@ -852,6 +852,7 @@ func cleanup(svr *server.Server, storage kv.Storage, dom *domain.Domain, gracefu
 	disk.CleanUp()
 	topsql.Close()
 	executor.StmtCacheExecManager.Close()
+	executor.CacheExecManager.Close()
 }
 
 func stringToList(repairString string) []string {

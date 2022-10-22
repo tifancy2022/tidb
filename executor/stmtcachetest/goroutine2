@@ -1,0 +1,1012 @@
+goroutine profile: total 2214
+192 @ 0x4041496 0x400979b 0x40092d8 0x5bd39db 0x5448e83 0x5bd3958 0x4075361
+# labels: {"pebble":"table-cache"}
+#	0x5bd39da	github.com/cockroachdb/pebble.(*tableCacheShard).releaseLoop.func1+0x5a	/Users/cs/code/goread/pkg/mod/github.com/cockroachdb/pebble@v0.0.0-20220415182917-06c9d3be25b3/table_cache.go:300
+#	0x5448e82	runtime/pprof.Do+0xa2							/usr/local/go/src/runtime/pprof/runtime.go:40
+#	0x5bd3957	github.com/cockroachdb/pebble.(*tableCacheShard).releaseLoop+0x57	/Users/cs/code/goread/pkg/mod/github.com/cockroachdb/pebble@v0.0.0-20220415182917-06c9d3be25b3/table_cache.go:299
+
+119 @ 0x4041496 0x40516fc 0x466cfb2 0x4075361
+#	0x466cfb1	google.golang.org/grpc.newClientStreamWithParams.func4+0x91	/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:355
+
+105 @ 0x4041496 0x40516fc 0x40703be 0x40d37d2 0x6a71805 0x6a7212c 0x6a66825 0x5a3a604 0x4075361
+#	0x40703bd	reflect.rselect+0x23d									/usr/local/go/src/runtime/select.go:590
+#	0x40d37d1	reflect.Select+0xd1									/usr/local/go/src/reflect/value.go:2952
+#	0x6a71804	github.com/pingcap/tiflow/cdc/kv.(*regionWorker).collectWorkpoolError+0x224		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/region_worker.go:595
+#	0x6a7212b	github.com/pingcap/tiflow/cdc/kv.(*regionWorker).run+0x2cb				/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/region_worker.go:660
+#	0x6a66824	github.com/pingcap/tiflow/cdc/kv.(*eventFeedSession).receiveFromStream.func2+0x24	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/client.go:1154
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63					/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+105 @ 0x4041496 0x40516fc 0x45e5f85 0x45e5cc7 0x45e7452 0x40e6e9a 0x45e73c5 0x45e739b 0x465cb67 0x465d466 0x465db4e 0x4670d1a 0x466ff85 0x466ed31 0x466fc9f 0x696c897 0x6a42d4c 0x6a6585f 0x6a61f45 0x5a3a604 0x4075361
+#	0x45e5f84	google.golang.org/grpc/internal/transport.(*recvBufferReader).readClient+0xa4		/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:191
+#	0x45e5cc6	google.golang.org/grpc/internal/transport.(*recvBufferReader).Read+0x146		/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:171
+#	0x45e7451	google.golang.org/grpc/internal/transport.(*transportReader).Read+0x31			/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:485
+#	0x40e6e99	io.ReadAtLeast+0x99									/usr/local/go/src/io/io.go:332
+#	0x45e73c4	io.ReadFull+0xa4									/usr/local/go/src/io/io.go:351
+#	0x45e739a	google.golang.org/grpc/internal/transport.(*Stream).Read+0x7a				/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:469
+#	0x465cb66	google.golang.org/grpc.(*parser).recvMsg+0x46						/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/rpc_util.go:559
+#	0x465d465	google.golang.org/grpc.recvAndDecompress+0x65						/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/rpc_util.go:690
+#	0x465db4d	google.golang.org/grpc.recv+0x6d							/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/rpc_util.go:756
+#	0x4670d19	google.golang.org/grpc.(*csAttempt).recvMsg+0x2b9					/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:994
+#	0x466ff84	google.golang.org/grpc.(*clientStream).RecvMsg.func1+0x24				/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:845
+#	0x466ed30	google.golang.org/grpc.(*clientStream).withRetry+0x2f0					/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:705
+#	0x466fc9e	google.golang.org/grpc.(*clientStream).RecvMsg+0x11e					/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:844
+#	0x696c896	github.com/grpc-ecosystem/go-grpc-prometheus.(*monitoredClientStream).RecvMsg+0x36	/Users/cs/code/goread/pkg/mod/github.com/grpc-ecosystem/go-grpc-prometheus@v1.2.0/client_metrics.go:160
+#	0x6a42d4b	github.com/pingcap/kvproto/pkg/cdcpb.(*changeDataEventFeedClient).Recv+0x4b		/Users/cs/code/goread/pkg/mod/github.com/pingcap/kvproto@v0.0.0-20220913025519-586cff113d10/pkg/cdcpb/cdcpb.pb.go:1479
+#	0x6a6585e	github.com/pingcap/tiflow/cdc/kv.(*eventFeedSession).receiveFromStream+0x2be		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/client.go:1158
+#	0x6a61f44	github.com/pingcap/tiflow/cdc/kv.(*eventFeedSession).requestRegionToStore.func2+0xe4	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/client.go:792
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63					/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+105 @ 0x4041496 0x40516fc 0x6a5d8da 0x5a3a604 0x4075361
+#	0x6a5d8d9	github.com/pingcap/tiflow/cdc/kv.(*eventFeedSession).eventFeed.func4+0x179	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/client.go:549
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+105 @ 0x4041496 0x40516fc 0x6a5e477 0x5a3a604 0x4075361
+#	0x6a5e476	github.com/pingcap/tiflow/cdc/kv.(*eventFeedSession).eventFeed.func3+0xd6	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/client.go:525
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+105 @ 0x4041496 0x40516fc 0x6a5f6b4 0x6a5e669 0x5a3a604 0x4075361
+#	0x6a5f6b3	github.com/pingcap/tiflow/cdc/kv.(*eventFeedSession).requestRegionToStore+0x193	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/client.go:705
+#	0x6a5e668	github.com/pingcap/tiflow/cdc/kv.(*eventFeedSession).eventFeed.func2+0x28	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/client.go:520
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+105 @ 0x4041496 0x40516fc 0x6a6212e 0x6a5e6a5 0x5a3a604 0x4075361
+#	0x6a6212d	github.com/pingcap/tiflow/cdc/kv.(*eventFeedSession).dispatchRequest+0x10d	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/client.go:863
+#	0x6a5e6a4	github.com/pingcap/tiflow/cdc/kv.(*eventFeedSession).eventFeed.func1+0x24	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/client.go:516
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+105 @ 0x4041496 0x40516fc 0x6a6e7b9 0x6a722d3 0x5a3a604 0x4075361
+#	0x6a6e7b8	github.com/pingcap/tiflow/cdc/kv.(*regionWorker).resolveLock+0x158	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/region_worker.go:317
+#	0x6a722d2	github.com/pingcap/tiflow/cdc/kv.(*regionWorker).run.func3+0x32		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/region_worker.go:655
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+105 @ 0x4041496 0x40516fc 0x6a712c5 0x6a70cd1 0x6a7226e 0x5a3a604 0x4075361
+#	0x6a712c4	github.com/pingcap/tiflow/cdc/kv.(*regionWorker).eventHandler.func2+0xe4	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/region_worker.go:500
+#	0x6a70cd0	github.com/pingcap/tiflow/cdc/kv.(*regionWorker).eventHandler+0xd0		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/region_worker.go:514
+#	0x6a7226d	github.com/pingcap/tiflow/cdc/kv.(*regionWorker).run.func4+0x2d			/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/region_worker.go:658
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+105 @ 0x4041496 0x40516fc 0x6a7689f 0x6a5d74e 0x5a3a604 0x4075361
+#	0x6a7689e	github.com/pingcap/tiflow/cdc/kv.(*sizedRegionRouter).Run+0x11e			/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/token_region.go:149
+#	0x6a5d74d	github.com/pingcap/tiflow/cdc/kv.(*eventFeedSession).eventFeed.func5+0x2d	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/client.go:589
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+105 @ 0x4041496 0x405297e 0x4052955 0x4070585 0x4084232 0x5a3a467 0x6a5d690 0x6a5c536 0x6b4c1f4 0x5a3a604 0x4075361
+#	0x4070584	sync.runtime_Semacquire+0x24						/usr/local/go/src/runtime/sema.go:62
+#	0x4084231	sync.(*WaitGroup).Wait+0x51						/usr/local/go/src/sync/waitgroup.go:139
+#	0x5a3a466	golang.org/x/sync/errgroup.(*Group).Wait+0x26				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:53
+#	0x6a5d68f	github.com/pingcap/tiflow/cdc/kv.(*eventFeedSession).eventFeed+0x8ef	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/client.go:603
+#	0x6a5c535	github.com/pingcap/tiflow/cdc/kv.(*CDCClient).EventFeed+0x155		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/client.go:411
+#	0x6b4c1f3	github.com/pingcap/tiflow/cdc/puller.(*pullerImpl).Run.func1+0xb3	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/puller/puller.go:128
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+64 @ 0x4041496 0x407088c 0x407086c 0x40808cc 0x6bcef71 0x6dec41c 0x5a3a604 0x4075361
+# labels: {"actor":"table"}
+#	0x407086b	sync.runtime_notifyListWait+0x12b					/usr/local/go/src/runtime/sema.go:517
+#	0x40808cb	sync.(*Cond).Wait+0x8b							/usr/local/go/src/sync/cond.go:70
+#	0x6bcef70	github.com/pingcap/tiflow/pkg/actor.(*System[...]).poll+0x470		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/actor/system.go:542
+#	0x6dec41b	github.com/pingcap/tiflow/pkg/actor.(*System[...]).Start.func1+0x21b	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/actor/system.go:456
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+52 @ 0x4041496 0x40516fc 0x6974545 0x6973288 0x5a3a604 0x4075361
+#	0x6974544	github.com/pingcap/tiflow/pkg/workerpool.(*worker).run+0x184			/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/workerpool/pool_impl.go:360
+#	0x6973287	github.com/pingcap/tiflow/pkg/workerpool.(*defaultPoolImpl).Run.func1+0x27	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/workerpool/pool_impl.go:67
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+45 @ 0x4041496 0x40516fc 0x6b4a4e5 0x5a3a604 0x4075361
+#	0x6b4a4e4	github.com/pingcap/tiflow/cdc/puller.(*pullerImpl).Run.func3+0x244	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/puller/puller.go:184
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+30 @ 0x4041496 0x40516fc 0x6971a95 0x4075361
+#	0x6971a94	github.com/pingcap/tiflow/pkg/notify.(*Receiver).signalTickLoop.func1+0x74	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/notify/notify.go:130
+
+30 @ 0x4041496 0x40516fc 0x6a833c8 0x5a3a604 0x4075361
+#	0x6a833c7	github.com/pingcap/tiflow/cdc/sorter/memory.(*EntrySorter).Run.func2+0x1a7	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/sorter/memory/entry_sorter.go:84
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+30 @ 0x4041496 0x40516fc 0x6a84868 0x4075361
+#	0x6a84867	github.com/pingcap/tiflow/cdc/sorter/memory.SortOutput.func2+0x107	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/sorter/memory/entry_sorter.go:201
+
+30 @ 0x4041496 0x40516fc 0x6b43406 0x5a3a604 0x4075361
+#	0x6b43405	github.com/pingcap/tiflow/cdc/puller.(*ddlJobPullerImpl).Run.func2+0xc5	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/puller/ddl_puller.go:96
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+30 @ 0x4041496 0x405297e 0x4052955 0x4070585 0x4084232 0x5a3a467 0x6a83165 0x6a845aa 0x4075361
+#	0x4070584	sync.runtime_Semacquire+0x24						/usr/local/go/src/runtime/sema.go:62
+#	0x4084231	sync.(*WaitGroup).Wait+0x51						/usr/local/go/src/sync/waitgroup.go:139
+#	0x5a3a466	golang.org/x/sync/errgroup.(*Group).Wait+0x26				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:53
+#	0x6a83164	github.com/pingcap/tiflow/cdc/sorter/memory.(*EntrySorter).Run+0x724	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/sorter/memory/entry_sorter.go:134
+#	0x6a845a9	github.com/pingcap/tiflow/cdc/sorter/memory.SortOutput.func3+0x49	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/sorter/memory/entry_sorter.go:220
+
+30 @ 0x4041496 0x405297e 0x4052955 0x4070585 0x4084232 0x5a3a467 0x6b4a035 0x6b4366e 0x5a3a604 0x4075361
+#	0x4070584	sync.runtime_Semacquire+0x24						/usr/local/go/src/runtime/sema.go:62
+#	0x4084231	sync.(*WaitGroup).Wait+0x51						/usr/local/go/src/sync/waitgroup.go:139
+#	0x5a3a466	golang.org/x/sync/errgroup.(*Group).Wait+0x26				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:53
+#	0x6b4a034	github.com/pingcap/tiflow/cdc/puller.(*pullerImpl).Run+0x774		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/puller/puller.go:248
+#	0x6b4366d	github.com/pingcap/tiflow/cdc/puller.(*ddlJobPullerImpl).Run.func1+0x2d	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/puller/ddl_puller.go:88
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+20 @ 0x4041496 0x403a137 0x406df49 0x40eeab2 0x40eff9a 0x40eff88 0x4236429 0x424aa45 0x42d083b 0x40e6e9a 0x4595f2e 0x4595ee8 0x4596cd5 0x45d6e3e 0x4075361
+#	0x406df48	internal/poll.runtime_pollWait+0x88					/usr/local/go/src/runtime/netpoll.go:305
+#	0x40eeab1	internal/poll.(*pollDesc).wait+0x31					/usr/local/go/src/internal/poll/fd_poll_runtime.go:84
+#	0x40eff99	internal/poll.(*pollDesc).waitRead+0x259				/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+#	0x40eff87	internal/poll.(*FD).Read+0x247						/usr/local/go/src/internal/poll/fd_unix.go:167
+#	0x4236428	net.(*netFD).Read+0x28							/usr/local/go/src/net/fd_posix.go:55
+#	0x424aa44	net.(*conn).Read+0x44							/usr/local/go/src/net/net.go:183
+#	0x42d083a	bufio.(*Reader).Read+0x1ba						/usr/local/go/src/bufio/bufio.go:237
+#	0x40e6e99	io.ReadAtLeast+0x99							/usr/local/go/src/io/io.go:332
+#	0x4595f2d	io.ReadFull+0x6d							/usr/local/go/src/io/io.go:351
+#	0x4595ee7	golang.org/x/net/http2.readFrameHeader+0x27				/Users/cs/code/goread/pkg/mod/golang.org/x/net@v0.0.0-20220809184613-07c6da5e1ced/http2/frame.go:237
+#	0x4596cd4	golang.org/x/net/http2.(*Framer).ReadFrame+0x94				/Users/cs/code/goread/pkg/mod/golang.org/x/net@v0.0.0-20220809184613-07c6da5e1ced/http2/frame.go:498
+#	0x45d6e3d	google.golang.org/grpc/internal/transport.(*http2Client).reader+0x4bd	/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/http2_client.go:1501
+
+20 @ 0x4041496 0x40516fc 0x45c2615 0x45c2d25 0x45ccbca 0x4075361
+#	0x45c2614	google.golang.org/grpc/internal/transport.(*controlBuffer).get+0x114	/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/controlbuf.go:408
+#	0x45c2d24	google.golang.org/grpc/internal/transport.(*loopyWriter).run+0x84	/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/controlbuf.go:535
+#	0x45ccbc9	google.golang.org/grpc/internal/transport.newHTTP2Client.func3+0x69	/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/http2_client.go:415
+
+20 @ 0x4041496 0x40516fc 0x464bb93 0x4075361
+#	0x464bb92	google.golang.org/grpc.(*ccBalancerWrapper).watcher+0x72	/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/balancer_conn_wrappers.go:112
+
+15 @ 0x4041496 0x40516fc 0x5adf545 0x4075361
+#	0x5adf544	github.com/cockroachdb/pebble/vfs.(*diskHealthCheckingFile).startTicker.func1+0xe4	/Users/cs/code/goread/pkg/mod/github.com/cockroachdb/pebble@v0.0.0-20220415182917-06c9d3be25b3/vfs/disk_health.go:63
+
+15 @ 0x4041496 0x40516fc 0x6b485bd 0x5a3a604 0x4075361
+#	0x6b485bc	github.com/pingcap/tiflow/cdc/puller.(*ddlPullerImpl).Run.func2+0x13c	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/puller/ddl_puller.go:616
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+15 @ 0x4041496 0x40516fc 0x6be18d2 0x6ccfefc 0x5a3a604 0x4075361
+#	0x6be18d1	github.com/pingcap/tiflow/cdc/sorter/db.(*Sorter).Run+0xb1			/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/sorter/db/sorter.go:191
+#	0x6ccfefb	github.com/pingcap/tiflow/cdc/processor/pipeline.(*sorterNode).start.func2+0x3b	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/processor/pipeline/sorter.go:180
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+15 @ 0x4041496 0x40516fc 0x6ca3f7a 0x4075361
+#	0x6ca3f79	github.com/pingcap/tiflow/cdc/owner.(*ddlSinkImpl).run.func1+0x8d9	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/owner/ddl_sink.go:184
+
+15 @ 0x4041496 0x40516fc 0x6cc9ee5 0x5a3a604 0x4075361
+#	0x6cc9ee4	github.com/pingcap/tiflow/cdc/processor/pipeline.(*pullerNode).start.func2+0x104	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/processor/pipeline/puller.go:93
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63					/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+15 @ 0x4041496 0x40516fc 0x6cfe847 0x4075361
+#	0x6cfe846	github.com/pingcap/tiflow/cdc/processor.(*processor).lazyInitImpl.func1+0x106	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/processor/processor.go:637
+
+15 @ 0x4041496 0x40516fc 0x6cffc69 0x4075361
+#	0x6cffc68	github.com/pingcap/tiflow/cdc/processor.(*processor).createAndDriveSchemaStorage.func2+0x148	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/processor/processor.go:822
+
+15 @ 0x4041496 0x405297e 0x4052955 0x4070585 0x4084232 0x5a3a467 0x6b432fc 0x6b48a2d 0x5a3a604 0x4075361
+#	0x4070584	sync.runtime_Semacquire+0x24						/usr/local/go/src/runtime/sema.go:62
+#	0x4084231	sync.(*WaitGroup).Wait+0x51						/usr/local/go/src/sync/waitgroup.go:139
+#	0x5a3a466	golang.org/x/sync/errgroup.(*Group).Wait+0x26				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:53
+#	0x6b432fb	github.com/pingcap/tiflow/cdc/puller.(*ddlJobPullerImpl).Run+0x19b	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/puller/ddl_puller.go:139
+#	0x6b48a2c	github.com/pingcap/tiflow/cdc/puller.(*ddlPullerImpl).Run.func1+0x2c	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/puller/ddl_puller.go:607
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+15 @ 0x4041496 0x405297e 0x4052955 0x4070585 0x4084232 0x5a3a467 0x6b432fc 0x6cffe77 0x4075361
+#	0x4070584	sync.runtime_Semacquire+0x24									/usr/local/go/src/runtime/sema.go:62
+#	0x4084231	sync.(*WaitGroup).Wait+0x51									/usr/local/go/src/sync/waitgroup.go:139
+#	0x5a3a466	golang.org/x/sync/errgroup.(*Group).Wait+0x26							/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:53
+#	0x6b432fb	github.com/pingcap/tiflow/cdc/puller.(*ddlJobPullerImpl).Run+0x19b				/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/puller/ddl_puller.go:139
+#	0x6cffe76	github.com/pingcap/tiflow/cdc/processor.(*processor).createAndDriveSchemaStorage.func1+0x76	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/processor/processor.go:815
+
+15 @ 0x4041496 0x405297e 0x4052955 0x4070585 0x4084232 0x5a3a467 0x6b483f0 0x6c9ec8d 0x4075361
+#	0x4070584	sync.runtime_Semacquire+0x24						/usr/local/go/src/runtime/sema.go:62
+#	0x4084231	sync.(*WaitGroup).Wait+0x51						/usr/local/go/src/sync/waitgroup.go:139
+#	0x5a3a466	golang.org/x/sync/errgroup.(*Group).Wait+0x26				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:53
+#	0x6b483ef	github.com/pingcap/tiflow/cdc/puller.(*ddlPullerImpl).Run+0x4ef		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/puller/ddl_puller.go:641
+#	0x6c9ec8c	github.com/pingcap/tiflow/cdc/owner.(*changefeed).initialize.func3+0xac	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/owner/changefeed.go:502
+
+15 @ 0x4041496 0x405297e 0x4052955 0x4070585 0x4084232 0x5a3a467 0x6b4a035 0x6cca07c 0x5a3a604 0x4075361
+#	0x4070584	sync.runtime_Semacquire+0x24							/usr/local/go/src/runtime/sema.go:62
+#	0x4084231	sync.(*WaitGroup).Wait+0x51							/usr/local/go/src/sync/waitgroup.go:139
+#	0x5a3a466	golang.org/x/sync/errgroup.(*Group).Wait+0x26					/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:53
+#	0x6b4a034	github.com/pingcap/tiflow/cdc/puller.(*pullerImpl).Run+0x774			/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/puller/puller.go:248
+#	0x6cca07b	github.com/pingcap/tiflow/cdc/processor/pipeline.(*pullerNode).start.func1+0x3b	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/processor/pipeline/puller.go:88
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+14 @ 0x4041496 0x40516fc 0x4be5ee5 0x4075361
+#	0x4be5ee4	go.etcd.io/etcd/client/v3.(*watchGrpcStream).serveSubstream+0x264	/Users/cs/code/goread/pkg/mod/go.etcd.io/etcd/client/v3@v3.5.2/watch.go:803
+
+14 @ 0x4041496 0x40516fc 0x6cd7bc5 0x4075361
+#	0x6cd7bc4	github.com/pingcap/tiflow/pkg/chann.(*Chann[...]).unboundedProcessing+0x484	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/chann/chann.go:193
+
+11 @ 0x4041496 0x40516fc 0x45d7725 0x4075361
+#	0x45d7724	google.golang.org/grpc/internal/transport.(*http2Client).keepalive+0x164	/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/http2_client.go:1575
+
+11 @ 0x4041496 0x407088c 0x407086c 0x40808cc 0x6cc72db 0x6cc67ad 0x6ccf5c6 0x5a3a604 0x4075361
+#	0x407086b	sync.runtime_notifyListWait+0x12b								/usr/local/go/src/runtime/sema.go:517
+#	0x40808cb	sync.(*Cond).Wait+0x8b										/usr/local/go/src/sync/cond.go:70
+#	0x6cc72da	github.com/pingcap/tiflow/cdc/sink/flowcontrol.(*tableMemoryQuota).consumeWithBlocking+0x23a	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/sink/flowcontrol/table_memory_quota.go:84
+#	0x6cc67ac	github.com/pingcap/tiflow/cdc/sink/flowcontrol.(*TableFlowController).Consume+0x26c		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/sink/flowcontrol/flow_control.go:122
+#	0x6ccf5c5	github.com/pingcap/tiflow/cdc/processor/pipeline.(*sorterNode).start.func3+0x18a5		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/processor/pipeline/sorter.go:304
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63						/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+10 @ 0x4041496 0x400979b 0x40092d8 0x4ef485f 0x4075361
+#	0x4ef485e	go.etcd.io/etcd/client/v3/concurrency.NewSession.func1+0x7e	/Users/cs/code/goread/pkg/mod/go.etcd.io/etcd/client/v3@v3.5.2/concurrency/session.go:66
+
+10 @ 0x4041496 0x40516fc 0x4bd4659 0x4075361
+#	0x4bd4658	go.etcd.io/etcd/client/v3.(*lessor).keepAliveCtxCloser+0xd8	/Users/cs/code/goread/pkg/mod/go.etcd.io/etcd/client/v3@v3.5.2/lease.go:330
+
+8 @ 0x4041496 0x407088c 0x407086c 0x40808cc 0x5b2ee19 0x5b2ee0d 0x5448e83 0x5b2e8bc 0x4075361
+# labels: {"pebble":"wal-sync"}
+#	0x407086b	sync.runtime_notifyListWait+0x12b					/usr/local/go/src/runtime/sema.go:517
+#	0x40808cb	sync.(*Cond).Wait+0x8b							/usr/local/go/src/sync/cond.go:70
+#	0x5b2ee18	github.com/cockroachdb/pebble/record.(*flusherCond).Wait+0x478		/Users/cs/code/goread/pkg/mod/github.com/cockroachdb/pebble@v0.0.0-20220415182917-06c9d3be25b3/record/log_writer.go:193
+#	0x5b2ee0c	github.com/cockroachdb/pebble/record.(*LogWriter).flushLoop+0x46c	/Users/cs/code/goread/pkg/mod/github.com/cockroachdb/pebble@v0.0.0-20220415182917-06c9d3be25b3/record/log_writer.go:396
+#	0x5448e82	runtime/pprof.Do+0xa2							/usr/local/go/src/runtime/pprof/runtime.go:40
+#	0x5b2e8bb	github.com/cockroachdb/pebble/record.NewLogWriter.func2+0x5b		/Users/cs/code/goread/pkg/mod/github.com/cockroachdb/pebble@v0.0.0-20220415182917-06c9d3be25b3/record/log_writer.go:314
+
+8 @ 0x4041496 0x407088c 0x407086c 0x40808cc 0x6be45d1 0x6dec1bc 0x5a3a604 0x4075361
+# labels: {"actor":"sorter-compactor"}
+#	0x407086b	sync.runtime_notifyListWait+0x12b					/usr/local/go/src/runtime/sema.go:517
+#	0x40808cb	sync.(*Cond).Wait+0x8b							/usr/local/go/src/sync/cond.go:70
+#	0x6be45d0	github.com/pingcap/tiflow/pkg/actor.(*System[...]).poll+0x470		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/actor/system.go:542
+#	0x6dec1bb	github.com/pingcap/tiflow/pkg/actor.(*System[...]).Start.func1+0x21b	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/actor/system.go:456
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+8 @ 0x4041496 0x407088c 0x407086c 0x40808cc 0x6be45d1 0x6dec1bc 0x5a3a604 0x4075361
+# labels: {"actor":"sorter-db"}
+#	0x407086b	sync.runtime_notifyListWait+0x12b					/usr/local/go/src/runtime/sema.go:517
+#	0x40808cb	sync.(*Cond).Wait+0x8b							/usr/local/go/src/sync/cond.go:70
+#	0x6be45d0	github.com/pingcap/tiflow/pkg/actor.(*System[...]).poll+0x470		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/actor/system.go:542
+#	0x6dec1bb	github.com/pingcap/tiflow/pkg/actor.(*System[...]).Start.func1+0x21b	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/actor/system.go:456
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+8 @ 0x4041496 0x407088c 0x407086c 0x40808cc 0x6be45d1 0x6dec1bc 0x5a3a604 0x4075361
+# labels: {"actor":"sorter-writer"}
+#	0x407086b	sync.runtime_notifyListWait+0x12b					/usr/local/go/src/runtime/sema.go:517
+#	0x40808cb	sync.(*Cond).Wait+0x8b							/usr/local/go/src/sync/cond.go:70
+#	0x6be45d0	github.com/pingcap/tiflow/pkg/actor.(*System[...]).poll+0x470		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/actor/system.go:542
+#	0x6dec1bb	github.com/pingcap/tiflow/pkg/actor.(*System[...]).Start.func1+0x21b	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/actor/system.go:456
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+7 @ 0x4041496 0x407088c 0x407086c 0x40808cc 0x6be45d1 0x6dec1bc 0x5a3a604 0x4075361
+#	0x407086b	sync.runtime_notifyListWait+0x12b					/usr/local/go/src/runtime/sema.go:517
+#	0x40808cb	sync.(*Cond).Wait+0x8b							/usr/local/go/src/sync/cond.go:70
+#	0x6be45d0	github.com/pingcap/tiflow/pkg/actor.(*System[...]).poll+0x470		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/actor/system.go:542
+#	0x6dec1bb	github.com/pingcap/tiflow/pkg/actor.(*System[...]).Start.func1+0x21b	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/actor/system.go:456
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+5 @ 0x4041496 0x40516fc 0x48ee41b 0x4075361
+#	0x48ee41a	github.com/tikv/pd/client.(*baseClient).memberLoop+0x13a	/Users/cs/code/goread/pkg/mod/github.com/tikv/pd/client@v0.0.0-20220725055910-7187a7ab72db/base_client.go:134
+
+5 @ 0x4041496 0x40516fc 0x48f2111 0x48f62d3 0x4075361
+#	0x48f2110	github.com/tikv/pd/client.(*tsoBatchController).fetchPendingRequests+0xd0	/Users/cs/code/goread/pkg/mod/github.com/tikv/pd/client@v0.0.0-20220725055910-7187a7ab72db/client.go:217
+#	0x48f62d2	github.com/tikv/pd/client.(*client).handleDispatcher+0x372			/Users/cs/code/goread/pkg/mod/github.com/tikv/pd/client@v0.0.0-20220725055910-7187a7ab72db/client.go:769
+
+5 @ 0x4041496 0x40516fc 0x48f36e6 0x4075361
+#	0x48f36e5	github.com/tikv/pd/client.(*client).leaderCheckLoop+0x165	/Users/cs/code/goread/pkg/mod/github.com/tikv/pd/client@v0.0.0-20220725055910-7187a7ab72db/client.go:478
+
+5 @ 0x4041496 0x40516fc 0x48f3c9d 0x4075361
+#	0x48f3c9c	github.com/tikv/pd/client.(*client).tsCancelLoop+0x1dc	/Users/cs/code/goread/pkg/mod/github.com/tikv/pd/client@v0.0.0-20220725055910-7187a7ab72db/client.go:526
+
+5 @ 0x4041496 0x40516fc 0x48f4192 0x4075361
+#	0x48f4191	github.com/tikv/pd/client.(*client).watchTSDeadline.func1+0xd1	/Users/cs/code/goread/pkg/mod/github.com/tikv/pd/client@v0.0.0-20220725055910-7187a7ab72db/client.go:543
+
+5 @ 0x4041496 0x40516fc 0x48f4c99 0x4075361
+#	0x48f4c98	github.com/tikv/pd/client.(*client).tsLoop+0x198	/Users/cs/code/goread/pkg/mod/github.com/tikv/pd/client@v0.0.0-20220725055910-7187a7ab72db/client.go:605
+
+5 @ 0x4041496 0x40516fc 0x48f7888 0x4075361
+#	0x48f7887	github.com/tikv/pd/client.(*client).handleDispatcher.func2+0x187	/Users/cs/code/goread/pkg/mod/github.com/tikv/pd/client@v0.0.0-20220725055910-7187a7ab72db/client.go:734
+
+5 @ 0x4041496 0x40516fc 0x5a14a65 0x5a12a47 0x5a1259b 0x4075361
+#	0x5a14a64	github.com/pingcap/tidb/statistics/handle.(*Handle).drainColTask+0xe4	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle_hist.go:393
+#	0x5a12a46	github.com/pingcap/tidb/statistics/handle.(*Handle).HandleOneTask+0xc6	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle_hist.go:203
+#	0x5a1259a	github.com/pingcap/tidb/statistics/handle.(*Handle).SubLoadWorker+0x11a	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle_hist.go:179
+
+5 @ 0x4041496 0x40516fc 0x5d04485 0x5d03237 0x4075361
+#	0x5d04484	github.com/pingcap/tidb/owner.(*ownerManager).watchOwner+0x2e4		/Users/cs/code/goread/src/github.com/pingcap/tidb/owner/manager.go:311
+#	0x5d03236	github.com/pingcap/tidb/owner.(*ownerManager).campaignLoop+0x876	/Users/cs/code/goread/src/github.com/pingcap/tidb/owner/manager.go:257
+
+4 @ 0x4041496 0x40516fc 0x45e5f85 0x45e5cc7 0x45e7452 0x40e6e9a 0x45e73c5 0x45e739b 0x465cb67 0x465d466 0x465db4e 0x4670d1a 0x466ff85 0x466ed31 0x466fc9f 0x4a4f2ac 0x4a947fb 0x4a9629a 0x4075361
+#	0x45e5f84	google.golang.org/grpc/internal/transport.(*recvBufferReader).readClient+0xa4		/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:191
+#	0x45e5cc6	google.golang.org/grpc/internal/transport.(*recvBufferReader).Read+0x146		/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:171
+#	0x45e7451	google.golang.org/grpc/internal/transport.(*transportReader).Read+0x31			/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:485
+#	0x40e6e99	io.ReadAtLeast+0x99									/usr/local/go/src/io/io.go:332
+#	0x45e73c4	io.ReadFull+0xa4									/usr/local/go/src/io/io.go:351
+#	0x45e739a	google.golang.org/grpc/internal/transport.(*Stream).Read+0x7a				/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:469
+#	0x465cb66	google.golang.org/grpc.(*parser).recvMsg+0x46						/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/rpc_util.go:559
+#	0x465d465	google.golang.org/grpc.recvAndDecompress+0x65						/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/rpc_util.go:690
+#	0x465db4d	google.golang.org/grpc.recv+0x6d							/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/rpc_util.go:756
+#	0x4670d19	google.golang.org/grpc.(*csAttempt).recvMsg+0x2b9					/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:994
+#	0x466ff84	google.golang.org/grpc.(*clientStream).RecvMsg.func1+0x24				/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:845
+#	0x466ed30	google.golang.org/grpc.(*clientStream).withRetry+0x2f0					/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:705
+#	0x466fc9e	google.golang.org/grpc.(*clientStream).RecvMsg+0x11e					/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:844
+#	0x4a4f2ab	github.com/pingcap/kvproto/pkg/tikvpb.(*tikvBatchCommandsClient).Recv+0x4b		/Users/cs/code/goread/pkg/mod/github.com/pingcap/kvproto@v0.0.0-20220913025519-586cff113d10/pkg/tikvpb/tikvpb.pb.go:2033
+#	0x4a947fa	github.com/tikv/client-go/v2/internal/client.(*batchCommandsStream).recv+0x19a		/Users/cs/code/goread/pkg/mod/github.com/tikv/client-go/v2@v2.0.1-0.20220923061703-33efe476e022/internal/client/client_batch.go:447
+#	0x4a96299	github.com/tikv/client-go/v2/internal/client.(*batchCommandsClient).batchRecvLoop+0xd9	/Users/cs/code/goread/pkg/mod/github.com/tikv/client-go/v2@v2.0.1-0.20220923061703-33efe476e022/internal/client/client_batch.go:604
+
+4 @ 0x4041496 0x40516fc 0x6ccea7d 0x5a3a604 0x4075361
+#	0x6ccea7c	github.com/pingcap/tiflow/cdc/processor/pipeline.(*sorterNode).start.func3+0xd5c	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/processor/pipeline/sorter.go:254
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63					/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+3 @ 0x4041496 0x407088c 0x407086c 0x40808cc 0x45d7805 0x4075361
+#	0x407086b	sync.runtime_notifyListWait+0x12b						/usr/local/go/src/runtime/sema.go:517
+#	0x40808cb	sync.(*Cond).Wait+0x8b								/usr/local/go/src/sync/cond.go:70
+#	0x45d7804	google.golang.org/grpc/internal/transport.(*http2Client).keepalive+0x244	/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/http2_client.go:1609
+
+2 @ 0x4041496 0x403a137 0x406df49 0x40eeab2 0x40eff9a 0x40eff88 0x4236429 0x424aa45 0x437c04e 0x42d01df 0x42d03bd 0x437ce6c 0x4075361
+# labels: {"plan_digest":"&\xc8o\xd5\xc5\x043y\xce\xdcw\xdbbQ,\x05+\xed8\xb2<\xb8ӽG\xfb\xa5\x95[\x18?\xc9", "sql_digest":"p\x9bv\x8fY\x8b\x1e\xd3A*\x1d\xf2+\xdf\xf3\xb0KU\x19'f\x8f\x8a\xf4U4\xcb\x05\xeb\xd5~\x02"}
+#	0x406df48	internal/poll.runtime_pollWait+0x88		/usr/local/go/src/runtime/netpoll.go:305
+#	0x40eeab1	internal/poll.(*pollDesc).wait+0x31		/usr/local/go/src/internal/poll/fd_poll_runtime.go:84
+#	0x40eff99	internal/poll.(*pollDesc).waitRead+0x259	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+#	0x40eff87	internal/poll.(*FD).Read+0x247			/usr/local/go/src/internal/poll/fd_unix.go:167
+#	0x4236428	net.(*netFD).Read+0x28				/usr/local/go/src/net/fd_posix.go:55
+#	0x424aa44	net.(*conn).Read+0x44				/usr/local/go/src/net/net.go:183
+#	0x437c04d	net/http.(*persistConn).Read+0x4d		/usr/local/go/src/net/http/transport.go:1929
+#	0x42d01de	bufio.(*Reader).fill+0xfe			/usr/local/go/src/bufio/bufio.go:106
+#	0x42d03bc	bufio.(*Reader).Peek+0x5c			/usr/local/go/src/bufio/bufio.go:144
+#	0x437ce6b	net/http.(*persistConn).readLoop+0x1ab		/usr/local/go/src/net/http/transport.go:2093
+
+2 @ 0x4041496 0x40516fc 0x40a3f5e 0x4075361
+#	0x40a3f5d	context.propagateCancel.func1+0x9d	/usr/local/go/src/context/context.go:279
+
+2 @ 0x4041496 0x40516fc 0x437eaf5 0x4075361
+# labels: {"plan_digest":"&\xc8o\xd5\xc5\x043y\xce\xdcw\xdbbQ,\x05+\xed8\xb2<\xb8ӽG\xfb\xa5\x95[\x18?\xc9", "sql_digest":"p\x9bv\x8fY\x8b\x1e\xd3A*\x1d\xf2+\xdf\xf3\xb0KU\x19'f\x8f\x8a\xf4U4\xcb\x05\xeb\xd5~\x02"}
+#	0x437eaf4	net/http.(*persistConn).writeLoop+0xf4	/usr/local/go/src/net/http/transport.go:2392
+
+2 @ 0x4041496 0x40516fc 0x45e5f85 0x45e5cc7 0x45e7452 0x40e6e9a 0x45e73c5 0x45e739b 0x465cb67 0x465d466 0x465db4e 0x4670d1a 0x466ff85 0x466ed31 0x466fc9f 0x4b6578c 0x4be5b2a 0x4075361
+#	0x45e5f84	google.golang.org/grpc/internal/transport.(*recvBufferReader).readClient+0xa4	/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:191
+#	0x45e5cc6	google.golang.org/grpc/internal/transport.(*recvBufferReader).Read+0x146	/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:171
+#	0x45e7451	google.golang.org/grpc/internal/transport.(*transportReader).Read+0x31		/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:485
+#	0x40e6e99	io.ReadAtLeast+0x99								/usr/local/go/src/io/io.go:332
+#	0x45e73c4	io.ReadFull+0xa4								/usr/local/go/src/io/io.go:351
+#	0x45e739a	google.golang.org/grpc/internal/transport.(*Stream).Read+0x7a			/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:469
+#	0x465cb66	google.golang.org/grpc.(*parser).recvMsg+0x46					/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/rpc_util.go:559
+#	0x465d465	google.golang.org/grpc.recvAndDecompress+0x65					/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/rpc_util.go:690
+#	0x465db4d	google.golang.org/grpc.recv+0x6d						/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/rpc_util.go:756
+#	0x4670d19	google.golang.org/grpc.(*csAttempt).recvMsg+0x2b9				/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:994
+#	0x466ff84	google.golang.org/grpc.(*clientStream).RecvMsg.func1+0x24			/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:845
+#	0x466ed30	google.golang.org/grpc.(*clientStream).withRetry+0x2f0				/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:705
+#	0x466fc9e	google.golang.org/grpc.(*clientStream).RecvMsg+0x11e				/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:844
+#	0x4b6578b	go.etcd.io/etcd/api/v3/etcdserverpb.(*watchWatchClient).Recv+0x4b		/Users/cs/code/goread/pkg/mod/go.etcd.io/etcd/api/v3@v3.5.2/etcdserverpb/rpc.pb.go:6714
+#	0x4be5b29	go.etcd.io/etcd/client/v3.(*watchGrpcStream).serveWatchClient+0x69		/Users/cs/code/goread/pkg/mod/go.etcd.io/etcd/client/v3@v3.5.2/watch.go:757
+
+2 @ 0x4041496 0x40516fc 0x45e5f85 0x45e5cc7 0x45e7452 0x40e6e9a 0x45e73c5 0x45e739b 0x465cb67 0x465d466 0x465db4e 0x4670d1a 0x466ff85 0x466ed31 0x466fc9f 0x4b65e6c 0x4bd5546 0x4075361
+#	0x45e5f84	google.golang.org/grpc/internal/transport.(*recvBufferReader).readClient+0xa4	/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:191
+#	0x45e5cc6	google.golang.org/grpc/internal/transport.(*recvBufferReader).Read+0x146	/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:171
+#	0x45e7451	google.golang.org/grpc/internal/transport.(*transportReader).Read+0x31		/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:485
+#	0x40e6e99	io.ReadAtLeast+0x99								/usr/local/go/src/io/io.go:332
+#	0x45e73c4	io.ReadFull+0xa4								/usr/local/go/src/io/io.go:351
+#	0x45e739a	google.golang.org/grpc/internal/transport.(*Stream).Read+0x7a			/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:469
+#	0x465cb66	google.golang.org/grpc.(*parser).recvMsg+0x46					/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/rpc_util.go:559
+#	0x465d465	google.golang.org/grpc.recvAndDecompress+0x65					/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/rpc_util.go:690
+#	0x465db4d	google.golang.org/grpc.recv+0x6d						/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/rpc_util.go:756
+#	0x4670d19	google.golang.org/grpc.(*csAttempt).recvMsg+0x2b9				/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:994
+#	0x466ff84	google.golang.org/grpc.(*clientStream).RecvMsg.func1+0x24			/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:845
+#	0x466ed30	google.golang.org/grpc.(*clientStream).withRetry+0x2f0				/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:705
+#	0x466fc9e	google.golang.org/grpc.(*clientStream).RecvMsg+0x11e				/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:844
+#	0x4b65e6b	go.etcd.io/etcd/api/v3/etcdserverpb.(*leaseLeaseKeepAliveClient).Recv+0x4b	/Users/cs/code/goread/pkg/mod/go.etcd.io/etcd/api/v3@v3.5.2/etcdserverpb/rpc.pb.go:6853
+#	0x4bd5545	go.etcd.io/etcd/client/v3.(*lessor).recvKeepAliveLoop+0x285			/Users/cs/code/goread/pkg/mod/go.etcd.io/etcd/client/v3@v3.5.2/lease.go:447
+
+2 @ 0x4041496 0x40516fc 0x4aa92ea 0x4075361
+#	0x4aa92e9	github.com/tikv/client-go/v2/internal/locate.(*RegionCache).asyncCheckAndResolveLoop+0xe9	/Users/cs/code/goread/pkg/mod/github.com/tikv/client-go/v2@v2.0.1-0.20220923061703-33efe476e022/internal/locate/region_cache.go:448
+
+2 @ 0x4041496 0x40516fc 0x4bcccc5 0x4075361
+#	0x4bcccc4	go.etcd.io/etcd/client/v3.(*Client).autoSync+0xc4	/Users/cs/code/goread/pkg/mod/go.etcd.io/etcd/client/v3@v3.5.2/client.go:199
+
+2 @ 0x4041496 0x40516fc 0x4bd63e5 0x4075361
+#	0x4bd63e4	go.etcd.io/etcd/client/v3.(*lessor).deadlineLoop+0x84	/Users/cs/code/goread/pkg/mod/go.etcd.io/etcd/client/v3@v3.5.2/lease.go:539
+
+2 @ 0x4041496 0x40516fc 0x4bd678c 0x4075361
+#	0x4bd678b	go.etcd.io/etcd/client/v3.(*lessor).sendKeepAliveLoop+0x1eb	/Users/cs/code/goread/pkg/mod/go.etcd.io/etcd/client/v3@v3.5.2/lease.go:579
+
+2 @ 0x4041496 0x40516fc 0x4be34b4 0x4075361
+#	0x4be34b3	go.etcd.io/etcd/client/v3.(*watchGrpcStream).run+0x353	/Users/cs/code/goread/pkg/mod/go.etcd.io/etcd/client/v3@v3.5.2/watch.go:537
+
+2 @ 0x4041496 0x40516fc 0x5d743db 0x4075361
+#	0x5d743da	github.com/pingcap/tidb/ddl.(*worker).start+0x31a	/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/ddl_worker.go:194
+
+2 @ 0x4041496 0x40516fc 0x6b22ef0 0x4075361
+#	0x6b22eef	github.com/pingcap/tiflow/pkg/etcd.(*Client).WatchWithChan+0x32f	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/etcd/client.go:239
+
+1 @ 0x4035dd6 0x406dac5 0x543dbd5 0x543d9ed 0x543a94b 0x544aee5 0x544ba7e 0x4361b4f 0x4363d29 0x66f03fb 0x43659ac 0x4360627 0x4075361
+#	0x406dac4	runtime/pprof.runtime_goroutineProfileWithLabels+0x24		/usr/local/go/src/runtime/mprof.go:846
+#	0x543dbd4	runtime/pprof.writeRuntimeProfile+0xb4				/usr/local/go/src/runtime/pprof/pprof.go:723
+#	0x543d9ec	runtime/pprof.writeGoroutine+0x4c				/usr/local/go/src/runtime/pprof/pprof.go:683
+#	0x543a94a	runtime/pprof.(*Profile).WriteTo+0x14a				/usr/local/go/src/runtime/pprof/pprof.go:330
+#	0x544aee4	net/http/pprof.handler.ServeHTTP+0x4a4				/usr/local/go/src/net/http/pprof/pprof.go:253
+#	0x544ba7d	net/http/pprof.Index+0x13d					/usr/local/go/src/net/http/pprof/pprof.go:371
+#	0x4361b4e	net/http.HandlerFunc.ServeHTTP+0x2e				/usr/local/go/src/net/http/server.go:2109
+#	0x4363d28	net/http.(*ServeMux).ServeHTTP+0x148				/usr/local/go/src/net/http/server.go:2487
+#	0x66f03fa	github.com/pingcap/tidb/server.CorsHandler.ServeHTTP+0x21a	/Users/cs/code/goread/src/github.com/pingcap/tidb/server/util.go:544
+#	0x43659ab	net/http.serverHandler.ServeHTTP+0x30b				/usr/local/go/src/net/http/server.go:2947
+#	0x4360626	net/http.(*conn).serve+0x606					/usr/local/go/src/net/http/server.go:1991
+
+1 @ 0x403b2fe 0x4070ce8 0x53aa8d9 0x4075361
+#	0x4070ce7	os/signal.signal_recv+0x27	/usr/local/go/src/runtime/sigqueue.go:149
+#	0x53aa8d8	os/signal.loop+0x18		/usr/local/go/src/os/signal/signal_unix.go:23
+
+1 @ 0x4041496 0x400979b 0x4009298 0x5e016e9 0x4075361
+#	0x5e016e8	github.com/pingcap/tidb/br/pkg/streamhelper.(*CheckpointAdvancer).OnStart.func1+0x28	/Users/cs/code/goread/src/github.com/pingcap/tidb/br/pkg/streamhelper/advancer_daemon.go:34
+
+1 @ 0x4041496 0x400979b 0x4009298 0x66e3e30 0x6def399 0x40410d2 0x4075361
+#	0x66e3e2f	github.com/pingcap/tidb/server.(*Server).Run+0x1ef	/Users/cs/code/goread/src/github.com/pingcap/tidb/server/server.go:371
+#	0x6def398	main.main+0x458						/Users/cs/code/goread/src/github.com/pingcap/tidb/tidb-server/main.go:234
+#	0x40410d1	runtime.main+0x211					/usr/local/go/src/runtime/proc.go:250
+
+1 @ 0x4041496 0x400979b 0x4009298 0x6722f85 0x4075361
+#	0x6722f84	github.com/pingcap/tidb/util/signal.SetupSignalHandler.func2+0x44	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/signal/signal_posix.go:53
+
+1 @ 0x4041496 0x400979b 0x4009298 0x67231af 0x4075361
+#	0x67231ae	github.com/pingcap/tidb/util/signal.SetupSignalHandler.func1+0x4e	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/signal/signal_posix.go:37
+
+1 @ 0x4041496 0x400979b 0x4009298 0x67234e5 0x4075361
+#	0x67234e4	github.com/pingcap/tidb/util/systimemon.StartMonitor+0x184	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/systimemon/systime_mon.go:32
+
+1 @ 0x4041496 0x400979b 0x4009298 0x6de7e2e 0x5a3a604 0x4075361
+#	0x6de7e2d	github.com/pingcap/tiflow/pkg/tcpserver.(*tcpServerImpl).Run.func3+0x4d	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/tcpserver/tcp_server.go:131
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+1 @ 0x4041496 0x400979b 0x4009298 0x6deab92 0x5a3a604 0x4075361
+#	0x6deab91	github.com/pingcap/tiflow/cdc/server.(*server).run.func7+0x31	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/server/server.go:351
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63		/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+1 @ 0x4041496 0x400979b 0x40092d8 0x43ea8a5 0x4075361
+# labels: {"plan_digest":"\xc5)d\xb0\xd8\xe7\xeaH.|\x8dA7>\x17\x99@/ݶ\xeat\"Gn|ߌ\xb4\xf3X\xdb", "sql_digest":"t\xdbZ\x8b\xd4w\xbbz~\x0e\xc0\x1e\xfa\x9bBPV骃zV\xdc\xd2$\xfa\x10'\x91M9\xb0"}
+#	0x43ea8a4	gopkg.in/natefinch/lumberjack%2ev2.(*Logger).millRun+0x44	/Users/cs/code/goread/pkg/mod/gopkg.in/natefinch/lumberjack.v2@v2.0.0/lumberjack.go:379
+
+1 @ 0x4041496 0x400979b 0x40092d8 0x5c1254a 0x4075361
+#	0x5c12549	github.com/golang/glog.(*loggingT).flushDaemon+0x69	/Users/cs/code/goread/pkg/mod/github.com/golang/glog@v1.0.0/glog.go:882
+
+1 @ 0x4041496 0x403a137 0x406df49 0x40eeab2 0x40eff9a 0x40eff88 0x4236429 0x424aa45 0x429457d 0x4120e58 0x4294765 0x4291bb6 0x429780f 0x4297810 0x42d083b 0x40e6e9a 0x43224ae 0x4322468 0x4323255 0x4346a70 0x4345f8f 0x4075361
+#	0x406df48	internal/poll.runtime_pollWait+0x88		/usr/local/go/src/runtime/netpoll.go:305
+#	0x40eeab1	internal/poll.(*pollDesc).wait+0x31		/usr/local/go/src/internal/poll/fd_poll_runtime.go:84
+#	0x40eff99	internal/poll.(*pollDesc).waitRead+0x259	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+#	0x40eff87	internal/poll.(*FD).Read+0x247			/usr/local/go/src/internal/poll/fd_unix.go:167
+#	0x4236428	net.(*netFD).Read+0x28				/usr/local/go/src/net/fd_posix.go:55
+#	0x424aa44	net.(*conn).Read+0x44				/usr/local/go/src/net/net.go:183
+#	0x429457c	crypto/tls.(*atLeastReader).Read+0x3c		/usr/local/go/src/crypto/tls/conn.go:787
+#	0x4120e57	bytes.(*Buffer).ReadFrom+0x97			/usr/local/go/src/bytes/buffer.go:202
+#	0x4294764	crypto/tls.(*Conn).readFromUntil+0xe4		/usr/local/go/src/crypto/tls/conn.go:809
+#	0x4291bb5	crypto/tls.(*Conn).readRecordOrCCS+0x115	/usr/local/go/src/crypto/tls/conn.go:616
+#	0x429780e	crypto/tls.(*Conn).readRecord+0x16e		/usr/local/go/src/crypto/tls/conn.go:582
+#	0x429780f	crypto/tls.(*Conn).Read+0x16f			/usr/local/go/src/crypto/tls/conn.go:1287
+#	0x42d083a	bufio.(*Reader).Read+0x1ba			/usr/local/go/src/bufio/bufio.go:237
+#	0x40e6e99	io.ReadAtLeast+0x99				/usr/local/go/src/io/io.go:332
+#	0x43224ad	io.ReadFull+0x6d				/usr/local/go/src/io/io.go:351
+#	0x4322467	net/http.http2readFrameHeader+0x27		/usr/local/go/src/net/http/h2_bundle.go:1565
+#	0x4323254	net/http.(*http2Framer).ReadFrame+0x94		/usr/local/go/src/net/http/h2_bundle.go:1829
+#	0x4346a6f	net/http.(*http2clientConnReadLoop).run+0x12f	/usr/local/go/src/net/http/h2_bundle.go:8875
+#	0x4345f8e	net/http.(*http2ClientConn).readLoop+0x6e	/usr/local/go/src/net/http/h2_bundle.go:8771
+
+1 @ 0x4041496 0x403a137 0x406df49 0x40eeab2 0x40eff9a 0x40eff88 0x4236429 0x424aa45 0x437c04e 0x42d01df 0x42d03bd 0x437ce6c 0x4075361
+#	0x406df48	internal/poll.runtime_pollWait+0x88		/usr/local/go/src/runtime/netpoll.go:305
+#	0x40eeab1	internal/poll.(*pollDesc).wait+0x31		/usr/local/go/src/internal/poll/fd_poll_runtime.go:84
+#	0x40eff99	internal/poll.(*pollDesc).waitRead+0x259	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+#	0x40eff87	internal/poll.(*FD).Read+0x247			/usr/local/go/src/internal/poll/fd_unix.go:167
+#	0x4236428	net.(*netFD).Read+0x28				/usr/local/go/src/net/fd_posix.go:55
+#	0x424aa44	net.(*conn).Read+0x44				/usr/local/go/src/net/net.go:183
+#	0x437c04d	net/http.(*persistConn).Read+0x4d		/usr/local/go/src/net/http/transport.go:1929
+#	0x42d01de	bufio.(*Reader).fill+0xfe			/usr/local/go/src/bufio/bufio.go:106
+#	0x42d03bc	bufio.(*Reader).Peek+0x5c			/usr/local/go/src/bufio/bufio.go:144
+#	0x437ce6b	net/http.(*persistConn).readLoop+0x1ab		/usr/local/go/src/net/http/transport.go:2093
+
+1 @ 0x4041496 0x403a137 0x406df49 0x40eeab2 0x40eff9a 0x40eff88 0x4236429 0x424aa45 0x437c04e 0x42d01df 0x42d03bd 0x437ce6c 0x4075361
+# labels: {"plan_digest":"\xc5)d\xb0\xd8\xe7\xeaH.|\x8dA7>\x17\x99@/ݶ\xeat\"Gn|ߌ\xb4\xf3X\xdb", "sql_digest":"t\xdbZ\x8b\xd4w\xbbz~\x0e\xc0\x1e\xfa\x9bBPV骃zV\xdc\xd2$\xfa\x10'\x91M9\xb0"}
+#	0x406df48	internal/poll.runtime_pollWait+0x88		/usr/local/go/src/runtime/netpoll.go:305
+#	0x40eeab1	internal/poll.(*pollDesc).wait+0x31		/usr/local/go/src/internal/poll/fd_poll_runtime.go:84
+#	0x40eff99	internal/poll.(*pollDesc).waitRead+0x259	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+#	0x40eff87	internal/poll.(*FD).Read+0x247			/usr/local/go/src/internal/poll/fd_unix.go:167
+#	0x4236428	net.(*netFD).Read+0x28				/usr/local/go/src/net/fd_posix.go:55
+#	0x424aa44	net.(*conn).Read+0x44				/usr/local/go/src/net/net.go:183
+#	0x437c04d	net/http.(*persistConn).Read+0x4d		/usr/local/go/src/net/http/transport.go:1929
+#	0x42d01de	bufio.(*Reader).fill+0xfe			/usr/local/go/src/bufio/bufio.go:106
+#	0x42d03bc	bufio.(*Reader).Peek+0x5c			/usr/local/go/src/bufio/bufio.go:144
+#	0x437ce6b	net/http.(*persistConn).readLoop+0x1ab		/usr/local/go/src/net/http/transport.go:2093
+
+1 @ 0x4041496 0x403a137 0x406df49 0x40eeab2 0x40eff9a 0x40eff88 0x4236429 0x424aa45 0x6675295 0x66769a5 0x42d083b 0x40e6e9a 0x4595f2e 0x4595ee8 0x4596cd5 0x45dd054 0x4661982 0x4661126 0x4075361
+#	0x406df48	internal/poll.runtime_pollWait+0x88						/usr/local/go/src/runtime/netpoll.go:305
+#	0x40eeab1	internal/poll.(*pollDesc).wait+0x31						/usr/local/go/src/internal/poll/fd_poll_runtime.go:84
+#	0x40eff99	internal/poll.(*pollDesc).waitRead+0x259					/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+#	0x40eff87	internal/poll.(*FD).Read+0x247							/usr/local/go/src/internal/poll/fd_unix.go:167
+#	0x4236428	net.(*netFD).Read+0x28								/usr/local/go/src/net/fd_posix.go:55
+#	0x424aa44	net.(*conn).Read+0x44								/usr/local/go/src/net/net.go:183
+#	0x6675294	github.com/soheilhy/cmux.(*bufferedReader).Read+0x134				/Users/cs/code/goread/pkg/mod/github.com/soheilhy/cmux@v0.1.5/buffer.go:53
+#	0x66769a4	github.com/soheilhy/cmux.(*MuxConn).Read+0x24					/Users/cs/code/goread/pkg/mod/github.com/soheilhy/cmux@v0.1.5/cmux.go:297
+#	0x42d083a	bufio.(*Reader).Read+0x1ba							/usr/local/go/src/bufio/bufio.go:237
+#	0x40e6e99	io.ReadAtLeast+0x99								/usr/local/go/src/io/io.go:332
+#	0x4595f2d	io.ReadFull+0x6d								/usr/local/go/src/io/io.go:351
+#	0x4595ee7	golang.org/x/net/http2.readFrameHeader+0x27					/Users/cs/code/goread/pkg/mod/golang.org/x/net@v0.0.0-20220809184613-07c6da5e1ced/http2/frame.go:237
+#	0x4596cd4	golang.org/x/net/http2.(*Framer).ReadFrame+0x94					/Users/cs/code/goread/pkg/mod/golang.org/x/net@v0.0.0-20220809184613-07c6da5e1ced/http2/frame.go:498
+#	0x45dd053	google.golang.org/grpc/internal/transport.(*http2Server).HandleStreams+0x173	/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/http2_server.go:614
+#	0x4661981	google.golang.org/grpc.(*Server).serveStreams+0x141				/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/server.go:916
+#	0x4661125	google.golang.org/grpc.(*Server).handleRawConn.func1+0x45			/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/server.go:858
+
+1 @ 0x4041496 0x403a137 0x406df49 0x40eeab2 0x40eff9a 0x40eff88 0x4236429 0x424aa45 0x6675295 0x66769a5 0x435a0bf 0x4075361
+#	0x406df48	internal/poll.runtime_pollWait+0x88			/usr/local/go/src/runtime/netpoll.go:305
+#	0x40eeab1	internal/poll.(*pollDesc).wait+0x31			/usr/local/go/src/internal/poll/fd_poll_runtime.go:84
+#	0x40eff99	internal/poll.(*pollDesc).waitRead+0x259		/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+#	0x40eff87	internal/poll.(*FD).Read+0x247				/usr/local/go/src/internal/poll/fd_unix.go:167
+#	0x4236428	net.(*netFD).Read+0x28					/usr/local/go/src/net/fd_posix.go:55
+#	0x424aa44	net.(*conn).Read+0x44					/usr/local/go/src/net/net.go:183
+#	0x6675294	github.com/soheilhy/cmux.(*bufferedReader).Read+0x134	/Users/cs/code/goread/pkg/mod/github.com/soheilhy/cmux@v0.1.5/buffer.go:53
+#	0x66769a4	github.com/soheilhy/cmux.(*MuxConn).Read+0x24		/Users/cs/code/goread/pkg/mod/github.com/soheilhy/cmux@v0.1.5/cmux.go:297
+#	0x435a0be	net/http.(*connReader).backgroundRead+0x3e		/usr/local/go/src/net/http/server.go:678
+
+1 @ 0x4041496 0x403a137 0x406df49 0x40eeab2 0x40eff9a 0x40eff88 0x4236429 0x424aa45 0x6675295 0x66769a5 0x435a6b1 0x42d01df 0x42d03bd 0x436075b 0x4075361
+#	0x406df48	internal/poll.runtime_pollWait+0x88			/usr/local/go/src/runtime/netpoll.go:305
+#	0x40eeab1	internal/poll.(*pollDesc).wait+0x31			/usr/local/go/src/internal/poll/fd_poll_runtime.go:84
+#	0x40eff99	internal/poll.(*pollDesc).waitRead+0x259		/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+#	0x40eff87	internal/poll.(*FD).Read+0x247				/usr/local/go/src/internal/poll/fd_unix.go:167
+#	0x4236428	net.(*netFD).Read+0x28					/usr/local/go/src/net/fd_posix.go:55
+#	0x424aa44	net.(*conn).Read+0x44					/usr/local/go/src/net/net.go:183
+#	0x6675294	github.com/soheilhy/cmux.(*bufferedReader).Read+0x134	/Users/cs/code/goread/pkg/mod/github.com/soheilhy/cmux@v0.1.5/buffer.go:53
+#	0x66769a4	github.com/soheilhy/cmux.(*MuxConn).Read+0x24		/Users/cs/code/goread/pkg/mod/github.com/soheilhy/cmux@v0.1.5/cmux.go:297
+#	0x435a6b0	net/http.(*connReader).Read+0x170			/usr/local/go/src/net/http/server.go:786
+#	0x42d01de	bufio.(*Reader).fill+0xfe				/usr/local/go/src/bufio/bufio.go:106
+#	0x42d03bc	bufio.(*Reader).Peek+0x5c				/usr/local/go/src/bufio/bufio.go:144
+#	0x436075a	net/http.(*conn).serve+0x73a				/usr/local/go/src/net/http/server.go:2017
+
+1 @ 0x4041496 0x403a137 0x406df49 0x40eeab2 0x40eff9a 0x40eff88 0x4236429 0x424aa45 0x6675295 0x66769a5 0x435a6b1 0x42d01df 0x42d0e4f 0x42d10a7 0x42d54f9 0x4355479 0x435547a 0x435bd0a 0x4360365 0x4075361
+#	0x406df48	internal/poll.runtime_pollWait+0x88			/usr/local/go/src/runtime/netpoll.go:305
+#	0x40eeab1	internal/poll.(*pollDesc).wait+0x31			/usr/local/go/src/internal/poll/fd_poll_runtime.go:84
+#	0x40eff99	internal/poll.(*pollDesc).waitRead+0x259		/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+#	0x40eff87	internal/poll.(*FD).Read+0x247				/usr/local/go/src/internal/poll/fd_unix.go:167
+#	0x4236428	net.(*netFD).Read+0x28					/usr/local/go/src/net/fd_posix.go:55
+#	0x424aa44	net.(*conn).Read+0x44					/usr/local/go/src/net/net.go:183
+#	0x6675294	github.com/soheilhy/cmux.(*bufferedReader).Read+0x134	/Users/cs/code/goread/pkg/mod/github.com/soheilhy/cmux@v0.1.5/buffer.go:53
+#	0x66769a4	github.com/soheilhy/cmux.(*MuxConn).Read+0x24		/Users/cs/code/goread/pkg/mod/github.com/soheilhy/cmux@v0.1.5/cmux.go:297
+#	0x435a6b0	net/http.(*connReader).Read+0x170			/usr/local/go/src/net/http/server.go:786
+#	0x42d01de	bufio.(*Reader).fill+0xfe				/usr/local/go/src/bufio/bufio.go:106
+#	0x42d0e4e	bufio.(*Reader).ReadSlice+0x2e				/usr/local/go/src/bufio/bufio.go:372
+#	0x42d10a6	bufio.(*Reader).ReadLine+0x26				/usr/local/go/src/bufio/bufio.go:401
+#	0x42d54f8	net/textproto.(*Reader).readLineSlice+0x98		/usr/local/go/src/net/textproto/reader.go:56
+#	0x4355478	net/textproto.(*Reader).ReadLine+0x78			/usr/local/go/src/net/textproto/reader.go:37
+#	0x4355479	net/http.readRequest+0x79				/usr/local/go/src/net/http/request.go:1036
+#	0x435bd09	net/http.(*conn).readRequest+0x249			/usr/local/go/src/net/http/server.go:994
+#	0x4360364	net/http.(*conn).serve+0x344				/usr/local/go/src/net/http/server.go:1916
+
+1 @ 0x4041496 0x403a137 0x406df49 0x40eeab2 0x40f3eb4 0x40f3ea1 0x4238595 0x4252d08 0x4251d9d 0x6675ce9 0x66db0d7 0x66da4d0 0x4075361
+#	0x406df48	internal/poll.runtime_pollWait+0x88						/usr/local/go/src/runtime/netpoll.go:305
+#	0x40eeab1	internal/poll.(*pollDesc).wait+0x31						/usr/local/go/src/internal/poll/fd_poll_runtime.go:84
+#	0x40f3eb3	internal/poll.(*pollDesc).waitRead+0x233					/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+#	0x40f3ea0	internal/poll.(*FD).Accept+0x220						/usr/local/go/src/internal/poll/fd_unix.go:614
+#	0x4238594	net.(*netFD).accept+0x34							/usr/local/go/src/net/fd_unix.go:172
+#	0x4252d07	net.(*TCPListener).accept+0x27							/usr/local/go/src/net/tcpsock_posix.go:142
+#	0x4251d9c	net.(*TCPListener).Accept+0x3c							/usr/local/go/src/net/tcpsock.go:288
+#	0x6675ce8	github.com/soheilhy/cmux.(*cMux).Serve+0xa8					/Users/cs/code/goread/pkg/mod/github.com/soheilhy/cmux@v0.1.5/cmux.go:170
+#	0x66db0d6	github.com/pingcap/tidb/server.(*Server).startStatusServerAndRPCServer+0x4f6	/Users/cs/code/goread/src/github.com/pingcap/tidb/server/http_status.go:474
+#	0x66da4cf	github.com/pingcap/tidb/server.(*Server).startHTTPServer+0x164f			/Users/cs/code/goread/src/github.com/pingcap/tidb/server/http_status.go:447
+
+1 @ 0x4041496 0x403a137 0x406df49 0x40eeab2 0x40f3eb4 0x40f3ea1 0x4238595 0x4252d08 0x4251d9d 0x6675ce9 0x6de7fc9 0x5a3a604 0x4075361
+#	0x406df48	internal/poll.runtime_pollWait+0x88					/usr/local/go/src/runtime/netpoll.go:305
+#	0x40eeab1	internal/poll.(*pollDesc).wait+0x31					/usr/local/go/src/internal/poll/fd_poll_runtime.go:84
+#	0x40f3eb3	internal/poll.(*pollDesc).waitRead+0x233				/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+#	0x40f3ea0	internal/poll.(*FD).Accept+0x220					/usr/local/go/src/internal/poll/fd_unix.go:614
+#	0x4238594	net.(*netFD).accept+0x34						/usr/local/go/src/net/fd_unix.go:172
+#	0x4252d07	net.(*TCPListener).accept+0x27						/usr/local/go/src/net/tcpsock_posix.go:142
+#	0x4251d9c	net.(*TCPListener).Accept+0x3c						/usr/local/go/src/net/tcpsock.go:288
+#	0x6675ce8	github.com/soheilhy/cmux.(*cMux).Serve+0xa8				/Users/cs/code/goread/pkg/mod/github.com/soheilhy/cmux@v0.1.5/cmux.go:170
+#	0x6de7fc8	github.com/pingcap/tiflow/pkg/tcpserver.(*tcpServerImpl).Run.func2+0x28	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/tcpserver/tcp_server.go:120
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+1 @ 0x4041496 0x403a137 0x406df49 0x40eeab2 0x40f3eb4 0x40f3ea1 0x4238595 0x4252d08 0x4251d9d 0x66e4006 0x4075361
+#	0x406df48	internal/poll.runtime_pollWait+0x88					/usr/local/go/src/runtime/netpoll.go:305
+#	0x40eeab1	internal/poll.(*pollDesc).wait+0x31					/usr/local/go/src/internal/poll/fd_poll_runtime.go:84
+#	0x40f3eb3	internal/poll.(*pollDesc).waitRead+0x233				/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+#	0x40f3ea0	internal/poll.(*FD).Accept+0x220					/usr/local/go/src/internal/poll/fd_unix.go:614
+#	0x4238594	net.(*netFD).accept+0x34						/usr/local/go/src/net/fd_unix.go:172
+#	0x4252d07	net.(*TCPListener).accept+0x27						/usr/local/go/src/net/tcpsock_posix.go:142
+#	0x4251d9c	net.(*TCPListener).Accept+0x3c						/usr/local/go/src/net/tcpsock.go:288
+#	0x66e4005	github.com/pingcap/tidb/server.(*Server).startNetworkListener+0xa5	/Users/cs/code/goread/src/github.com/pingcap/tidb/server/server.go:384
+
+1 @ 0x4041496 0x403a137 0x406df49 0x40eeab2 0x40f3eb4 0x40f3ea1 0x4238595 0x42596fc 0x4257d3d 0x66e4006 0x4075361
+#	0x406df48	internal/poll.runtime_pollWait+0x88					/usr/local/go/src/runtime/netpoll.go:305
+#	0x40eeab1	internal/poll.(*pollDesc).wait+0x31					/usr/local/go/src/internal/poll/fd_poll_runtime.go:84
+#	0x40f3eb3	internal/poll.(*pollDesc).waitRead+0x233				/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+#	0x40f3ea0	internal/poll.(*FD).Accept+0x220					/usr/local/go/src/internal/poll/fd_unix.go:614
+#	0x4238594	net.(*netFD).accept+0x34						/usr/local/go/src/net/fd_unix.go:172
+#	0x42596fb	net.(*UnixListener).accept+0x1b						/usr/local/go/src/net/unixsock_posix.go:166
+#	0x4257d3c	net.(*UnixListener).Accept+0x3c						/usr/local/go/src/net/unixsock.go:260
+#	0x66e4005	github.com/pingcap/tidb/server.(*Server).startNetworkListener+0xa5	/Users/cs/code/goread/src/github.com/pingcap/tidb/server/server.go:384
+
+1 @ 0x4041496 0x40516fc 0x437eaf5 0x4075361
+#	0x437eaf4	net/http.(*persistConn).writeLoop+0xf4	/usr/local/go/src/net/http/transport.go:2392
+
+1 @ 0x4041496 0x40516fc 0x437eaf5 0x4075361
+# labels: {"plan_digest":"\xc5)d\xb0\xd8\xe7\xeaH.|\x8dA7>\x17\x99@/ݶ\xeat\"Gn|ߌ\xb4\xf3X\xdb", "sql_digest":"t\xdbZ\x8b\xd4w\xbbz~\x0e\xc0\x1e\xfa\x9bBPV骃zV\xdc\xd2$\xfa\x10'\x91M9\xb0"}
+#	0x437eaf4	net/http.(*persistConn).writeLoop+0xf4	/usr/local/go/src/net/http/transport.go:2392
+
+1 @ 0x4041496 0x40516fc 0x45c2615 0x45c2d25 0x45da08e 0x4075361
+#	0x45c2614	google.golang.org/grpc/internal/transport.(*controlBuffer).get+0x114	/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/controlbuf.go:408
+#	0x45c2d24	google.golang.org/grpc/internal/transport.(*loopyWriter).run+0x84	/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/controlbuf.go:535
+#	0x45da08d	google.golang.org/grpc/internal/transport.NewServerTransport.func2+0xcd	/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/http2_server.go:331
+
+1 @ 0x4041496 0x40516fc 0x45e14d3 0x4075361
+#	0x45e14d2	google.golang.org/grpc/internal/transport.(*http2Server).keepalive+0x232	/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/http2_server.go:1132
+
+1 @ 0x4041496 0x40516fc 0x45e5e30 0x45e5cf8 0x45e7452 0x40e6e9a 0x45e73c5 0x45e739b 0x465cb67 0x465d466 0x465db4e 0x4674a38 0x6920acc 0x6981550 0x6980aab 0x5a3a604 0x4075361
+#	0x45e5e2f	google.golang.org/grpc/internal/transport.(*recvBufferReader).read+0x8f		/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:179
+#	0x45e5cf7	google.golang.org/grpc/internal/transport.(*recvBufferReader).Read+0x177	/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:173
+#	0x45e7451	google.golang.org/grpc/internal/transport.(*transportReader).Read+0x31		/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:485
+#	0x40e6e99	io.ReadAtLeast+0x99								/usr/local/go/src/io/io.go:332
+#	0x45e73c4	io.ReadFull+0xa4								/usr/local/go/src/io/io.go:351
+#	0x45e739a	google.golang.org/grpc/internal/transport.(*Stream).Read+0x7a			/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:469
+#	0x465cb66	google.golang.org/grpc.(*parser).recvMsg+0x46					/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/rpc_util.go:559
+#	0x465d465	google.golang.org/grpc.recvAndDecompress+0x65					/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/rpc_util.go:690
+#	0x465db4d	google.golang.org/grpc.recv+0x6d						/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/rpc_util.go:756
+#	0x4674a37	google.golang.org/grpc.(*serverStream).RecvMsg+0x177				/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:1598
+#	0x6920acb	github.com/pingcap/tiflow/proto/p2p.(*cDCPeerToPeerSendMessageServer).Recv+0x4b	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/proto/p2p/CDCPeerToPeer.pb.go:531
+#	0x698154f	github.com/pingcap/tiflow/pkg/p2p.(*MessageServer).receive+0x3ef		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/p2p/server.go:721
+#	0x6980aaa	github.com/pingcap/tiflow/pkg/p2p.(*MessageServer).SendMessage.func1+0xaa	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/p2p/server.go:630
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+1 @ 0x4041496 0x40516fc 0x45e5f85 0x45e5cc7 0x45e7452 0x40e6e9a 0x45e73c5 0x45e739b 0x465cb67 0x465d466 0x465db4e 0x4670d1a 0x466ff85 0x466ed31 0x466fc9f 0x696c897 0x69208ec 0x6977e64 0x6976a16 0x5a3a604 0x4075361
+#	0x45e5f84	google.golang.org/grpc/internal/transport.(*recvBufferReader).readClient+0xa4		/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:191
+#	0x45e5cc6	google.golang.org/grpc/internal/transport.(*recvBufferReader).Read+0x146		/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:171
+#	0x45e7451	google.golang.org/grpc/internal/transport.(*transportReader).Read+0x31			/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:485
+#	0x40e6e99	io.ReadAtLeast+0x99									/usr/local/go/src/io/io.go:332
+#	0x45e73c4	io.ReadFull+0xa4									/usr/local/go/src/io/io.go:351
+#	0x45e739a	google.golang.org/grpc/internal/transport.(*Stream).Read+0x7a				/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/internal/transport/transport.go:469
+#	0x465cb66	google.golang.org/grpc.(*parser).recvMsg+0x46						/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/rpc_util.go:559
+#	0x465d465	google.golang.org/grpc.recvAndDecompress+0x65						/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/rpc_util.go:690
+#	0x465db4d	google.golang.org/grpc.recv+0x6d							/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/rpc_util.go:756
+#	0x4670d19	google.golang.org/grpc.(*csAttempt).recvMsg+0x2b9					/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:994
+#	0x466ff84	google.golang.org/grpc.(*clientStream).RecvMsg.func1+0x24				/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:845
+#	0x466ed30	google.golang.org/grpc.(*clientStream).withRetry+0x2f0					/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:705
+#	0x466fc9e	google.golang.org/grpc.(*clientStream).RecvMsg+0x11e					/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/stream.go:844
+#	0x696c896	github.com/grpc-ecosystem/go-grpc-prometheus.(*monitoredClientStream).RecvMsg+0x36	/Users/cs/code/goread/pkg/mod/github.com/grpc-ecosystem/go-grpc-prometheus@v1.2.0/client_metrics.go:160
+#	0x69208eb	github.com/pingcap/tiflow/proto/p2p.(*cDCPeerToPeerSendMessageClient).Recv+0x4b		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/proto/p2p/CDCPeerToPeer.pb.go:485
+#	0x6977e63	github.com/pingcap/tiflow/pkg/p2p.(*MessageClient).runRx+0x163				/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/p2p/client.go:347
+#	0x6976a15	github.com/pingcap/tiflow/pkg/p2p.(*MessageClient).run.func2+0x55			/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/p2p/client.go:205
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63					/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+1 @ 0x4041496 0x40516fc 0x4a80ea5 0x4075361
+#	0x4a80ea4	github.com/tikv/client-go/v2/tikvrpc.CheckStreamTimeoutLoop+0x184	/Users/cs/code/goread/pkg/mod/github.com/tikv/client-go/v2@v2.0.1-0.20220923061703-33efe476e022/tikvrpc/tikvrpc.go:1178
+
+1 @ 0x4041496 0x40516fc 0x4a92e55 0x4a93685 0x4075361
+#	0x4a92e54	github.com/tikv/client-go/v2/internal/client.(*batchConn).fetchAllPendingRequests+0xb4	/Users/cs/code/goread/pkg/mod/github.com/tikv/client-go/v2@v2.0.1-0.20220923061703-33efe476e022/internal/client/client_batch.go:224
+#	0x4a93684	github.com/tikv/client-go/v2/internal/client.(*batchConn).batchSendLoop+0x164		/Users/cs/code/goread/pkg/mod/github.com/tikv/client-go/v2@v2.0.1-0.20220923061703-33efe476e022/internal/client/client_batch.go:315
+
+1 @ 0x4041496 0x40516fc 0x4ae7108 0x4075361
+#	0x4ae7107	github.com/tikv/client-go/v2/oracle/oracles.(*pdOracle).updateTS+0x127	/Users/cs/code/goread/pkg/mod/github.com/tikv/client-go/v2@v2.0.1-0.20220923061703-33efe476e022/oracle/oracles/pd.go:229
+
+1 @ 0x4041496 0x40516fc 0x4bf800b 0x4075361
+#	0x4bf800a	github.com/tikv/client-go/v2/tikv.(*KVStore).runSafePointChecker+0x12a	/Users/cs/code/goread/pkg/mod/github.com/tikv/client-go/v2@v2.0.1-0.20220923061703-33efe476e022/tikv/kv.go:234
+
+1 @ 0x4041496 0x40516fc 0x4bfa28d 0x4075361
+#	0x4bfa28c	github.com/tikv/client-go/v2/tikv.(*KVStore).safeTSUpdater+0x1ec	/Users/cs/code/goread/pkg/mod/github.com/tikv/client-go/v2@v2.0.1-0.20220923061703-33efe476e022/tikv/kv.go:530
+
+1 @ 0x4041496 0x40516fc 0x4e1ecd0 0x4075361
+#	0x4e1eccf	github.com/pingcap/tidb/util/topsql/stmtstats.(*aggregator).run+0xef	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/topsql/stmtstats/aggregator.go:67
+
+1 @ 0x4041496 0x40516fc 0x556cb4d 0x4075361
+#	0x556cb4c	go.opencensus.io/stats/view.(*worker).start+0xac	/Users/cs/code/goread/pkg/mod/go.opencensus.io@v0.23.1-0.20220331163232-052120675fac/stats/view/worker.go:292
+
+1 @ 0x4041496 0x40516fc 0x5adf545 0x4075361
+# labels: {"actor":"sorter-db"}
+#	0x5adf544	github.com/cockroachdb/pebble/vfs.(*diskHealthCheckingFile).startTicker.func1+0xe4	/Users/cs/code/goread/pkg/mod/github.com/cockroachdb/pebble@v0.0.0-20220415182917-06c9d3be25b3/vfs/disk_health.go:63
+
+1 @ 0x4041496 0x40516fc 0x5c186aa 0x4075361
+#	0x5c186a9	github.com/dgraph-io/ristretto.(*Cache).processItems+0x189	/Users/cs/code/goread/pkg/mod/github.com/dgraph-io/ristretto@v0.1.1-0.20220403145359-8e850b710d6d/cache.go:476
+
+1 @ 0x4041496 0x40516fc 0x5c1a1f1 0x4075361
+#	0x5c1a1f0	github.com/dgraph-io/ristretto.(*lfuPolicy).processItems+0x90	/Users/cs/code/goread/pkg/mod/github.com/dgraph-io/ristretto@v0.1.1-0.20220403145359-8e850b710d6d/policy.go:67
+
+1 @ 0x4041496 0x40516fc 0x5cea645 0x4efbf33 0x4075361
+#	0x5cea644	github.com/pingcap/tidb/util/cpuprofile.(*parallelCPUProfiler).profilingLoop+0x104	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/cpuprofile/cpuprofile.go:164
+#	0x4efbf32	github.com/pingcap/tidb/util.WithRecovery+0x52						/Users/cs/code/goread/src/github.com/pingcap/tidb/util/misc.go:96
+
+1 @ 0x4041496 0x40516fc 0x5cec945 0x4075361
+#	0x5cec944	github.com/pingcap/tidb/util/topsql/collector.(*SQLCPUCollector).collectSQLCPULoop+0x1a4	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/topsql/collector/cpu.go:120
+
+1 @ 0x4041496 0x40516fc 0x5cf6ccd 0x4075361
+#	0x5cf6ccc	github.com/pingcap/tidb/util/topsql/reporter.(*RemoteTopSQLReporter).collectWorker+0x18c	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/topsql/reporter/reporter.go:175
+
+1 @ 0x4041496 0x40516fc 0x5cf79bd 0x4075361
+#	0x5cf79bc	github.com/pingcap/tidb/util/topsql/reporter.(*RemoteTopSQLReporter).reportWorker+0xfc	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/topsql/reporter/reporter.go:261
+
+1 @ 0x4041496 0x40516fc 0x5cf8baf 0x5cf87e5 0x4075361
+#	0x5cf8bae	github.com/pingcap/tidb/util/topsql/reporter.(*SingleTargetDataSink).run+0x12e		/Users/cs/code/goread/src/github.com/pingcap/tidb/util/topsql/reporter/single_target.go:114
+#	0x5cf87e4	github.com/pingcap/tidb/util/topsql/reporter.(*SingleTargetDataSink).recoverRun+0x64	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/topsql/reporter/single_target.go:95
+
+1 @ 0x4041496 0x40516fc 0x5d7321f 0x4f04fda 0x4075361
+#	0x5d7321e	github.com/pingcap/tidb/ddl.(*ddl).PollTiFlashRoutine+0x29e	/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/ddl_tiflash_api.go:697
+#	0x4f04fd9	github.com/pingcap/tidb/util.(*WaitGroupWrapper).Run.func1+0x59	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/wait_group_wrapper.go:33
+
+1 @ 0x4041496 0x40516fc 0x5d7551d 0x4f04fda 0x4075361
+#	0x5d7551c	github.com/pingcap/tidb/ddl.(*ddl).limitDDLJobs+0x13c		/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/ddl_worker.go:278
+#	0x4f04fd9	github.com/pingcap/tidb/util.(*WaitGroupWrapper).Run.func1+0x59	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/wait_group_wrapper.go:33
+
+1 @ 0x4041496 0x40516fc 0x5dfd6b8 0x4075361
+#	0x5dfd6b7	github.com/pingcap/tidb/br/pkg/streamhelper.(*CheckpointAdvancer).StartTaskListener.func1+0x117	/Users/cs/code/goread/src/github.com/pingcap/tidb/br/pkg/streamhelper/advancer.go:390
+
+1 @ 0x4041496 0x40516fc 0x5e00697 0x4075361
+#	0x5e00696	github.com/pingcap/tidb/br/pkg/streamhelper.AdvancerExt.startListen.func2+0x156	/Users/cs/code/goread/src/github.com/pingcap/tidb/br/pkg/streamhelper/advancer_cliext.go:121
+
+1 @ 0x4041496 0x40516fc 0x5e2ab88 0x4f04fda 0x4075361
+#	0x5e2ab87	github.com/pingcap/tidb/br/pkg/streamhelper/daemon.(*OwnerDaemon).Begin.func1+0x247	/Users/cs/code/goread/src/github.com/pingcap/tidb/br/pkg/streamhelper/daemon/owner_daemon.go:79
+#	0x4f04fd9	github.com/pingcap/tidb/util.(*WaitGroupWrapper).Run.func1+0x59				/Users/cs/code/goread/src/github.com/pingcap/tidb/util/wait_group_wrapper.go:33
+
+1 @ 0x4041496 0x40516fc 0x6000f16 0x4075361
+#	0x6000f15	github.com/pingcap/tidb/util/expensivequery.(*Handle).Run+0x175	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/expensivequery/expensivequery.go:56
+
+1 @ 0x4041496 0x40516fc 0x6001ef9 0x4075361
+#	0x6001ef8	github.com/pingcap/tidb/util/memoryusagealarm.(*Handle).Run+0x178	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/memoryusagealarm/memoryusagealarm.go:65
+
+1 @ 0x4041496 0x40516fc 0x6007905 0x4075361
+#	0x6007904	github.com/pingcap/tidb/util/servermemorylimit.(*Handle).Run+0x164	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/servermemorylimit/servermemorylimit.go:56
+
+1 @ 0x4041496 0x40516fc 0x600b3d4 0x4075361
+#	0x600b3d3	github.com/pingcap/tidb/domain.(*Domain).topNSlowQueryLoop+0x193	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:527
+
+1 @ 0x4041496 0x40516fc 0x600b905 0x4075361
+#	0x600b904	github.com/pingcap/tidb/domain.(*Domain).infoSyncerKeeper+0x164	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:559
+
+1 @ 0x4041496 0x40516fc 0x600bed5 0x4075361
+#	0x600bed4	github.com/pingcap/tidb/domain.(*Domain).globalConfigSyncerKeeper+0xf4	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:582
+
+1 @ 0x4041496 0x40516fc 0x600c3c5 0x4075361
+#	0x600c3c4	github.com/pingcap/tidb/domain.(*Domain).topologySyncerKeeper+0x164	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:605
+
+1 @ 0x4041496 0x40516fc 0x600d52a 0x4f04fda 0x4075361
+#	0x600d529	github.com/pingcap/tidb/domain.(*Domain).mdlCheckLoop+0xe9	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:658
+#	0x4f04fd9	github.com/pingcap/tidb/util.(*WaitGroupWrapper).Run.func1+0x59	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/wait_group_wrapper.go:33
+
+1 @ 0x4041496 0x40516fc 0x600e097 0x4075361
+#	0x600e096	github.com/pingcap/tidb/domain.(*Domain).loadSchemaInLoop+0x1b6	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:741
+
+1 @ 0x4041496 0x40516fc 0x601198d 0x4075361
+#	0x601198c	github.com/pingcap/tidb/domain.(*Domain).closestReplicaReadCheckLoop+0x2ec	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1091
+
+1 @ 0x4041496 0x40516fc 0x6012d45 0x4075361
+#	0x6012d44	github.com/pingcap/tidb/domain.(*Domain).LoadPrivilegeLoop.func1+0x144	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1281
+
+1 @ 0x4041496 0x40516fc 0x6013585 0x4075361
+#	0x6013584	github.com/pingcap/tidb/domain.(*Domain).LoadSysVarCacheLoop.func1+0x144	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1331
+
+1 @ 0x4041496 0x40516fc 0x6013fcf 0x4075361
+#	0x6013fce	github.com/pingcap/tidb/domain.(*Domain).globalBindHandleWorkerLoop.func1+0x16e	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1416
+
+1 @ 0x4041496 0x40516fc 0x6014867 0x4075361
+#	0x6014866	github.com/pingcap/tidb/domain.(*Domain).handleEvolvePlanTasksLoop.func1+0x106	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1454
+
+1 @ 0x4041496 0x40516fc 0x6014fdc 0x4075361
+#	0x6014fdb	github.com/pingcap/tidb/domain.(*Domain).TelemetryReportLoop.func1+0x11b	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1488
+
+1 @ 0x4041496 0x40516fc 0x60154ec 0x4075361
+#	0x60154eb	github.com/pingcap/tidb/domain.(*Domain).TelemetryRotateSubWindowLoop.func1+0xcb	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1517
+
+1 @ 0x4041496 0x40516fc 0x60157d6 0x4075361
+#	0x60157d5	github.com/pingcap/tidb/domain.(*Domain).DumpFileGcCheckerLoop.func1+0xf5	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1539
+
+1 @ 0x4041496 0x40516fc 0x6016aca 0x4f04fda 0x4075361
+#	0x6016ac9	github.com/pingcap/tidb/domain.(*Domain).loadStatsWorker+0x469	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1663
+#	0x4f04fd9	github.com/pingcap/tidb/util.(*WaitGroupWrapper).Run.func1+0x59	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/wait_group_wrapper.go:33
+
+1 @ 0x4041496 0x40516fc 0x60189ee 0x6015fe5 0x4f04fda 0x4075361
+#	0x60189ed	github.com/pingcap/tidb/domain.(*Domain).autoAnalyzeWorker+0xed			/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1789
+#	0x6015fe4	github.com/pingcap/tidb/domain.(*Domain).UpdateTableStatsLoop.func2+0x24	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1612
+#	0x4f04fd9	github.com/pingcap/tidb/util.(*WaitGroupWrapper).Run.func1+0x59			/Users/cs/code/goread/src/github.com/pingcap/tidb/util/wait_group_wrapper.go:33
+
+1 @ 0x4041496 0x40516fc 0x6018c85 0x6015fa5 0x4f04fda 0x4075361
+#	0x6018c84	github.com/pingcap/tidb/domain.(*Domain).gcAnalyzeHistory+0x104			/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1810
+#	0x6015fa4	github.com/pingcap/tidb/domain.(*Domain).UpdateTableStatsLoop.func3+0x24	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1613
+#	0x4f04fd9	github.com/pingcap/tidb/util.(*WaitGroupWrapper).Run.func1+0x59			/Users/cs/code/goread/src/github.com/pingcap/tidb/util/wait_group_wrapper.go:33
+
+1 @ 0x4041496 0x40516fc 0x6019a25 0x4075361
+#	0x6019a24	github.com/pingcap/tidb/domain.(*Domain).LoadSigningCertLoop.func1+0xc4	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1904
+
+1 @ 0x4041496 0x40516fc 0x601b8b2 0x4075361
+#	0x601b8b1	github.com/pingcap/tidb/domain.(*Domain).serverIDKeeper+0x271	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:2118
+
+1 @ 0x4041496 0x40516fc 0x664382c 0x4075361
+#	0x664382b	github.com/pingcap/tidb/store/gcworker.(*GCWorker).start+0x2eb	/Users/cs/code/goread/src/github.com/pingcap/tidb/store/gcworker/gc_worker.go:227
+
+1 @ 0x4041496 0x40516fc 0x66780de 0x4365fe5 0x66db377 0x4efbf33 0x4075361
+#	0x66780dd	github.com/soheilhy/cmux.muxListener.Accept+0x7d					/Users/cs/code/goread/pkg/mod/github.com/soheilhy/cmux@v0.1.5/cmux.go:262
+#	0x4365fe4	net/http.(*Server).Serve+0x384								/usr/local/go/src/net/http/server.go:3070
+#	0x66db376	github.com/pingcap/tidb/server.(*Server).startStatusServerAndRPCServer.func2+0x36	/Users/cs/code/goread/src/github.com/pingcap/tidb/server/http_status.go:470
+#	0x4efbf32	github.com/pingcap/tidb/util.WithRecovery+0x52						/Users/cs/code/goread/src/github.com/pingcap/tidb/util/misc.go:96
+
+1 @ 0x4041496 0x40516fc 0x66780de 0x4660755 0x66db5d7 0x4efbf33 0x4075361
+#	0x66780dd	github.com/soheilhy/cmux.muxListener.Accept+0x7d					/Users/cs/code/goread/pkg/mod/github.com/soheilhy/cmux@v0.1.5/cmux.go:262
+#	0x4660754	google.golang.org/grpc.(*Server).Serve+0x474						/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/server.go:790
+#	0x66db5d6	github.com/pingcap/tidb/server.(*Server).startStatusServerAndRPCServer.func1+0x36	/Users/cs/code/goread/src/github.com/pingcap/tidb/server/http_status.go:465
+#	0x4efbf32	github.com/pingcap/tidb/util.WithRecovery+0x52						/Users/cs/code/goread/src/github.com/pingcap/tidb/util/misc.go:96
+
+1 @ 0x4041496 0x40516fc 0x66780de 0x4660755 0x6deabff 0x5a3a604 0x4075361
+#	0x66780dd	github.com/soheilhy/cmux.muxListener.Accept+0x7d		/Users/cs/code/goread/pkg/mod/github.com/soheilhy/cmux@v0.1.5/cmux.go:262
+#	0x4660754	google.golang.org/grpc.(*Server).Serve+0x474			/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/server.go:790
+#	0x6deabfe	github.com/pingcap/tiflow/cdc/server.(*server).run.func6+0x3e	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/server/server.go:348
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63		/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+1 @ 0x4041496 0x40516fc 0x66780de 0x6de683b 0x4365fe5 0x6de9a85 0x4075361
+#	0x66780dd	github.com/soheilhy/cmux.muxListener.Accept+0x7d				/Users/cs/code/goread/pkg/mod/github.com/soheilhy/cmux@v0.1.5/cmux.go:262
+#	0x6de683a	golang.org/x/net/netutil.(*limitListener).Accept+0x9a				/Users/cs/code/goread/pkg/mod/golang.org/x/net@v0.0.0-20220809184613-07c6da5e1ced/netutil/listen.go:63
+#	0x4365fe4	net/http.(*Server).Serve+0x384							/usr/local/go/src/net/http/server.go:3070
+#	0x6de9a84	github.com/pingcap/tiflow/cdc/server.(*server).startStatusHTTP.func1+0x144	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/server/server.go:265
+
+1 @ 0x4041496 0x40516fc 0x6927432 0x6976d65 0x6976ad6 0x5a3a604 0x4075361
+#	0x6927431	github.com/pingcap/tiflow/pkg/p2p/internal.(*SendChan).Receive+0x111	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/p2p/internal/send_chan.go:138
+#	0x6976d64	github.com/pingcap/tiflow/pkg/p2p.(*MessageClient).runTx+0x224		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/p2p/client.go:231
+#	0x6976ad5	github.com/pingcap/tiflow/pkg/p2p.(*MessageClient).run.func1+0x55	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/p2p/client.go:200
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+1 @ 0x4041496 0x40516fc 0x697b94d 0x697b785 0x5a3a604 0x4075361
+#	0x697b94c	github.com/pingcap/tiflow/pkg/p2p.(*MessageServer).run+0x14c		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/p2p/server.go:225
+#	0x697b784	github.com/pingcap/tiflow/pkg/p2p.(*MessageServer).Run.func2+0x24	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/p2p/server.go:207
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+1 @ 0x4041496 0x40516fc 0x698034b 0x698378f 0x69209df 0x4667347 0x4668b8a 0x4661d38 0x4075361
+#	0x698034a	github.com/pingcap/tiflow/pkg/p2p.(*MessageServer).SendMessage+0x62a		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/p2p/server.go:673
+#	0x698378e	github.com/pingcap/tiflow/pkg/p2p.(*ServerWrapper).SendMessage+0x1ce		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/p2p/server_wrapper.go:97
+#	0x69209de	github.com/pingcap/tiflow/proto/p2p._CDCPeerToPeer_SendMessage_Handler+0x9e	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/proto/p2p/CDCPeerToPeer.pb.go:512
+#	0x4667346	google.golang.org/grpc.(*Server).processStreamingRPC+0xfc6			/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/server.go:1558
+#	0x4668b89	google.golang.org/grpc.(*Server).handleStream+0x9e9				/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/server.go:1640
+#	0x4661d37	google.golang.org/grpc.(*Server).serveStreams.func1.2+0x97			/Users/cs/code/goread/pkg/mod/google.golang.org/grpc@v1.48.0/server.go:932
+
+1 @ 0x4041496 0x40516fc 0x6980705 0x5a3a604 0x4075361
+#	0x6980704	github.com/pingcap/tiflow/pkg/p2p.(*MessageServer).SendMessage.func2+0x124	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/p2p/server.go:647
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+1 @ 0x4041496 0x40516fc 0x6a5888d 0x6b3e330 0x4075361
+#	0x6a5888c	github.com/pingcap/tiflow/pkg/pdutil.(*clock).Run+0x18c		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/pdutil/clock.go:80
+#	0x6b3e32f	github.com/pingcap/tiflow/pkg/upstream.initUpstream.func1+0x6f	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/upstream/upstream.go:202
+
+1 @ 0x4041496 0x40516fc 0x6a6b5fb 0x6b3e210 0x4075361
+#	0x6a6b5fa	github.com/pingcap/tiflow/cdc/kv.(*GrpcPoolImpl).RecycleConn+0x15a	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/grpc_pool_impl.go:236
+#	0x6b3e20f	github.com/pingcap/tiflow/pkg/upstream.initUpstream.func2+0x6f		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/upstream/upstream.go:207
+
+1 @ 0x4041496 0x40516fc 0x6b3411b 0x6d08945 0x6d06039 0x5a3a604 0x4075361
+#	0x6b3411a	github.com/pingcap/tiflow/pkg/orchestrator.(*EtcdWorker).Run+0x6da		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/orchestrator/etcd_worker.go:182
+#	0x6d08944	github.com/pingcap/tiflow/cdc/capture.(*captureImpl).runEtcdWorker+0x184	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/capture/capture.go:494
+#	0x6d06038	github.com/pingcap/tiflow/cdc/capture.(*captureImpl).run.func4+0x298		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/capture/capture.go:336
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+1 @ 0x4041496 0x40516fc 0x6b3411b 0x6d08945 0x6d072db 0x6d063bf 0x5a3a604 0x4075361
+#	0x6b3411a	github.com/pingcap/tiflow/pkg/orchestrator.(*EtcdWorker).Run+0x6da		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/orchestrator/etcd_worker.go:182
+#	0x6d08944	github.com/pingcap/tiflow/cdc/capture.(*captureImpl).runEtcdWorker+0x184	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/capture/capture.go:494
+#	0x6d072da	github.com/pingcap/tiflow/cdc/capture.(*captureImpl).campaignOwner+0x7ba	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/capture/capture.go:445
+#	0x6d063be	github.com/pingcap/tiflow/cdc/capture.(*captureImpl).run.func3+0x3e		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/capture/capture.go:315
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+1 @ 0x4041496 0x40516fc 0x6be9665 0x4075361
+#	0x6be9664	github.com/pingcap/tiflow/cdc/sorter/db/system.(*System).Start.func1+0x164	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/sorter/db/system/system.go:172
+
+1 @ 0x4041496 0x40516fc 0x6cd7825 0x4075361
+#	0x6cd7824	github.com/pingcap/tiflow/pkg/chann.(*Chann[...]).unboundedProcessing+0xe4	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/chann/chann.go:180
+
+1 @ 0x4041496 0x40516fc 0x6de9fb6 0x6dead05 0x5a3a604 0x4075361
+#	0x6de9fb5	github.com/pingcap/tiflow/cdc/server.(*server).etcdHealthChecker+0x375	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/server/server.go:289
+#	0x6dead04	github.com/pingcap/tiflow/cdc/server.(*server).run.func2+0x24		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/server/server.go:324
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+1 @ 0x4041496 0x405297e 0x4052955 0x4070585 0x4084232 0x5a3a467 0x6973225 0x697b72e 0x5a3a604 0x4075361
+#	0x4070584	sync.runtime_Semacquire+0x24						/usr/local/go/src/runtime/sema.go:62
+#	0x4084231	sync.(*WaitGroup).Wait+0x51						/usr/local/go/src/sync/waitgroup.go:139
+#	0x5a3a466	golang.org/x/sync/errgroup.(*Group).Wait+0x26				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:53
+#	0x6973224	github.com/pingcap/tiflow/pkg/workerpool.(*defaultPoolImpl).Run+0x1a4	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/workerpool/pool_impl.go:75
+#	0x697b72d	github.com/pingcap/tiflow/pkg/p2p.(*MessageServer).Run.func3+0x2d	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/p2p/server.go:211
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+1 @ 0x4041496 0x405297e 0x4052955 0x4070585 0x4084232 0x5a3a467 0x6973225 0x6a75010 0x5a3a604 0x4075361
+#	0x4070584	sync.runtime_Semacquire+0x24						/usr/local/go/src/runtime/sema.go:62
+#	0x4084231	sync.(*WaitGroup).Wait+0x51						/usr/local/go/src/sync/waitgroup.go:139
+#	0x5a3a466	golang.org/x/sync/errgroup.(*Group).Wait+0x26				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:53
+#	0x6973224	github.com/pingcap/tiflow/pkg/workerpool.(*defaultPoolImpl).Run+0x1a4	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/workerpool/pool_impl.go:75
+#	0x6a7500f	github.com/pingcap/tiflow/cdc/kv.RunWorkerPool.func1+0x2f		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/region_worker.go:916
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+1 @ 0x4041496 0x405297e 0x4052955 0x4070585 0x4084232 0x5a3a467 0x697693c 0x6976630 0x6975dae 0x6979ee5 0x4075361
+#	0x4070584	sync.runtime_Semacquire+0x24							/usr/local/go/src/runtime/sema.go:62
+#	0x4084231	sync.(*WaitGroup).Wait+0x51							/usr/local/go/src/sync/waitgroup.go:139
+#	0x5a3a466	golang.org/x/sync/errgroup.(*Group).Wait+0x26					/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:53
+#	0x697693b	github.com/pingcap/tiflow/pkg/p2p.(*MessageClient).run+0x1fb			/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/p2p/client.go:208
+#	0x697662f	github.com/pingcap/tiflow/pkg/p2p.(*MessageClient).launchStream+0x12f		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/p2p/client.go:192
+#	0x6975dad	github.com/pingcap/tiflow/pkg/p2p.(*MessageClient).Run+0x56d			/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/p2p/client.go:163
+#	0x6979ee4	github.com/pingcap/tiflow/pkg/p2p.(*messageRouterImpl).GetClient.func1+0xe4	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/p2p/message_router.go:144
+
+1 @ 0x4041496 0x405297e 0x4052955 0x4070585 0x4084232 0x5a3a467 0x697b687 0x6d05d6f 0x5a3a604 0x4075361
+#	0x4070584	sync.runtime_Semacquire+0x24						/usr/local/go/src/runtime/sema.go:62
+#	0x4084231	sync.(*WaitGroup).Wait+0x51						/usr/local/go/src/sync/waitgroup.go:139
+#	0x5a3a466	golang.org/x/sync/errgroup.(*Group).Wait+0x26				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:53
+#	0x697b686	github.com/pingcap/tiflow/pkg/p2p.(*MessageServer).Run+0x1a6		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/p2p/server.go:214
+#	0x6d05d6e	github.com/pingcap/tiflow/cdc/capture.(*captureImpl).run.func5+0x4e	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/capture/capture.go:343
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+1 @ 0x4041496 0x405297e 0x4052955 0x4070585 0x4084232 0x5a3a467 0x6a74fb2 0x6deacc5 0x5a3a604 0x4075361
+#	0x4070584	sync.runtime_Semacquire+0x24					/usr/local/go/src/runtime/sema.go:62
+#	0x4084231	sync.(*WaitGroup).Wait+0x51					/usr/local/go/src/sync/waitgroup.go:139
+#	0x5a3a466	golang.org/x/sync/errgroup.(*Group).Wait+0x26			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:53
+#	0x6a74fb1	github.com/pingcap/tiflow/cdc/kv.RunWorkerPool+0xd1		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/kv/region_worker.go:918
+#	0x6deacc4	github.com/pingcap/tiflow/cdc/server.(*server).run.func3+0x24	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/server/server.go:328
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63		/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+1 @ 0x4041496 0x405297e 0x4052955 0x4070585 0x4084232 0x5a3a467 0x6d05c5c 0x6d05405 0x6dead4d 0x5a3a604 0x4075361
+#	0x4070584	sync.runtime_Semacquire+0x24					/usr/local/go/src/runtime/sema.go:62
+#	0x4084231	sync.(*WaitGroup).Wait+0x51					/usr/local/go/src/sync/waitgroup.go:139
+#	0x5a3a466	golang.org/x/sync/errgroup.(*Group).Wait+0x26			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:53
+#	0x6d05c5b	github.com/pingcap/tiflow/cdc/capture.(*captureImpl).run+0x41b	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/capture/capture.go:346
+#	0x6d05404	github.com/pingcap/tiflow/cdc/capture.(*captureImpl).Run+0x184	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/capture/capture.go:267
+#	0x6dead4c	github.com/pingcap/tiflow/cdc/server.(*server).run.func1+0x2c	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/server/server.go:320
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63		/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+1 @ 0x4041496 0x405297e 0x4052955 0x4070585 0x4084232 0x5a3a467 0x6de7d2f 0x6deac8e 0x5a3a604 0x4075361
+#	0x4070584	sync.runtime_Semacquire+0x24						/usr/local/go/src/runtime/sema.go:62
+#	0x4084231	sync.(*WaitGroup).Wait+0x51						/usr/local/go/src/sync/waitgroup.go:139
+#	0x5a3a466	golang.org/x/sync/errgroup.(*Group).Wait+0x26				/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:53
+#	0x6de7d2e	github.com/pingcap/tiflow/pkg/tcpserver.(*tcpServerImpl).Run+0x18e	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/tcpserver/tcp_server.go:137
+#	0x6deac8d	github.com/pingcap/tiflow/cdc/server.(*server).run.func4+0x2d		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/server/server.go:332
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+
+1 @ 0x4041496 0x405297e 0x4052955 0x4070585 0x4084232 0x5a3a467 0x6deaac5 0x6de95d7 0x4075361
+#	0x4070584	sync.runtime_Semacquire+0x24					/usr/local/go/src/runtime/sema.go:62
+#	0x4084231	sync.(*WaitGroup).Wait+0x51					/usr/local/go/src/sync/waitgroup.go:139
+#	0x5a3a466	golang.org/x/sync/errgroup.(*Group).Wait+0x26			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:53
+#	0x6deaac4	github.com/pingcap/tiflow/cdc/server.(*server).run+0x444	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/server/server.go:357
+#	0x6de95d6	github.com/pingcap/tiflow/cdc/server.(*server).Run+0x76		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/cdc/server/server.go:231
+
+1 @ 0x4041496 0x405297e 0x4052955 0x40706a5 0x4082745 0x6456136 0x6456115 0x645667b 0x641d21a 0x6427097 0x641d6d4 0x63d7219 0x63d2e45 0x662d885 0x662c478 0x66c41ca 0x66b9087 0x66b7bd4 0x66b3165 0x66af9ee 0x66e5b7d 0x4075361
+# labels: {"plan_digest":"\x9d\xb4pZ\x04\x8f\xa7\x1fC+E+\xaf;k}\xaa\xb6\x912\xcc\x02\xc8v8\x9e\xc5wɪ\xafE", "sql_digest":"\xca,\x13}\x91uĩg\x05\xd1.\x0e!\x11U\xbfs\xd08W\xab4\xcc\xf3yw .B\xd7!"}
+#	0x40706a4	sync.runtime_SemacquireMutex+0x24							/usr/local/go/src/runtime/sema.go:77
+#	0x4082744	sync.(*Mutex).lockSlow+0x164								/usr/local/go/src/sync/mutex.go:171
+#	0x6456135	sync.(*Mutex).Lock+0x35									/usr/local/go/src/sync/mutex.go:90
+#	0x6456114	github.com/pingcap/tidb/executor.(*CacheExecutor).Begin+0x14				/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/cache_executor.go:148
+#	0x645667a	github.com/pingcap/tidb/executor.(*CacheExecutorManager).GetCacheExecutorByDigest+0x13a	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/cache_executor.go:189
+#	0x641d219	github.com/pingcap/tidb/executor.(*executorBuilder).build+0x139				/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/builder.go:168
+#	0x6427096	github.com/pingcap/tidb/executor.(*executorBuilder).buildExplain+0x276			/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/builder.go:1181
+#	0x641d6d3	github.com/pingcap/tidb/executor.(*executorBuilder).build+0x5f3				/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/builder.go:215
+#	0x63d7218	github.com/pingcap/tidb/executor.(*ExecStmt).buildExecutor+0x1d8			/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/adapter.go:972
+#	0x63d2e44	github.com/pingcap/tidb/executor.(*ExecStmt).Exec+0x6e4					/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/adapter.go:511
+#	0x662d884	github.com/pingcap/tidb/session.runStmt+0x564						/Users/cs/code/goread/src/github.com/pingcap/tidb/session/session.go:2298
+#	0x662c477	github.com/pingcap/tidb/session.(*session).ExecuteStmt+0xad7				/Users/cs/code/goread/src/github.com/pingcap/tidb/session/session.go:2162
+#	0x66c41c9	github.com/pingcap/tidb/server.(*TiDBContext).ExecuteStmt+0x69				/Users/cs/code/goread/src/github.com/pingcap/tidb/server/driver_tidb.go:231
+#	0x66b9086	github.com/pingcap/tidb/server.(*clientConn).handleStmt+0x166				/Users/cs/code/goread/src/github.com/pingcap/tidb/server/conn.go:2049
+#	0x66b7bd3	github.com/pingcap/tidb/server.(*clientConn).handleQuery+0x773				/Users/cs/code/goread/src/github.com/pingcap/tidb/server/conn.go:1904
+#	0x66b3164	github.com/pingcap/tidb/server.(*clientConn).dispatch+0x1024				/Users/cs/code/goread/src/github.com/pingcap/tidb/server/conn.go:1359
+#	0x66af9ed	github.com/pingcap/tidb/server.(*clientConn).Run+0x24d					/Users/cs/code/goread/src/github.com/pingcap/tidb/server/conn.go:1104
+#	0x66e5b7c	github.com/pingcap/tidb/server.(*Server).onConn+0x65c					/Users/cs/code/goread/src/github.com/pingcap/tidb/server/server.go:563
+
+1 @ 0x4041496 0x405297e 0x4052955 0x40706a5 0x4082745 0x64565b4 0x6456584 0x641d21a 0x63d7219 0x63d2e45 0x662d885 0x662c478 0x662b38f 0x662ad68 0x662b10e 0x59f7274 0x59f6ed1 0x59f7105 0x5a21edf 0x6017f2c 0x601602d 0x4f04fda 0x4075361
+#	0x40706a4	sync.runtime_SemacquireMutex+0x24							/usr/local/go/src/runtime/sema.go:77
+#	0x4082744	sync.(*Mutex).lockSlow+0x164								/usr/local/go/src/sync/mutex.go:171
+#	0x64565b3	sync.(*Mutex).Lock+0x73									/usr/local/go/src/sync/mutex.go:90
+#	0x6456583	github.com/pingcap/tidb/executor.(*CacheExecutorManager).GetCacheExecutorByDigest+0x43	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/cache_executor.go:179
+#	0x641d219	github.com/pingcap/tidb/executor.(*executorBuilder).build+0x139				/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/builder.go:168
+#	0x63d7218	github.com/pingcap/tidb/executor.(*ExecStmt).buildExecutor+0x1d8			/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/adapter.go:972
+#	0x63d2e44	github.com/pingcap/tidb/executor.(*ExecStmt).Exec+0x6e4					/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/adapter.go:511
+#	0x662d884	github.com/pingcap/tidb/session.runStmt+0x564						/Users/cs/code/goread/src/github.com/pingcap/tidb/session/session.go:2298
+#	0x662c477	github.com/pingcap/tidb/session.(*session).ExecuteStmt+0xad7				/Users/cs/code/goread/src/github.com/pingcap/tidb/session/session.go:2162
+#	0x662b38e	github.com/pingcap/tidb/session.(*session).ExecRestrictedSQL.func1+0x20e		/Users/cs/code/goread/src/github.com/pingcap/tidb/session/session.go:2045
+#	0x662ad67	github.com/pingcap/tidb/session.(*session).withRestrictedSQLExecutor+0x2e7		/Users/cs/code/goread/src/github.com/pingcap/tidb/session/session.go:2031
+#	0x662b10d	github.com/pingcap/tidb/session.(*session).ExecRestrictedSQL+0x8d			/Users/cs/code/goread/src/github.com/pingcap/tidb/session/session.go:2035
+#	0x59f7273	github.com/pingcap/tidb/statistics/handle.(*Handle).execRestrictedSQL.func1+0xf3	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle.go:133
+#	0x59f6ed0	github.com/pingcap/tidb/statistics/handle.(*Handle).withRestrictedSQLExecutor+0x1b0	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle.go:127
+#	0x59f7104	github.com/pingcap/tidb/statistics/handle.(*Handle).execRestrictedSQL+0xe4		/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle.go:132
+#	0x5a21ede	github.com/pingcap/tidb/statistics/handle.(*Handle).HandleUpdateStats+0x9e		/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/update.go:760
+#	0x6017f2b	github.com/pingcap/tidb/domain.(*Domain).updateStatsWorker+0x6eb			/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1754
+#	0x601602c	github.com/pingcap/tidb/domain.(*Domain).UpdateTableStatsLoop.func1+0x2c		/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1611
+#	0x4f04fd9	github.com/pingcap/tidb/util.(*WaitGroupWrapper).Run.func1+0x59				/Users/cs/code/goread/src/github.com/pingcap/tidb/util/wait_group_wrapper.go:33
+
+1 @ 0x4041496 0x405297e 0x4052955 0x40706a5 0x4082745 0x64565b4 0x6456584 0x641d21a 0x642948e 0x641e791 0x6430fbd 0x641e6b4 0x642c93d 0x641e665 0x63d7219 0x63d2e45 0x662d885 0x662c478 0x6626fd2 0x5d2df8f 0x5da2a59 0x5da3045 0x5da404d 0x5da3d05 0x4f04fda 0x4075361
+#	0x40706a4	sync.runtime_SemacquireMutex+0x24							/usr/local/go/src/runtime/sema.go:77
+#	0x4082744	sync.(*Mutex).lockSlow+0x164								/usr/local/go/src/sync/mutex.go:171
+#	0x64565b3	sync.(*Mutex).Lock+0x73									/usr/local/go/src/sync/mutex.go:90
+#	0x6456583	github.com/pingcap/tidb/executor.(*CacheExecutorManager).GetCacheExecutorByDigest+0x43	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/cache_executor.go:179
+#	0x641d219	github.com/pingcap/tidb/executor.(*executorBuilder).build+0x139				/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/builder.go:168
+#	0x642948d	github.com/pingcap/tidb/executor.(*executorBuilder).buildHashJoin+0xed			/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/builder.go:1408
+#	0x641e790	github.com/pingcap/tidb/executor.(*executorBuilder).build+0x16b0			/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/builder.go:271
+#	0x6430fbc	github.com/pingcap/tidb/executor.(*executorBuilder).buildSort+0x7c			/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/builder.go:2017
+#	0x641e6b3	github.com/pingcap/tidb/executor.(*executorBuilder).build+0x15d3			/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/builder.go:261
+#	0x642c93c	github.com/pingcap/tidb/executor.(*executorBuilder).buildProjection+0x7c		/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/builder.go:1655
+#	0x641e664	github.com/pingcap/tidb/executor.(*executorBuilder).build+0x1584			/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/builder.go:287
+#	0x63d7218	github.com/pingcap/tidb/executor.(*ExecStmt).buildExecutor+0x1d8			/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/adapter.go:972
+#	0x63d2e44	github.com/pingcap/tidb/executor.(*ExecStmt).Exec+0x6e4					/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/adapter.go:511
+#	0x662d884	github.com/pingcap/tidb/session.runStmt+0x564						/Users/cs/code/goread/src/github.com/pingcap/tidb/session/session.go:2298
+#	0x662c477	github.com/pingcap/tidb/session.(*session).ExecuteStmt+0xad7				/Users/cs/code/goread/src/github.com/pingcap/tidb/session/session.go:2162
+#	0x6626fd1	github.com/pingcap/tidb/session.(*session).ExecuteInternal+0x3f1			/Users/cs/code/goread/src/github.com/pingcap/tidb/session/session.go:1654
+#	0x5d2df8e	github.com/pingcap/tidb/ddl.(*session).execute+0x1ae					/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/ddl.go:1679
+#	0x5da2a58	github.com/pingcap/tidb/ddl.(*ddl).getJob+0x158						/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/job_table.go:98
+#	0x5da3044	github.com/pingcap/tidb/ddl.(*ddl).getGeneralJob+0x44					/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/job_table.go:128
+#	0x5da404c	github.com/pingcap/tidb/ddl.(*ddl).loadDDLJobAndRun+0x16c				/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/job_table.go:210
+#	0x5da3d04	github.com/pingcap/tidb/ddl.(*ddl).startDispatchLoop+0x6e4				/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/job_table.go:194
+#	0x4f04fd9	github.com/pingcap/tidb/util.(*WaitGroupWrapper).Run.func1+0x59				/Users/cs/code/goread/src/github.com/pingcap/tidb/util/wait_group_wrapper.go:33
+
+1 @ 0x4041496 0x407088c 0x407086c 0x40808cc 0x6be45d1 0x6dec1bc 0x5a3a604 0x4075361
+# labels: {"actor":"sorter-reader"}
+#	0x407086b	sync.runtime_notifyListWait+0x12b					/usr/local/go/src/runtime/sema.go:517
+#	0x40808cb	sync.(*Cond).Wait+0x8b							/usr/local/go/src/sync/cond.go:70
+#	0x6be45d0	github.com/pingcap/tiflow/pkg/actor.(*System[...]).poll+0x470		/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/actor/system.go:542
+#	0x6dec1bb	github.com/pingcap/tiflow/pkg/actor.(*System[...]).Start.func1+0x21b	/Users/cs/code/goread/pkg/mod/github.com/tifancy2022/tiflow@v0.0.0-20221021071617-085178d66e65/pkg/actor/system.go:456
+#	0x5a3a603	golang.org/x/sync/errgroup.(*Group).Go.func1+0x63			/Users/cs/code/goread/pkg/mod/golang.org/x/sync@v0.0.0-20220722155255-886fb9371eb4/errgroup/errgroup.go:75
+

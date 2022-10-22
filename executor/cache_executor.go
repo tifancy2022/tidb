@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"github.com/pingcap/tidb/expression"
+	"github.com/pingcap/tidb/sessionctx"
 	"github.com/pingcap/tidb/stmtcache"
 	"github.com/pingcap/tidb/util/chunk"
 	"github.com/pingcap/tidb/util/logutil"
@@ -16,6 +17,9 @@ import (
 )
 
 func TryCacheAggPlan(p plannercore.PhysicalPlan, e Executor) (Executor, bool, error) {
+	if _, ok := e.(*CacheExecutor); ok {
+		return e, false, nil
+	}
 	switch p.(type) {
 	case *plannercore.PhysicalStreamAgg, *plannercore.PhysicalHashAgg:
 		children := p.Children()
@@ -172,7 +176,7 @@ func (sc *CacheExecutorManager) addCacheExecutor(p plannercore.PhysicalPlan, e E
 	return nil
 }
 
-func (sc *CacheExecutorManager) GetCacheExecutorByDigest(digest string) (*CacheExecutor, error) {
+func (sc *CacheExecutorManager) GetCacheExecutorByDigest(digest string, ctx sessionctx.Context, p plannercore.PhysicalPlan) (*CacheExecutor, error) {
 	sc.Lock()
 	defer sc.Unlock()
 	e := sc.cacheExecMap[digest]
@@ -180,6 +184,14 @@ func (sc *CacheExecutorManager) GetCacheExecutorByDigest(digest string) (*CacheE
 		return nil, nil
 	}
 	err := e.Executor.Reset()
+	if err != nil {
+		return nil, err
+	}
+	err = e.ResetCtx(ctx, p)
+	if err != nil {
+		logutil.BgLogger().Info("ResetCtx cached executor failed----------cs-------------", zap.String("err", err.Error()))
+		return nil, err
+	}
 	e.Begin()
 	return e, err
 }
@@ -203,10 +215,10 @@ func (sc *CacheExecutorManager) Close() {
 	for _, rs := range sc.cacheExecMap {
 		err := rs.Executor.Close()
 		if err != nil {
-			logutil.BgLogger().Info("close stmt cache executor failed", zap.String("error", err.Error()))
+			logutil.BgLogger().Info("close cache executor failed", zap.String("error", err.Error()))
 		}
 	}
-	logutil.BgLogger().Info("stmt cache manager closed---")
+	logutil.BgLogger().Info("cache executor manager closed---")
 }
 
 func (sc *CacheExecutorManager) Size() int {
