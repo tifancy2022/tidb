@@ -925,6 +925,20 @@ func (e *Explain) getOperatorInfo(p Plan, id string) (string, string, string, st
 	return estRows, estCost, costFormula, accessObject, operatorInfo
 }
 
+func GetPlanInfo(p Plan) (string, string) {
+	var accessObject, operatorInfo string
+	if plan, ok := p.(dataAccesser); ok {
+		accessObject = plan.AccessObject().String()
+		operatorInfo = plan.OperatorInfo(false)
+	} else {
+		if pa, ok := p.(partitionAccesser); ok && p.SCtx() != nil {
+			accessObject = pa.accessObject(p.SCtx()).String()
+		}
+		operatorInfo = p.ExplainInfo()
+	}
+	return accessObject, operatorInfo
+}
+
 // BinaryPlanStrFromFlatPlan generates the compressed and encoded binary plan from a FlatPhysicalPlan.
 func BinaryPlanStrFromFlatPlan(explainCtx sessionctx.Context, flat *FlatPhysicalPlan) string {
 	binary := binaryDataFromFlatPlan(explainCtx, flat)

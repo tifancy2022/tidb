@@ -115,6 +115,18 @@ func (key *StmtElement) Hash() []byte {
 	return key.hash
 }
 
+func CalculateHash(fn func(buf *bytes.Buffer)) []byte {
+	d := digesterPool.Get().(*hashGenerator)
+	defer func() {
+		d.buf.Reset()
+		d.hasher.Reset()
+		digesterPool.Put(d)
+	}()
+	fn(&d.buf)
+	d.hasher.Write(d.buf.Bytes())
+	return d.hasher.Sum(nil)
+}
+
 var digesterPool = sync.Pool{
 	New: func() interface{} {
 		return &hashGenerator{

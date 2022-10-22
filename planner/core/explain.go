@@ -210,7 +210,7 @@ func (p *PhysicalTableScan) OperatorInfo(normalized bool) string {
 		buffer.WriteString(", desc")
 	}
 	if p.stats.StatsVersion == statistics.PseudoVersion && !normalized {
-		buffer.WriteString(", stats:pseudo")
+		//buffer.WriteString(", stats:pseudo")
 	}
 	if p.StoreType == kv.TiFlash && p.Table.GetPartitionInfo() != nil && p.IsMPPOrBatchCop && p.ctx.GetSessionVars().StmtCtx.UseDynamicPartitionPrune() {
 		buffer.WriteString(", PartitionTableScan:true")
@@ -362,6 +362,9 @@ func (p *basePhysicalAgg) explainInfo(normalized bool) string {
 	}
 
 	builder := &strings.Builder{}
+	if p.cached {
+		builder.WriteString("cached: true, ")
+	}
 	if len(p.GroupByItems) > 0 {
 		builder.WriteString("group by:")
 		builder.Write(sortedExplainExpressionList(p.GroupByItems))

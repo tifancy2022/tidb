@@ -17,6 +17,7 @@ package executor
 import (
 	"bytes"
 	"context"
+	"go.uber.org/zap"
 	"math"
 	"strconv"
 	"strings"
@@ -61,6 +62,7 @@ import (
 	"github.com/pingcap/tidb/util/collate"
 	"github.com/pingcap/tidb/util/cteutil"
 	"github.com/pingcap/tidb/util/execdetails"
+	"github.com/pingcap/tidb/util/logutil"
 	"github.com/pingcap/tidb/util/mathutil"
 	"github.com/pingcap/tidb/util/memory"
 	"github.com/pingcap/tidb/util/ranger"
@@ -158,6 +160,22 @@ func (b *MockExecutorBuilder) Build(p plannercore.Plan) Executor {
 }
 
 func (b *executorBuilder) build(p plannercore.Plan) Executor {
+	switch p.(type) {
+	case *plannercore.PhysicalStreamAgg, *plannercore.PhysicalHashAgg:
+		physicalPlan, ok := p.(plannercore.PhysicalPlan)
+		if b.ctx.GetSessionVars().EnableCacheStmt && ok {
+			_, planHash := GetPlanTreeHash(physicalPlan)
+			e, err := CacheExecManager.GetCacheExecutorByDigest(string(planHash))
+			if err == nil && e != nil {
+				logutil.BgLogger().Info("get cached executor success -------------cs-----------")
+				physicalPlan.MarkCached()
+				return e
+			}
+			if err != nil {
+				logutil.BgLogger().Info("get cached executor failed----------cs-------------", zap.String("err", err.Error()))
+			}
+		}
+	}
 	switch v := p.(type) {
 	case nil:
 		return nil

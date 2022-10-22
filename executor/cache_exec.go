@@ -48,7 +48,7 @@ func (rs *CacheStmtRecordSet) Close() error {
 }
 
 func (sc *StmtCacheExecutorManager) addStmtCacheExecutor(digest []byte, e Executor, rs *recordSet) error {
-	exec, err := sc.replaceTableReader(e)
+	exec, err := replaceTableReader(e)
 	if err != nil {
 		return err
 	}
@@ -101,7 +101,7 @@ func (sc *StmtCacheExecutorManager) Close() {
 	logutil.BgLogger().Info("stmt cache manager closed---")
 }
 
-func (sc *StmtCacheExecutorManager) replaceTableReader(e Executor) (Executor, error) {
+func replaceTableReader(e Executor) (Executor, error) {
 	switch v := e.(type) {
 	case *TableReaderExecutor:
 		err := v.Close()
@@ -111,7 +111,7 @@ func (sc *StmtCacheExecutorManager) replaceTableReader(e Executor) (Executor, er
 		return BuildTableSinkerExecutor(v)
 	}
 	for i, child := range e.base().children {
-		exec, err := sc.replaceTableReader(child)
+		exec, err := replaceTableReader(child)
 		if err != nil {
 			return nil, err
 		}
