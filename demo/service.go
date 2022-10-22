@@ -8,7 +8,6 @@ import (
 	"math"
 	"math/rand"
 	"net/http"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -92,7 +91,7 @@ func (s *service) serve() error {
 	}
 
 	router := mux.NewRouter()
-	router.Handle("/", s.homepageEmbed())
+	router.Handle("/", s.homepage())
 	router.Handle("/api/v1/rate", fn.Wrap(s.Rate)).Methods(http.MethodPost)
 	router.Handle("/api/v1/stats", fn.Wrap(s.Stats)).Methods(http.MethodGet)
 
@@ -177,12 +176,14 @@ type (
 )
 
 func (s *service) Rate(r *RateRequest) (*RateResponse, error) {
-	i := sort.SearchStrings(teamNames, strings.TrimSpace(r.TeamName))
-	if i < 0 {
-		return nil, fmt.Errorf("illegal team name in request")
-	}
+	r.TeamName = strings.TrimSpace(r.TeamName)
 	if r.TeamName == "" {
 		r.TeamName = s.randomTeam()
+	} else {
+		_, found := teamMapping[r.TeamName]
+		if !found {
+			return nil, fmt.Errorf("illegal team name in request")
+		}
 	}
 	score := int64(rand.Intn(s.opt.MaxScore))
 	_, err := s.db.Exec("INSERT INTO rate_records(team_name, score) VALUES (?, ?)", r.TeamName, score)
@@ -196,6 +197,7 @@ func (s *service) Rate(r *RateRequest) (*RateResponse, error) {
 type (
 	StatsItem struct {
 		TeamName   string `json:"team_name"`
+		TeamType   int    `json:"team_type"`
 		TotalScore int64  `json:"total_score"`
 	}
 	StatsResponse struct {
@@ -226,6 +228,7 @@ func (s *service) Stats() (*StatsResponse, error) {
 		}
 		response.Teams = append(response.Teams, StatsItem{
 			TeamName:   teamName,
+			TeamType:   teamMapping[teamName],
 			TotalScore: totalScore,
 		})
 	}
