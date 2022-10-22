@@ -1,1 +1,336 @@
-<html></html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TiFancy Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            height: 100%;
+            width: 100%;
+            bottom: 0;
+            position: absolute;
+        }
+
+        #stats-panel-app {
+            width: 80%;
+            height: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: #fafbfb;
+        }
+
+        #stats-panel-prod {
+            width: 80%;
+            height: 50%;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            background: #fafbfb;
+        }
+
+        #app {
+            width: 20%;
+            height: 100%;
+            position: absolute;
+            right: 0;
+            overflow: hidden;
+            font-family: monospace;
+        }
+
+        .guide, .stats-count, .stats-latency {
+            margin: 10px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgb(34, 193, 195);
+            background: linear-gradient(0deg, rgba(34, 193, 195, 1) 0%, rgba(45, 185, 253, 1) 100%);
+        }
+
+        .guide {
+            font-size: 16px;
+            background: #0f0c29; /* fallback for old browsers */
+            background: -webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29); /* Chrome 10-25, Safari 5.1-6 */
+            background: linear-gradient(to right, #24243e, #302b63, #0f0c29); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+        }
+
+        .info-title {
+            color: aliceblue;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .info-number {
+            color: white;
+            font-size: 30px;
+        }
+
+        .random-rate {
+            margin: 10px;
+        }
+
+        .random-rate button {
+            width: 100%;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 0;
+            border-radius: 10px;
+            color: white;
+            background-image: linear-gradient(to right top, #d16ba5, #c777b9, #ba83ca, #aa8fd8, #9a9ae1, #8aa7ec, #79b3f4, #69bff8, #52cffe, #41dfff, #46eefa, #5ffbf1);
+            font-size: 18px;
+        }
+
+        .random-rate button input {
+            margin-right: 10px;
+        }
+
+        .events {
+            margin: 10px;
+            font-size: 14px;
+            padding-left: 5px;
+        }
+
+        .events ul {
+            list-style: none;
+            color: #555;
+        }
+
+        .events ul li {
+            margin-bottom: 5px;
+        }
+
+        .event-score {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div id="stats-panel-app"></div>
+    <div id="stats-panel-prod"></div>
+    <div id="app">
+        <div class="info-panel">
+            <div class="guide" style="color: white; border-radius: 5px">
+                💡 Click the bar of left side charts to rate score for the team
+            </div>
+            <div class="stats-count">
+                <div class="info-title">Current Records</div>
+                <div class="info-number">{{count}}</div>
+            </div>
+            <div class="stats-latency">
+                <div class="info-title">Current Latency</div>
+                <div class="info-number">{{latency}}ms</div>
+            </div>
+        </div>
+        <div class="rate-panel">
+            <div class="random-rate">
+                <button @click="onAutoRandom">
+                    <input type="checkbox" :checked="randomTimer !== 0">
+                    <span>Random Rate</span></button>
+            </div>
+        </div>
+        <div class="events">
+            <ul>
+                <li v-for="event in events">{{ event.team_name }} <span class="event-score">+{{ event.score }}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+<script src="https://unpkg.com/vue@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.0/dist/echarts.min.js"></script>
+<script>
+    // EChart
+    var appStatsPanel = echarts.init(document.getElementById('stats-panel-app'));
+    var prodStatsPanel = echarts.init(document.getElementById('stats-panel-prod'));
+    // Specify the configuration items and data for the chart
+    var statsPanelOption = {
+        title: {
+            left: 'center',
+            padding: [15, 0],
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        grid: {
+            top: 50,
+            right: 50,
+            bottom: 100
+        },
+        animation: false,
+        xAxis: {
+            axisTick: {
+                alignWithLabel: true
+            },
+            type: 'category',
+            axisLabel: {
+                interval: 0,
+                rotate: 35,
+                hideOverlap: false,
+                showMaxLabel: true,
+            },
+            data: []
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [
+            {
+                name: 'score',
+                type: 'bar',
+                data: []
+            }
+        ]
+    };
+
+    appStatsPanel.setOption(statsPanelOption);
+    prodStatsPanel.setOption(statsPanelOption);
+
+    // Vue initialization
+    const {createApp} = Vue
+    createApp({
+        data() {
+            return {
+                stats: [],
+                events: [],
+                count: 0,
+                latency: 0,
+                randomTimer: 0,
+            }
+        },
+        methods: {
+            onRate: function (name) {
+                let self = this;
+                let payload = {
+                    team_name: name
+                };
+                axios.post('/api/v1/rate', payload)
+                    .then(function (response) {
+                        const count = 15
+                        self.events.splice(0, 0, response.data)
+                        if (self.events.length > count) {
+                            self.events.splice(count)
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log("Rate failed", error);
+                    });
+            },
+            onAutoRandom: function () {
+                if (this.randomTimer !== 0) {
+                    window.clearInterval(this.randomTimer)
+                    this.randomTimer = 0
+                } else {
+                    this.randomTimer = window.setInterval(() => this.onRate(''), 200)
+                }
+            },
+            fetchStats: function () {
+                let self = this;
+                axios.get('/api/v1/stats').then(res => {
+                    // Specify the configuration items and data for the chart
+                    var appStatsPanelOption = {
+                        title: {
+                            text: "Application Group Leaderboard"
+                        },
+                        xAxis: {
+                            data: []
+                        },
+                        series: [
+                            {
+                                name: 'score',
+                                type: 'bar',
+                                itemStyle: {
+                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                        {offset: 0, color: '#83bff6'},
+                                        {offset: 0.5, color: '#188df0'},
+                                        {offset: 1, color: '#188df0'}
+                                    ])
+                                },
+                                data: []
+                            }
+                        ]
+                    };
+                    var prodStatsPanelOption = {
+                        title: {
+                            text: "Product Group Leaderboard"
+                        },
+                        xAxis: {
+                            data: []
+                        },
+                        series: [
+                            {
+                                name: 'score',
+                                type: 'bar',
+                                itemStyle: {
+                                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                        {offset: 0, color: '#6BBFD1'},
+                                        {offset: 0.5, color: '#6BB0D7'},
+                                        {offset: 1, color: '#3AB5D4'}
+                                    ])
+                                },
+                                data: []
+                            }
+                        ]
+                    };
+
+                    res.data.teams.sort((a, b) => {
+                        if (a.team_name === b.team_name) {
+                            return 0
+                        }
+                        if (a.team_name < b.team_name) {
+                            return -1
+                        }
+                        if (a.team_name > b.team_name) {
+                            return 1
+                        }
+                    });
+                    res.data.teams.forEach(team => {
+                        if (team.team_type === 1) {
+                            appStatsPanelOption.xAxis.data.push(team.team_name);
+                            appStatsPanelOption.series[0].data.push(team.total_score);
+                        } else if (team.team_type === 2) {
+                            prodStatsPanelOption.xAxis.data.push(team.team_name);
+                            prodStatsPanelOption.series[0].data.push(team.total_score);
+                        }
+                    })
+
+                    // Display the chart using the configuration items and data just specified.
+                    appStatsPanel.setOption(appStatsPanelOption);
+                    prodStatsPanel.setOption(prodStatsPanelOption);
+
+                    self.count = res.data.count;
+                    self.latency = res.data.latency;
+                }).catch(err => {
+                    console.log("Fetch stats failed", err)
+                })
+            },
+        },
+        mounted: function () {
+            let self = this;
+            appStatsPanel.on("click", function (event) {
+                self.onRate(event.name)
+            });
+            prodStatsPanel.on("click", function (event) {
+                self.onRate(event.name)
+            });
+            this.fetchStats();
+            window.setInterval(this.fetchStats, 200);
+        }
+    }).mount('#app')
+</script>
+
+</html>

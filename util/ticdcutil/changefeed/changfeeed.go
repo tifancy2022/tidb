@@ -55,7 +55,7 @@ func newChangfeed(
 		return nil, err
 	}
 
-	changefeedID := generateChangefeedID(dbName, tableName)
+	changefeedID := generateChangefeedID()
 	changefeedConfig := &apiv2.ChangefeedConfig{
 		ID:      changefeedID,
 		SinkURI: memory.MakeSinkURI(changefeedID),
@@ -165,12 +165,12 @@ func (c *changefeed) Close() error {
 	return removeChangefeed(context.Background(), c.id)
 }
 
-func generateChangefeedID(dbName, tableName string) string {
+func generateChangefeedID() string {
 	var buf [4]byte
 	if _, err := rand.Read(buf[:]); err != nil {
 		panic(err)
 	}
-	return fmt.Sprintf("changefeed-%s-%s-%x", dbName, tableName, buf)
+	return fmt.Sprintf("changefeed-%x", buf)
 }
 
 func removeChangefeed(ctx context.Context, id string) error {
