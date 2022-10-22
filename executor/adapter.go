@@ -1707,7 +1707,7 @@ func (a *ExecStmt) TryCacheStmt(succ bool) ([]byte, bool) {
 	if !ok {
 		return nil, false
 	}
-	if sessVars.User == nil || isNoResultPlan(a.Plan) || !isPlanContainAgg(physicalPlan) || isPlanContainSystemTableReader(physicalPlan) {
+	if sessVars.User == nil || isNoResultPlan(a.Plan) || !isPlanContainAgg(physicalPlan) || isPlanContainSystemTableReader(physicalPlan) || !isFullTableScan(physicalPlan) {
 		return nil, false
 	}
 	stmtCtx := sessVars.StmtCtx
@@ -1773,6 +1773,28 @@ func isPlanContainSystemTableReader(p plannercore.PhysicalPlan) bool {
 		return true
 	}
 	return false
+}
+
+func isFullTableScan(p plannercore.PhysicalPlan) bool {
+	switch p.(type) {
+	case *plannercore.PhysicalTableReader:
+		return true
+	case *plannercore.PhysicalIndexReader:
+		return false
+	case *plannercore.PhysicalIndexLookUpReader:
+		return false
+	case *plannercore.PhysicalMemTable:
+		return false
+	default:
+		children := p.Children()
+		for _, child := range children {
+			ok := isFullTableScan(child)
+			if !ok {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 // GetTextToLog return the query text to log.
