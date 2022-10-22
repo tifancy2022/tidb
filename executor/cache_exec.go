@@ -76,8 +76,17 @@ func (sc *StmtCacheExecutorManager) GetStmtCacheExecutorByDigest(digest string) 
 	return rs, err
 }
 
-func (sc *StmtCacheExecutorManager) GetAllStmtCacheExecutor() map[string]*CacheStmtRecordSet {
-	return sc.cacheRs
+func (sc *StmtCacheExecutorManager) Reset() {
+	sc.Lock()
+	defer sc.Unlock()
+	for _, rs := range sc.cacheRs {
+		err := rs.executor.Close()
+		if err != nil {
+			logutil.BgLogger().Info("close stmt cache executor failed", zap.String("error", err.Error()))
+		}
+	}
+	sc.cacheRs = make(map[string]*CacheStmtRecordSet)
+	logutil.BgLogger().Info("stmt cache manager has been reset---")
 }
 
 func (sc *StmtCacheExecutorManager) Close() {

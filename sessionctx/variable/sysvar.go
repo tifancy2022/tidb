@@ -171,6 +171,11 @@ var defaultSysVars = []*SysVar{
 	{Scope: ScopeGlobal | ScopeSession, Name: TiDBEnableCacheStmt, Value: BoolToOnOff(true), Type: TypeBool, SetSession: func(s *SessionVars, val string) error {
 		s.EnableCacheStmt = TiDBOptOn(val)
 		return nil
+	}, SetGlobal: func(vars *SessionVars, val string) error {
+		config.UpdateGlobal(func(conf *config.Config) {
+			conf.EnableCacheStmt = TiDBOptOn(val)
+		})
+		return nil
 	}},
 	{Scope: ScopeSession, Name: TiDBOptDistinctAggPushDown, Value: BoolToOnOff(config.GetGlobalConfig().Performance.DistinctAggPushDown), Type: TypeBool, SetSession: func(s *SessionVars, val string) error {
 		s.AllowDistinctAggPushDown = TiDBOptOn(val)

@@ -20,6 +20,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/pingcap/tidb/config"
 	"io"
 	"net/http"
 	"strconv"
@@ -439,6 +440,10 @@ func (e *memtableRetriever) setDataForVariablesInfo(ctx sessionctx.Context) erro
 }
 
 func (e *memtableRetriever) setDataForStmtCached(ctx sessionctx.Context) error {
+	if !config.GetGlobalConfig().EnableCacheStmt {
+		stmtcache.StmtCache.Reset()
+		StmtCacheExecManager.Reset()
+	}
 	e.rows = stmtcache.StmtCache.GetAllStmtCached()
 	return nil
 }

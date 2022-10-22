@@ -276,6 +276,7 @@ type Config struct {
 	Plugin                     Plugin     `toml:"plugin" json:"plugin"`
 	MaxServerConnections       uint32     `toml:"max-server-connections" json:"max-server-connections"`
 	RunDDL                     bool       `toml:"run-ddl" json:"run-ddl"`
+	EnableCacheStmt            bool
 }
 
 // UpdateTempStoragePath is to update the `TempStoragePath` if port/statusPort was changed
@@ -810,6 +811,7 @@ var defaultConf = Config{
 	Store:                        "unistore",
 	Path:                         "/tmp/tidb",
 	RunDDL:                       true,
+	EnableCacheStmt:              true,
 	SplitTable:                   true,
 	Lease:                        "45s",
 	TokenLimit:                   1000,

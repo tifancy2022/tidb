@@ -16,11 +16,11 @@ package stmtcache
 
 import (
 	"bytes"
-	"crypto/sha256"
 	"hash"
 	"sync"
 	"time"
 
+	"crypto/sha256"
 	"github.com/pingcap/tidb/parser/mysql"
 	"github.com/pingcap/tidb/types"
 	"github.com/pingcap/tidb/util/kvcache"
@@ -59,10 +59,15 @@ func (sc *stmtCache) Size() int {
 	return sc.cache.Size()
 }
 
+func (sc *stmtCache) Reset() {
+	sc.Lock()
+	defer sc.Unlock()
+	sc.cache.DeleteAll()
+}
+
 func (sc *stmtCache) GetAllStmtCached() [][]types.Datum {
 	sc.Lock()
 	defer sc.Unlock()
-
 	values := sc.cache.Values()
 	rows := make([][]types.Datum, 0, len(values))
 	for _, v := range values {
