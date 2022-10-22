@@ -3,6 +3,7 @@ package executor
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"github.com/pingcap/tidb/expression"
 	"github.com/pingcap/tidb/sessionctx"
 	"github.com/pingcap/tidb/stmtcache"
@@ -85,18 +86,30 @@ func appendPlanInfo(buf *bytes.Buffer, p plannercore.PhysicalPlan, depth int, is
 	buf.WriteString(p.TP())
 	buf.WriteByte('\t')
 	var access, operatorInfo string
-	access, operatorInfo = plannercore.GetPlanInfo(p)
+	access, operatorInfo = getPlanInfo(p)
 	buf.WriteString(access)
 	buf.WriteByte('\t')
 	buf.WriteString(operatorInfo)
-	buf.WriteByte('\t')
-	buf.WriteString("columns:")
 	schema := p.Schema()
-	for i, col := range schema.Columns {
-		if i > 0 {
-			buf.WriteByte(',')
+	allHaveName := true
+	for _, col := range schema.Columns {
+		if col.OrigName == "" {
+			allHaveName = false
+			break
 		}
-		buf.WriteString(col.String())
+	}
+	if allHaveName {
+		buf.WriteByte('\t')
+		buf.WriteString("columns:")
+		for i, col := range schema.Columns {
+			if i > 0 {
+				buf.WriteByte(',')
+			}
+			buf.WriteString(col.OrigName)
+		}
+	} else {
+		buf.WriteByte('\t')
+		buf.WriteString(fmt.Sprintf("columns_len:%v", len(schema.Columns)))
 	}
 	switch v := p.(type) {
 	case *plannercore.PhysicalTableReader:
@@ -105,6 +118,17 @@ func appendPlanInfo(buf *bytes.Buffer, p plannercore.PhysicalPlan, depth int, is
 	}
 	for _, child := range p.Children() {
 		appendPlanInfo(buf, child, depth+1, isCop)
+	}
+}
+
+func getPlanInfo(p plannercore.PhysicalPlan) (string, string) {
+	switch v := p.(type) {
+	case *plannercore.PhysicalStreamAgg:
+		return "", v.ExplainInfoForCacheDigest()
+	case *plannercore.PhysicalHashAgg:
+		return "", v.ExplainInfoForCacheDigest()
+	default:
+		return plannercore.GetPlanInfo(p)
 	}
 }
 
