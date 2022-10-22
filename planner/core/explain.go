@@ -152,12 +152,19 @@ func (p *PhysicalTableScan) ExplainID() fmt.Stringer {
 
 // TP overrides the TP in order to match different range.
 func (p *PhysicalTableScan) TP() string {
+	if p.isSinker {
+		return "TableIncrementSinker"
+	}
 	if p.isChildOfIndexLookUp {
 		return plancodec.TypeTableRowIDScan
 	} else if p.isFullScan() {
 		return plancodec.TypeTableFullScan
 	}
 	return plancodec.TypeTableRangeScan
+}
+
+func (p *PhysicalTableScan) MarkIsSinker() {
+	p.isSinker = true
 }
 
 // ExplainInfo implements Plan interface.
@@ -364,7 +371,7 @@ func (p *basePhysicalAgg) explainInfo(normalized bool) string {
 
 	builder := &strings.Builder{}
 	if p.cached {
-		builder.WriteString("cached: true, ")
+		builder.WriteString("cached:true, ")
 	}
 	if len(p.GroupByItems) > 0 {
 		builder.WriteString("group by:")

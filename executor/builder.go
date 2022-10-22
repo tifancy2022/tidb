@@ -163,7 +163,7 @@ func (b *executorBuilder) build(p plannercore.Plan) Executor {
 	switch p.(type) {
 	case *plannercore.PhysicalStreamAgg, *plannercore.PhysicalHashAgg:
 		physicalPlan, ok := p.(plannercore.PhysicalPlan)
-		if b.ctx.GetSessionVars().EnableCacheStmt && ok {
+		if config.GetGlobalConfig().EnableCacheStmt && ok {
 			_, planHash := GetPlanTreeHash(physicalPlan)
 			e, err := CacheExecManager.GetCacheExecutorByDigest(string(planHash), b.ctx, physicalPlan)
 			if err == nil && e != nil {

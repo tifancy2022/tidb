@@ -48,7 +48,6 @@ import (
 	"github.com/pingcap/tidb/sessionctx/variable"
 	"github.com/pingcap/tidb/sessiontxn"
 	"github.com/pingcap/tidb/sessiontxn/staleread"
-	"github.com/pingcap/tidb/stmtcache"
 	"github.com/pingcap/tidb/types"
 	"github.com/pingcap/tidb/util/breakpoint"
 	"github.com/pingcap/tidb/util/chunk"
@@ -490,22 +489,6 @@ func (a *ExecStmt) Exec(ctx context.Context) (_ sqlexec.RecordSet, err error) {
 
 	if sctx.GetSessionVars().StmtCtx.HasMemQuotaHint {
 		sctx.GetSessionVars().StmtCtx.MemTracker.SetBytesLimit(sctx.GetSessionVars().StmtCtx.MemQuotaQuery)
-	}
-
-	sessVars := a.Ctx.GetSessionVars()
-	if sessVars.EnableCacheStmt {
-		stmt := &stmtcache.StmtElement{
-			SchemaName: sessVars.CurrentDB,
-			SQL:        sessVars.StmtCtx.OriginalSQL,
-			Params:     sessVars.PreparedParams.String(),
-		}
-		cacheResult, err := StmtCacheExecManager.GetStmtCacheExecutorByDigest(string(stmt.Hash()))
-		if err != nil {
-			return nil, err
-		}
-		if cacheResult != nil {
-			return cacheResult, nil
-		}
 	}
 
 	e, err := a.buildExecutor()
@@ -1695,7 +1678,7 @@ func (a *ExecStmt) TryCacheExecutor(succ bool, rs *recordSet) bool {
 		return false
 	}
 	sessVars := a.Ctx.GetSessionVars()
-	if !sessVars.EnableCacheStmt {
+	if !config.GetGlobalConfig().EnableCacheStmt {
 		return false
 	}
 	physicalPlan, ok := a.Plan.(plannercore.PhysicalPlan)

@@ -851,7 +851,6 @@ func cleanup(svr *server.Server, storage kv.Storage, dom *domain.Domain, gracefu
 	closeDomainAndStorage(storage, dom)
 	disk.CleanUp()
 	topsql.Close()
-	executor.StmtCacheExecManager.Close()
 	executor.CacheExecManager.Close()
 }
 

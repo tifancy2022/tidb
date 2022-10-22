@@ -817,6 +817,8 @@ type PhysicalTableScan struct {
 	tblCols     []*expression.Column
 	tblColHists *statistics.HistColl
 	prop        *property.PhysicalProperty
+
+	isSinker bool
 }
 
 // Clone implements PhysicalPlan interface.

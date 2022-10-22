@@ -185,7 +185,7 @@ const (
 	// TableVariablesInfo is the string constant of variables_info table.
 	TableVariablesInfo = "VARIABLES_INFO"
 
-	TableStmtCached = "STATEMENT_CACHED"
+	TableStmtCached = "CACHED_EXECUTORS"
 )
 
 const (
@@ -1541,8 +1541,7 @@ var tableVariablesInfoCols = []columnInfo{
 
 var tableStmtCachedCols = []columnInfo{
 	{name: "START", tp: mysql.TypeTimestamp, size: 26, decimal: 6, flag: mysql.NotNullFlag},
-	{name: "SCHEMA_NAME", tp: mysql.TypeVarchar, size: 64, flag: mysql.NotNullFlag},
-	{name: "QUERY", tp: mysql.TypeLongBlob, size: types.UnspecifiedLength},
+	{name: "PLAN", tp: mysql.TypeLongBlob, size: types.UnspecifiedLength},
 }
 
 // GetShardingInfo returns a nil or description string for the sharding information of given TableInfo.

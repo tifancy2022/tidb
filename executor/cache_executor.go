@@ -5,14 +5,18 @@ import (
 	"context"
 	"fmt"
 	"github.com/pingcap/tidb/expression"
+	"github.com/pingcap/tidb/parser/mysql"
 	"github.com/pingcap/tidb/sessionctx"
+	"github.com/pingcap/tidb/sessionctx/variable"
 	"github.com/pingcap/tidb/stmtcache"
+	"github.com/pingcap/tidb/types"
 	"github.com/pingcap/tidb/util/chunk"
 	"github.com/pingcap/tidb/util/logutil"
 	"go.uber.org/zap"
 	"strings"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	plannercore "github.com/pingcap/tidb/planner/core"
 )
@@ -30,8 +34,12 @@ func TryCacheAggPlan(p plannercore.PhysicalPlan, e Executor) (Executor, bool, er
 		if !isSupportedPlan(children[0]) {
 			return e, false, nil
 		}
+		planTree, digest := GetPlanTreeHash(p)
+		if CacheExecManager.IsPlanCached(digest) {
+			return e, false, nil
+		}
 		newE := &CacheExecutor{Executor: e}
-		return newE, true, CacheExecManager.addCacheExecutor(p, e)
+		return newE, true, CacheExecManager.addCacheExecutor(digest, planTree, p, e)
 	default:
 		children := p.Children()
 		childrenExec := e.base().children
@@ -132,7 +140,12 @@ func getPlanInfo(p plannercore.PhysicalPlan) (string, string) {
 	}
 }
 
-var CacheExecManager = newCacheExecutorManager()
+var CacheExecManager *CacheExecutorManager
+
+func init() {
+	CacheExecManager = newCacheExecutorManager()
+	variable.ResetCacheExecutorManager = CacheExecManager.Reset
+}
 
 type CacheExecutorManager struct {
 	sync.Mutex
@@ -140,11 +153,12 @@ type CacheExecutorManager struct {
 }
 
 type CacheExecutor struct {
+	Executor
 	mu       sync.Mutex
 	started  atomic.Bool
 	planTree string
 	p        plannercore.PhysicalPlan
-	Executor
+	ts       int64
 }
 
 func newCacheExecutorManager() *CacheExecutorManager {
@@ -183,8 +197,7 @@ func (e *CacheExecutor) Close() error {
 	return nil
 }
 
-func (sc *CacheExecutorManager) addCacheExecutor(p plannercore.PhysicalPlan, e Executor) error {
-	planTree, digest := GetPlanTreeHash(p)
+func (sc *CacheExecutorManager) addCacheExecutor(digest []byte, planTree string, p plannercore.PhysicalPlan, e Executor) error {
 	exec, err := replaceTableReader(e)
 	if err != nil {
 		return err
@@ -196,8 +209,15 @@ func (sc *CacheExecutorManager) addCacheExecutor(p plannercore.PhysicalPlan, e E
 
 	sc.Lock()
 	defer sc.Unlock()
-	sc.cacheExecMap[string(digest)] = &CacheExecutor{planTree: planTree, p: p, Executor: e}
+	sc.cacheExecMap[string(digest)] = &CacheExecutor{planTree: planTree, p: p, Executor: e, ts: time.Now().Unix()}
 	return nil
+}
+
+func (sc *CacheExecutorManager) IsPlanCached(digest []byte) bool {
+	sc.Lock()
+	defer sc.Unlock()
+	_, ok := sc.cacheExecMap[string(digest)]
+	return ok
 }
 
 func (sc *CacheExecutorManager) GetCacheExecutorByDigest(digest string, ctx sessionctx.Context, p plannercore.PhysicalPlan) (*CacheExecutor, error) {
@@ -231,6 +251,21 @@ func (sc *CacheExecutorManager) Reset() {
 	}
 	sc.cacheExecMap = make(map[string]*CacheExecutor)
 	logutil.BgLogger().Info("cache executor manager has been reset---")
+}
+
+func (sc *CacheExecutorManager) GetAllStmtCached() [][]types.Datum {
+	sc.Lock()
+	defer sc.Unlock()
+	rows := make([][]types.Datum, 0, len(sc.cacheExecMap))
+	for _, v := range sc.cacheExecMap {
+		ts := types.NewTime(types.FromGoTime(time.Unix(v.ts, 0)), mysql.TypeTimestamp, types.DefaultFsp)
+		row := types.MakeDatums(
+			ts,
+			v.planTree,
+		)
+		rows = append(rows, row)
+	}
+	return rows
 }
 
 func (sc *CacheExecutorManager) Close() {
