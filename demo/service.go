@@ -33,8 +33,10 @@ type options struct {
 		Options string
 	}
 
+	Init      bool
 	Record    int
 	BatchSize int
+	MaxScore  int
 }
 
 func (opt *options) addFlags(flags *pflag.FlagSet) {
@@ -45,12 +47,13 @@ func (opt *options) addFlags(flags *pflag.FlagSet) {
 	flags.IntVar(&opt.DB.Port, "db.port", 4000, "Database server port")
 	flags.StringVar(&opt.DB.User, "db.user", "root", "Database server user name")
 	flags.StringVar(&opt.DB.Pass, "db.pass", "", "Database server password")
-	flags.StringVar(&opt.DB.Name, "db.name", "tifancy-demo", "Database server database name")
+	flags.StringVar(&opt.DB.Name, "db.name", "tifancy_demo", "Database server database name")
 	flags.StringVar(&opt.DB.Options, "db.options", "charset=utf8mb4", "Database server connection options")
 
-	flags.IntVar(&opt.Record, "record", 10000, "Initial user rate records")
+	flags.BoolVar(&opt.Init, "init", true, "Whether to initialize user rate records")
+	flags.IntVar(&opt.Record, "record", 10000, "The number of initial user rate records")
 	flags.IntVar(&opt.BatchSize, "batch-size", 1000, "Batch size of initialing user rate records")
-
+	flags.IntVar(&opt.MaxScore, "max-score", 100000, "The maximum score for each user rate record")
 }
 
 // DSN returns the data source name for the given database.
@@ -82,8 +85,10 @@ func (s *service) serve() error {
 
 	fmt.Println("Connected to TiDB successfully")
 
-	if err := s.initData(s.opt.Record, s.opt.BatchSize); err != nil {
-		return err
+	if s.opt.Init {
+		if err := s.initData(s.opt.Record, s.opt.BatchSize); err != nil {
+			return err
+		}
 	}
 
 	router := mux.NewRouter()
@@ -105,7 +110,7 @@ func (s *service) initData(record, batchSize int) error {
 		    team_name VARCHAR(64),
 		    score BIGINT DEFAULT 0,
 		    created_at DATETIME DEFAULT NOW()
-		);
+		)
 `)
 	if err != nil {
 		return err
@@ -130,7 +135,7 @@ func (s *service) initData(record, batchSize int) error {
 		}
 		batchRecords = batchRecords[:0]
 		for j := 0; j < count; j++ {
-			batchRecords = append(batchRecords, fmt.Sprintf(`("%s"", 1)`, s.randomTeam()))
+			batchRecords = append(batchRecords, fmt.Sprintf(`("%s", 1)`, s.randomTeam()))
 		}
 		_, err := s.db.Exec("INSERT INTO rate_records(team_name, score) VALUES " + strings.Join(batchRecords, ","))
 		if err != nil {
@@ -179,7 +184,7 @@ func (s *service) Rate(r *RateRequest) (*RateResponse, error) {
 	if r.TeamName == "" {
 		r.TeamName = s.randomTeam()
 	}
-	score := int64(rand.Intn(100000))
+	score := int64(rand.Intn(s.opt.MaxScore))
 	_, err := s.db.Exec("INSERT INTO rate_records(team_name, score) VALUES (?, ?)", r.TeamName, score)
 	if err != nil {
 		return nil, ErrServerInternal

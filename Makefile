@@ -14,7 +14,7 @@
 
 include Makefile.common
 
-.PHONY: all clean test server dev benchkv benchraw check checklist parser tidy ddltest build_br build_lightning build_lightning-ctl build_dumpling ut bazel_build bazel_prepare bazel_test check-file-perm bazel_lint
+.PHONY: all clean test server dev benchkv benchraw check checklist parser tidy ddltest build_br build_lightning build_lightning-ctl build_dumpling ut bazel_build bazel_prepare bazel_test check-file-perm bazel_lint demo
 
 default: server buildsucc
 
@@ -144,6 +144,9 @@ ifeq ($(TARGET), "")
 else
 	CGO_ENABLED=1 $(GOBUILD) $(RACE_FLAG) -ldflags '$(LDFLAGS) $(CHECK_FLAG)' -o '$(TARGET)' tidb-server/main.go
 endif
+
+demo:
+	cd demo && go build -o ../bin/demo github.com/pingcap/tidb/demo
 
 server_debug:
 ifeq ($(TARGET), "")
