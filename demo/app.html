@@ -91,6 +91,32 @@
             margin-right: 10px;
         }
 
+
+        .cache-switch {
+            margin: 10px;
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 10px;
+        }
+
+        .cache-switch button {
+            width: 100%;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 0;
+            border-radius: 10px;
+            color: white;
+            background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
+            font-size: 18px;
+        }
+
+        .cache-switch button input {
+            margin-right: 10px;
+        }
+
         .events {
             margin: 10px;
             font-size: 14px;
@@ -143,6 +169,11 @@
                 <li v-for="event in events">{{ event.team_name }} <span class="event-score">+{{ event.score }}</span>
                 </li>
             </ul>
+        </div>
+        <div class="cache-switch">
+            <button @click="onSwitchCache">
+                <input type="checkbox" :checked="cacheEnabled">
+                <span>切换智能缓存</span></button>
         </div>
     </div>
 </div>
@@ -210,6 +241,7 @@
                 count: 0,
                 latency: 0,
                 randomTimer: 0,
+                cacheEnabled: false,
             }
         },
         methods: {
@@ -228,6 +260,19 @@
                     })
                     .catch(function (error) {
                         console.log("Rate failed", error);
+                    });
+            },
+            onSwitchCache: function () {
+                let self = this;
+                let payload = {
+                    enabled: self.cacheEnabled,
+                };
+                axios.post('/api/v1/cache', payload)
+                    .then(function (response) {
+                        self.cacheEnabled = response.data.enabled
+                    })
+                    .catch(function (error) {
+                        console.log("Switch cache failed", error);
                     });
             },
             onAutoRandom: function () {

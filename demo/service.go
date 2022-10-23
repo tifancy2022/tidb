@@ -101,6 +101,7 @@ func (s *service) serve() error {
 	router := mux.NewRouter()
 	router.Handle("/", homepageHandler)
 	router.Handle("/api/v1/rate", fn.Wrap(s.Rate)).Methods(http.MethodPost)
+	router.Handle("/api/v1/cache", fn.Wrap(s.Cache)).Methods(http.MethodPost)
 	router.Handle("/api/v1/stats", fn.Wrap(s.Stats)).Methods(http.MethodGet)
 
 	addr := fmt.Sprintf(":%d", s.opt.Port)
@@ -203,6 +204,36 @@ func (s *service) Rate(r *RateRequest) (*RateResponse, error) {
 }
 
 type (
+	CacheRequest struct {
+		Enabled bool `json:"enabled"`
+	}
+	CacheResponse struct {
+		Enabled bool `json:"enabled"`
+	}
+)
+
+func (s *service) Cache(r *CacheRequest) (*CacheResponse, error) {
+	value := 0
+	if r.Enabled {
+		value = 1
+	}
+	_, err := s.db.Exec(fmt.Sprintf("set @@global.tidb_enable_smart_cache=%d", value))
+	if err != nil {
+		return nil, ErrServerInternal
+	}
+
+	var cached int64
+	err = s.db.QueryRow("SELECT @@global.tidb_enable_smart_cache").Scan(&cached)
+	if err != nil {
+		return nil, ErrServerInternal
+	}
+	res := &CacheResponse{
+		Enabled: cached != 0,
+	}
+	return res, nil
+}
+
+type (
 	StatsItem struct {
 		TeamName   string `json:"team_name"`
 		TeamType   int    `json:"team_type"`
@@ -212,6 +243,7 @@ type (
 		Teams   []StatsItem `json:"teams"`
 		Count   int64       `json:"count"`
 		Latency int64       `json:"latency"`
+		Cached  int64       `json:"cached"`
 	}
 )
 
@@ -223,6 +255,11 @@ func (s *service) Stats() (*StatsResponse, error) {
 		return nil, ErrServerInternal
 	}
 	response.Latency = time.Since(startTime).Microseconds()
+
+	err = s.db.QueryRow("SELECT @@global.tidb_enable_smart_cache").Scan(&response.Cached)
+	if err != nil {
+		return nil, ErrServerInternal
+	}
 
 	r, err := s.db.Query("SELECT team_name, SUM(score) FROM rate_records GROUP BY team_name")
 	if err != nil {
