@@ -36,6 +36,7 @@ type options struct {
 	Record    int
 	BatchSize int
 	MaxScore  int
+	NoEmbed   bool
 }
 
 func (opt *options) addFlags(flags *pflag.FlagSet) {
@@ -53,6 +54,7 @@ func (opt *options) addFlags(flags *pflag.FlagSet) {
 	flags.IntVar(&opt.Record, "record", 10000, "The number of initial user rate records")
 	flags.IntVar(&opt.BatchSize, "batch-size", 1000, "Batch size of initialing user rate records")
 	flags.IntVar(&opt.MaxScore, "max-score", 100000, "The maximum score for each user rate record")
+	flags.BoolVar(&opt.NoEmbed, "no-embed", false, "Whether to use embed homepage web content")
 }
 
 // DSN returns the data source name for the given database.
@@ -90,8 +92,14 @@ func (s *service) serve() error {
 		}
 	}
 
+	// No embed homepage web content is useful for debug frontend
+	homepageHandler := s.homepageEmbed()
+	if s.opt.NoEmbed {
+		homepageHandler = s.homepage()
+	}
+
 	router := mux.NewRouter()
-	router.Handle("/", s.homepageEmbed())
+	router.Handle("/", homepageHandler)
 	router.Handle("/api/v1/rate", fn.Wrap(s.Rate)).Methods(http.MethodPost)
 	router.Handle("/api/v1/stats", fn.Wrap(s.Stats)).Methods(http.MethodGet)
 
@@ -214,7 +222,7 @@ func (s *service) Stats() (*StatsResponse, error) {
 	if err != nil {
 		return nil, ErrServerInternal
 	}
-	response.Latency = time.Since(startTime).Milliseconds()
+	response.Latency = time.Since(startTime).Microseconds()
 
 	r, err := s.db.Query("SELECT team_name, SUM(score) FROM rate_records GROUP BY team_name")
 	if err != nil {

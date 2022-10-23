@@ -120,14 +120,14 @@
     <div id="app">
         <div class="info-panel">
             <div class="guide" style="color: white; border-radius: 5px">
-                💡 Click the bar of left side charts to rate score for the team
+                💡 点击柱状图可以对指定队伍进行加分（分数随机）
             </div>
             <div class="stats-count">
-                <div class="info-title">Current Records</div>
-                <div class="info-number">{{count}}</div>
+                <div class="info-title">数据集大小</div>
+                <div class="info-number">{{count.toLocaleString()}}</div>
             </div>
             <div class="stats-latency">
-                <div class="info-title">Current Latency</div>
+                <div class="info-title">查询延迟</div>
                 <div class="info-number">{{latency}}ms</div>
             </div>
         </div>
@@ -135,7 +135,7 @@
             <div class="random-rate">
                 <button @click="onAutoRandom">
                     <input type="checkbox" :checked="randomTimer !== 0">
-                    <span>Random Rate</span></button>
+                    <span>随机投票</span></button>
             </div>
         </div>
         <div class="events">
@@ -244,7 +244,7 @@
                     // Specify the configuration items and data for the chart
                     var appStatsPanelOption = {
                         title: {
-                            text: "Application Group Leaderboard"
+                            text: "应用组"
                         },
                         xAxis: {
                             data: []
@@ -266,7 +266,7 @@
                     };
                     var prodStatsPanelOption = {
                         title: {
-                            text: "Product Group Leaderboard"
+                            text: "产品组"
                         },
                         xAxis: {
                             data: []
@@ -313,7 +313,7 @@
                     prodStatsPanel.setOption(prodStatsPanelOption);
 
                     self.count = res.data.count;
-                    self.latency = res.data.latency;
+                    self.latency = res.data.latency / 1000.0;
                 }).catch(err => {
                     console.log("Fetch stats failed", err)
                 })
