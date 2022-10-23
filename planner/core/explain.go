@@ -153,7 +153,7 @@ func (p *PhysicalTableScan) ExplainID() fmt.Stringer {
 // TP overrides the TP in order to match different range.
 func (p *PhysicalTableScan) TP() string {
 	if p.isSinker {
-		return "TableIncrementSinker"
+		return "TableIncrementalPuller"
 	}
 	if p.isChildOfIndexLookUp {
 		return plancodec.TypeTableRowIDScan
