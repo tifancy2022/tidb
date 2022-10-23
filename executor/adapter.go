@@ -48,7 +48,6 @@ import (
 	"github.com/pingcap/tidb/sessionctx/variable"
 	"github.com/pingcap/tidb/sessiontxn"
 	"github.com/pingcap/tidb/sessiontxn/staleread"
-	"github.com/pingcap/tidb/stmtcache"
 	"github.com/pingcap/tidb/types"
 	"github.com/pingcap/tidb/util/breakpoint"
 	"github.com/pingcap/tidb/util/chunk"
@@ -186,15 +185,10 @@ func (a *recordSet) NewChunk(alloc chunk.Allocator) *chunk.Chunk {
 
 func (a *recordSet) Close() error {
 	var err error
-	digest, cached := a.stmt.TryCacheStmt(a.lastErr == nil)
-	if !cached {
-		err = a.executor.Close()
-	} else {
-		err = StmtCacheExecManager.addStmtCacheExecutor(digest, a.executor, a)
-		if err != nil {
-			return err
-		}
-	}
+	a.stmt.TryCacheExecutor(a.lastErr == nil, a)
+	//if !cached {
+	err = a.executor.Close()
+	//}
 	a.stmt.CloseRecordSet(a.txnStartTS, a.lastErr)
 	return err
 }
@@ -495,22 +489,6 @@ func (a *ExecStmt) Exec(ctx context.Context) (_ sqlexec.RecordSet, err error) {
 
 	if sctx.GetSessionVars().StmtCtx.HasMemQuotaHint {
 		sctx.GetSessionVars().StmtCtx.MemTracker.SetBytesLimit(sctx.GetSessionVars().StmtCtx.MemQuotaQuery)
-	}
-
-	sessVars := a.Ctx.GetSessionVars()
-	if sessVars.EnableCacheStmt {
-		stmt := &stmtcache.StmtElement{
-			SchemaName: sessVars.CurrentDB,
-			SQL:        sessVars.StmtCtx.OriginalSQL,
-			Params:     sessVars.PreparedParams.String(),
-		}
-		cacheResult, err := StmtCacheExecManager.GetStmtCacheExecutorByDigest(string(stmt.Hash()))
-		if err != nil {
-			return nil, err
-		}
-		if cacheResult != nil {
-			return cacheResult, nil
-		}
 	}
 
 	e, err := a.buildExecutor()
@@ -1695,38 +1673,32 @@ func (a *ExecStmt) SummaryStmt(succ bool) {
 
 var CacheMinProcessKeys int64 = 10000
 
-func (a *ExecStmt) TryCacheStmt(succ bool) ([]byte, bool) {
+func (a *ExecStmt) TryCacheExecutor(succ bool, rs *recordSet) bool {
 	if !succ {
-		return nil, false
+		return false
 	}
 	sessVars := a.Ctx.GetSessionVars()
-	if !sessVars.EnableCacheStmt {
-		return nil, false
+	if !config.GetGlobalConfig().EnableCacheStmt {
+		return false
 	}
 	physicalPlan, ok := a.Plan.(plannercore.PhysicalPlan)
 	if !ok {
-		return nil, false
+		return false
 	}
-	if sessVars.User == nil || isNoResultPlan(a.Plan) || !isPlanContainAgg(physicalPlan) || isPlanContainSystemTableReader(physicalPlan) {
-		return nil, false
+	if sessVars.User == nil || isNoResultPlan(a.Plan) || !isPlanContainAgg(physicalPlan) || isPlanContainSystemTableReader(physicalPlan) || !isFullTableScan(physicalPlan) {
+		return false
 	}
 	stmtCtx := sessVars.StmtCtx
 	resultRows := GetResultRowsCount(stmtCtx, a.Plan)
 	if resultRows > 100 || resultRows == 0 {
-		return nil, false
+		return false
 	}
-	// unistore doesn't return processkeys info.
-	//execDetail := stmtCtx.GetExecDetails()
-	//if execDetail.ScanDetail == nil || execDetail.ScanDetail.ProcessedKeys < CacheMinProcessKeys {
-	//	return
-	//}
-	stmt := &stmtcache.StmtElement{
-		SchemaName: sessVars.CurrentDB,
-		SQL:        sessVars.StmtCtx.OriginalSQL,
-		Params:     sessVars.PreparedParams.String(),
+	var err error
+	rs.executor, _, err = TryCacheAggPlan(physicalPlan, rs.executor)
+	if err != nil {
+		logutil.BgLogger().Error("add stmt cache executor failed", zap.Error(err))
 	}
-	digestByte, cached := stmtcache.StmtCache.AddStatement(stmt)
-	return digestByte, cached
+	return false
 }
 
 func isPlanContainAgg(p plannercore.PhysicalPlan) bool {
@@ -1773,6 +1745,28 @@ func isPlanContainSystemTableReader(p plannercore.PhysicalPlan) bool {
 		return true
 	}
 	return false
+}
+
+func isFullTableScan(p plannercore.PhysicalPlan) bool {
+	switch p.(type) {
+	case *plannercore.PhysicalTableReader:
+		return true
+	case *plannercore.PhysicalIndexReader:
+		return false
+	case *plannercore.PhysicalIndexLookUpReader:
+		return false
+	case *plannercore.PhysicalMemTable:
+		return false
+	default:
+		children := p.Children()
+		for _, child := range children {
+			ok := isFullTableScan(child)
+			if !ok {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 // GetTextToLog return the query text to log.

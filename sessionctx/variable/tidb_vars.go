@@ -750,8 +750,10 @@ const (
 	// limit for ranges.
 	TiDBOptRangeMaxSize = "tidb_opt_range_max_size"
 
-	TiDBEnableCacheStmt = "tidb_enable_cache_stmt"
+	TiDBEnableCacheStmt = "tidb_enable_smart_cache"
 )
+
+var ResetCacheExecutorManager func()
 
 // TiDB vars that have only global scope
 

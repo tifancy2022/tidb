@@ -49,7 +49,6 @@ import (
 	"github.com/pingcap/tidb/sessionctx"
 	"github.com/pingcap/tidb/sessionctx/variable"
 	"github.com/pingcap/tidb/sessiontxn"
-	"github.com/pingcap/tidb/stmtcache"
 	"github.com/pingcap/tidb/store/helper"
 	"github.com/pingcap/tidb/table"
 	"github.com/pingcap/tidb/tablecodec"
@@ -439,7 +438,7 @@ func (e *memtableRetriever) setDataForVariablesInfo(ctx sessionctx.Context) erro
 }
 
 func (e *memtableRetriever) setDataForStmtCached(ctx sessionctx.Context) error {
-	e.rows = stmtcache.StmtCache.GetAllStmtCached()
+	e.rows = CacheExecManager.GetAllStmtCached()
 	return nil
 }
 func (e *memtableRetriever) setDataFromSchemata(ctx sessionctx.Context, schemas []*model.DBInfo) {

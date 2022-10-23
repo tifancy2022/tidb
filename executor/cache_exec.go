@@ -3,8 +3,8 @@ package executor
 import (
 	"context"
 	"fmt"
-	"sync"
 
+	"github.com/pingcap/errors"
 	"github.com/pingcap/kvproto/pkg/coprocessor"
 	"github.com/pingcap/tidb/parser/model"
 	plannercore "github.com/pingcap/tidb/planner/core"
@@ -13,6 +13,7 @@ import (
 	"github.com/pingcap/tidb/table"
 	"github.com/pingcap/tidb/types"
 	"github.com/pingcap/tidb/util/chunk"
+	"github.com/pingcap/tidb/util/execdetails"
 	"github.com/pingcap/tidb/util/logutil"
 	"github.com/pingcap/tidb/util/ranger"
 	"github.com/pingcap/tidb/util/ticdcutil"
@@ -20,79 +21,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var StmtCacheExecManager = newStmtCacheExecutorManager()
-
-type StmtCacheExecutorManager struct {
-	sync.Mutex
-	cacheRs map[string]*CacheStmtRecordSet
-}
-
-type CacheStmtRecordSet struct {
-	mu sync.Mutex
-	*recordSet
-}
-
-func newStmtCacheExecutorManager() *StmtCacheExecutorManager {
-	return &StmtCacheExecutorManager{
-		cacheRs: make(map[string]*CacheStmtRecordSet),
-	}
-}
-
-func (rs *CacheStmtRecordSet) Begin() {
-	rs.mu.Lock()
-}
-
-func (rs *CacheStmtRecordSet) Close() error {
-	rs.mu.Unlock()
-	return nil
-}
-
-func (sc *StmtCacheExecutorManager) addStmtCacheExecutor(digest []byte, e Executor, rs *recordSet) error {
-	exec, err := sc.replaceTableReader(e)
-	if err != nil {
-		return err
-	}
-	err = exec.Reset()
-	if err != nil {
-		return err
-	}
-	rs.executor = exec
-
-	sc.Lock()
-	defer sc.Unlock()
-	sc.cacheRs[string(digest)] = &CacheStmtRecordSet{recordSet: rs}
-	return nil
-}
-
-func (sc *StmtCacheExecutorManager) GetStmtCacheExecutorByDigest(digest string) (*CacheStmtRecordSet, error) {
-	sc.Lock()
-	defer sc.Unlock()
-	rs := sc.cacheRs[digest]
-	if rs == nil {
-		return nil, nil
-	}
-	err := rs.Reset()
-	rs.Begin()
-	return rs, err
-}
-
-func (sc *StmtCacheExecutorManager) GetAllStmtCacheExecutor() map[string]*CacheStmtRecordSet {
-	return sc.cacheRs
-}
-
-func (sc *StmtCacheExecutorManager) Close() {
-	sc.Lock()
-	defer sc.Unlock()
-	for _, rs := range sc.cacheRs {
-		err := rs.executor.Close()
-		if err != nil {
-			logutil.BgLogger().Info("close stmt cache executor failed", zap.String("error", err.Error()))
-		}
-	}
-	logutil.BgLogger().Info("stmt cache manager closed---")
-}
-
-func (sc *StmtCacheExecutorManager) replaceTableReader(e Executor) (Executor, error) {
+func replaceTableReader(e Executor) (Executor, error) {
 	switch v := e.(type) {
 	case *TableReaderExecutor:
 		err := v.Close()
@@ -102,7 +31,7 @@ func (sc *StmtCacheExecutorManager) replaceTableReader(e Executor) (Executor, er
 		return BuildTableSinkerExecutor(v)
 	}
 	for i, child := range e.base().children {
-		exec, err := sc.replaceTableReader(child)
+		exec, err := replaceTableReader(child)
 		if err != nil {
 			return nil, err
 		}
@@ -173,6 +102,22 @@ func (e *IncrementTableReaderExecutor) Reset() error {
 		}
 	}
 	return nil
+}
+
+func (e *IncrementTableReaderExecutor) ResetCtx(ctx sessionctx.Context, p plannercore.PhysicalPlan) error {
+	e.id = p.ID()
+	e.ctx = ctx
+	if ctx.GetSessionVars().StmtCtx.RuntimeStatsColl != nil {
+		if e.id > 0 {
+			e.runtimeStats = &execdetails.BasicRuntimeStats{}
+			e.ctx.GetSessionVars().StmtCtx.RuntimeStatsColl.RegisterStats(e.id, e.runtimeStats)
+		}
+	}
+	tableReader, ok := p.(*plannercore.PhysicalTableReader)
+	if !ok {
+		return errors.Errorf("the expected plan is table reader")
+	}
+	return e.children[0].ResetCtx(ctx, tableReader.GetTablePlan())
 }
 
 type TableScanSinker struct {
@@ -253,6 +198,22 @@ func (e *TableScanSinker) Reset() error {
 	return nil
 }
 
+func (e *TableScanSinker) ResetCtx(ctx sessionctx.Context, p plannercore.PhysicalPlan) error {
+	e.id = p.ID()
+	p.TP()
+	e.ctx = ctx
+	if ctx.GetSessionVars().StmtCtx.RuntimeStatsColl != nil {
+		if e.id > 0 {
+			e.runtimeStats = &execdetails.BasicRuntimeStats{}
+			e.ctx.GetSessionVars().StmtCtx.RuntimeStatsColl.RegisterStats(e.id, e.runtimeStats)
+		}
+	}
+	if tableScan, ok := p.(*plannercore.PhysicalTableScan); ok {
+		tableScan.MarkIsSinker()
+	}
+	return nil
+}
+
 func (e *TableScanSinker) ResetAndClean() error {
 	return nil
 }
@@ -293,5 +254,17 @@ func (e *MockTableScanSinker) Reset() error {
 
 func (e *MockTableScanSinker) ResetAndClean() error {
 	e.executed = false
+	return nil
+}
+
+func (e *MockTableScanSinker) ResetCtx(ctx sessionctx.Context, p plannercore.PhysicalPlan) error {
+	e.id = p.ID()
+	e.ctx = ctx
+	if ctx.GetSessionVars().StmtCtx.RuntimeStatsColl != nil {
+		if e.id > 0 {
+			e.runtimeStats = &execdetails.BasicRuntimeStats{}
+			e.ctx.GetSessionVars().StmtCtx.RuntimeStatsColl.RegisterStats(e.id, e.runtimeStats)
+		}
+	}
 	return nil
 }

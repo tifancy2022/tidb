@@ -16,11 +16,11 @@ package stmtcache
 
 import (
 	"bytes"
-	"crypto/sha256"
 	"hash"
 	"sync"
 	"time"
 
+	"crypto/sha256"
 	"github.com/pingcap/tidb/parser/mysql"
 	"github.com/pingcap/tidb/types"
 	"github.com/pingcap/tidb/util/kvcache"
@@ -59,10 +59,15 @@ func (sc *stmtCache) Size() int {
 	return sc.cache.Size()
 }
 
+func (sc *stmtCache) Reset() {
+	sc.Lock()
+	defer sc.Unlock()
+	sc.cache.DeleteAll()
+}
+
 func (sc *stmtCache) GetAllStmtCached() [][]types.Datum {
 	sc.Lock()
 	defer sc.Unlock()
-
 	values := sc.cache.Values()
 	rows := make([][]types.Datum, 0, len(values))
 	for _, v := range values {
@@ -108,6 +113,18 @@ func (key *StmtElement) Hash() []byte {
 		key.hash = d.hasher.Sum(nil)
 	}
 	return key.hash
+}
+
+func CalculateHash(fn func(buf *bytes.Buffer)) []byte {
+	d := digesterPool.Get().(*hashGenerator)
+	defer func() {
+		d.buf.Reset()
+		d.hasher.Reset()
+		digesterPool.Put(d)
+	}()
+	fn(&d.buf)
+	d.hasher.Write(d.buf.Bytes())
+	return d.hasher.Sum(nil)
 }
 
 var digesterPool = sync.Pool{

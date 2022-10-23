@@ -17,6 +17,7 @@ package executor
 import (
 	"context"
 	"fmt"
+	plannercore "github.com/pingcap/tidb/planner/core"
 	"runtime/trace"
 	"sync"
 	"sync/atomic"
@@ -348,6 +349,32 @@ func (e *ProjectionExec) ResetAndClean() error {
 			panic(msg)
 		}
 		err := copExec.ResetAndClean()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (e *ProjectionExec) ResetCtx(ctx sessionctx.Context, p plannercore.PhysicalPlan) error {
+	e.id = p.ID()
+	e.ctx = ctx
+	if ctx.GetSessionVars().StmtCtx.RuntimeStatsColl != nil {
+		if e.id > 0 {
+			e.runtimeStats = &execdetails.BasicRuntimeStats{}
+			e.ctx.GetSessionVars().StmtCtx.RuntimeStatsColl.RegisterStats(e.id, e.runtimeStats)
+		}
+	}
+	planChildren := p.Children()
+	execChildren := e.children
+	if _, ok := p.(*plannercore.PhysicalTableScan); ok && len(e.children) == 1 {
+		return e.children[0].ResetCtx(ctx, p)
+	}
+	if len(planChildren) != len(execChildren) {
+		return errors.Errorf("executor children is %v, but the plan children is %v, plan tp: %v", len(execChildren), len(planChildren), p.TP())
+	}
+	for i, childExec := range execChildren {
+		err := childExec.ResetCtx(ctx, planChildren[i])
 		if err != nil {
 			return err
 		}

@@ -379,6 +379,8 @@ type PhysicalPlan interface {
 
 	// MemoryUsage return the memory usage of PhysicalPlan
 	MemoryUsage() int64
+
+	MarkCached()
 }
 
 // NewDefaultPlanCostOption returns PlanCostOption
@@ -689,6 +691,12 @@ type basePlan struct {
 	ctx         sessionctx.Context
 	stats       *property.StatsInfo
 	blockOffset int
+
+	cached bool
+}
+
+func (p *basePlan) MarkCached() {
+	p.cached = true
 }
 
 // OutputNames returns the outputting names of each column.

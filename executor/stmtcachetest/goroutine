@@ -1,0 +1,455 @@
+goroutine 4995 [running]:
+runtime/pprof.writeGoroutineStacks({0x769b800, 0xc005de02a0})
+	/usr/local/go/src/runtime/pprof/pprof.go:692 +0x70
+runtime/pprof.writeGoroutine({0x769b800?, 0xc005de02a0?}, 0xc005d8fad0?)
+	/usr/local/go/src/runtime/pprof/pprof.go:681 +0x2b
+runtime/pprof.(*Profile).WriteTo(0x6cd5700?, {0x769b800?, 0xc005de02a0?}, 0xc?)
+	/usr/local/go/src/runtime/pprof/pprof.go:330 +0x14b
+net/http/pprof.handler.ServeHTTP({0xc005b795d1, 0x9}, {0x76bae30, 0xc005de02a0}, 0x2e302e302e373231?)
+	/usr/local/go/src/net/http/pprof/pprof.go:253 +0x4a5
+net/http/pprof.Index({0x76bae30?, 0xc005de02a0}, 0xc005dc6200)
+	/usr/local/go/src/net/http/pprof/pprof.go:371 +0x13e
+net/http.HandlerFunc.ServeHTTP(0xc004ebdaf0?, {0x76bae30?, 0xc005de02a0?}, 0x0?)
+	/usr/local/go/src/net/http/server.go:2109 +0x2f
+net/http.(*ServeMux).ServeHTTP(0xc005b795db?, {0x76bae30, 0xc005de02a0}, 0xc005dc6200)
+	/usr/local/go/src/net/http/server.go:2487 +0x149
+net/http.serverHandler.ServeHTTP({0xc005df2db0?}, {0x76bae30, 0xc005de02a0}, 0xc005dc6200)
+	/usr/local/go/src/net/http/server.go:2947 +0x30c
+net/http.(*conn).serve(0xc005de50e0, {0x76bddd8, 0xc000a6ede0})
+	/usr/local/go/src/net/http/server.go:1991 +0x607
+created by net/http.(*Server).Serve
+	/usr/local/go/src/net/http/server.go:3102 +0x4db
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc000f86340, {0x6fb6a9a?, 0x155c31ba81fe?}, 0x70d1bc8)
+	/usr/local/go/src/testing/testing.go:1494 +0x37a
+testing.runTests.func1(0xc000f86340?)
+	/usr/local/go/src/testing/testing.go:1846 +0x6e
+testing.tRunner(0xc000f86340, 0xc000c3fb50)
+	/usr/local/go/src/testing/testing.go:1446 +0x10b
+testing.runTests(0xc000f34e60?, {0x99e26c0, 0x5, 0x5}, {0x0?, 0x0?, 0x9a7f8a0?})
+	/usr/local/go/src/testing/testing.go:1844 +0x456
+testing.(*M).Run(0xc000f34e60)
+	/usr/local/go/src/testing/testing.go:1726 +0x5d9
+go.uber.org/goleak.VerifyTestMain({0x769bc20?, 0xc000f34e60?}, {0xc004cc7e78, 0x4, 0x4})
+	/Users/cs/code/goread/pkg/mod/go.uber.org/goleak@v1.2.0/testmain.go:53 +0x6b
+github.com/pingcap/tidb/executor/stmtcachetest.TestMain(0xffffffffffffffff?)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/stmtcachetest/main_test.go:42 +0x288
+main.main()
+	_testmain.go:57 +0x1d3
+
+goroutine 12 [select]:
+go.opencensus.io/stats/view.(*worker).start(0xc000261780)
+	/Users/cs/code/goread/pkg/mod/go.opencensus.io@v0.23.1-0.20220331163232-052120675fac/stats/view/worker.go:292 +0xad
+created by go.opencensus.io/stats/view.init.0
+	/Users/cs/code/goread/pkg/mod/go.opencensus.io@v0.23.1-0.20220331163232-052120675fac/stats/view/worker.go:34 +0x8d
+
+goroutine 87 [select]:
+github.com/pingcap/badger.(*blobGCHandler).run(0xc00090ca40, 0xc0001321c8)
+	/Users/cs/code/goread/pkg/mod/github.com/pingcap/badger@v1.5.1-0.20220314162537-ab58fbf40580/blob.go:468 +0xd6
+created by github.com/pingcap/badger.(*blobManager).Open
+	/Users/cs/code/goread/pkg/mod/github.com/pingcap/badger@v1.5.1-0.20220314162537-ab58fbf40580/blob.go:292 +0x5bd
+
+goroutine 44 [chan receive]:
+github.com/golang/glog.(*loggingT).flushDaemon(0x0?)
+	/Users/cs/code/goread/pkg/mod/github.com/golang/glog@v1.0.0/glog.go:882 +0x6a
+created by github.com/golang/glog.init.0
+	/Users/cs/code/goread/pkg/mod/github.com/golang/glog@v1.0.0/glog.go:410 +0x1bf
+
+goroutine 100 [semacquire]:
+sync.runtime_SemacquireMutex(0x0?, 0x1?, 0xc005b0d100?)
+	/usr/local/go/src/runtime/sema.go:77 +0x25
+sync.(*Mutex).lockSlow(0xc005b42240)
+	/usr/local/go/src/sync/mutex.go:171 +0x165
+sync.(*Mutex).Lock(...)
+	/usr/local/go/src/sync/mutex.go:90
+github.com/pingcap/tidb/executor.(*CacheExecutor).Begin(0x6a6fe80?)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/cache_executor.go:145 +0x36
+github.com/pingcap/tidb/executor.(*CacheExecutorManager).GetCacheExecutorByDigest(0x76f8320?, {0xc0055230d8?, 0xc005b6aea0?})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/cache_executor.go:186 +0x13b
+github.com/pingcap/tidb/executor.(*executorBuilder).build(0xc0058f9500, {0x76e18c0?, 0xc005b6aea0?})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/builder.go:168 +0x13a
+github.com/pingcap/tidb/executor.(*ExecStmt).buildExecutor(0xc005b1f0e0)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/adapter.go:972 +0x1d9
+github.com/pingcap/tidb/executor.(*ExecStmt).Exec(0xc005b1f0e0, {0x76bddd8, 0xc005b66600})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/adapter.go:511 +0x6e5
+github.com/pingcap/tidb/session.runStmt({0x76bdd68, 0xc000124008}, 0xc00619d180, {0x76cd520, 0xc005b1f0e0?})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/session/session.go:2298 +0x565
+github.com/pingcap/tidb/session.(*session).ExecuteStmt(0xc00619d180, {0x76bdd68, 0xc000124008}, {0x76d6240?, 0xc005b57560})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/session/session.go:2162 +0xad8
+github.com/pingcap/tidb/testkit.(*TestKit).ExecWithContext(0xc007045600, {0x76bdd68, 0xc000124008}, {0x6fcbf64, 0x17}, {0x0?, 0x6?, 0x0?})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/testkit/testkit.go:277 +0x408
+github.com/pingcap/tidb/testkit.(*TestKit).MustQueryWithContext(0xc007045600, {0x76bdd68, 0xc000124008}, {0x6fcbf64, 0x17}, {0x0, 0x0, 0x0})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/testkit/testkit.go:134 +0x145
+github.com/pingcap/tidb/testkit.(*TestKit).MustQuery(...)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/testkit/testkit.go:128
+github.com/pingcap/tidb/executor/stmtcachetest.TestCacheExecutor2(0x40080b9?)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/stmtcachetest/stmt_cache_test.go:80 +0x5ba
+testing.tRunner(0xc000f864e0, 0x70d1bc8)
+	/usr/local/go/src/testing/testing.go:1446 +0x10b
+created by testing.(*T).Run
+	/usr/local/go/src/testing/testing.go:1493 +0x35f
+
+goroutine 101 [IO wait]:
+internal/poll.runtime_pollWait(0x33779058, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:305 +0x89
+internal/poll.(*pollDesc).wait(0xc000a67700?, 0x4?, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0x32
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Accept(0xc000a67700)
+	/usr/local/go/src/internal/poll/fd_unix.go:614 +0x234
+net.(*netFD).accept(0xc000a67700)
+	/usr/local/go/src/net/fd_unix.go:172 +0x35
+net.(*TCPListener).accept(0xc000472b88)
+	/usr/local/go/src/net/tcpsock_posix.go:142 +0x28
+net.(*TCPListener).Accept(0xc000472b88)
+	/usr/local/go/src/net/tcpsock.go:288 +0x3d
+net/http.(*Server).Serve(0xc0006c20f0, {0x76babf0, 0xc000472b88})
+	/usr/local/go/src/net/http/server.go:3070 +0x385
+net/http.(*Server).ListenAndServe(0xc0006c20f0)
+	/usr/local/go/src/net/http/server.go:2999 +0x7d
+net/http.ListenAndServe(...)
+	/usr/local/go/src/net/http/server.go:3255
+github.com/pingcap/tidb/executor/stmtcachetest.TestCacheExecutor2.func1()
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/stmtcachetest/stmt_cache_test.go:59 +0x45
+created by github.com/pingcap/tidb/executor/stmtcachetest.TestCacheExecutor2
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/stmtcachetest/stmt_cache_test.go:58 +0x3d
+
+goroutine 102 [select]:
+github.com/pingcap/badger.(*DB).updateSize(0x0?, 0xc00069dd70)
+	/Users/cs/code/goread/pkg/mod/github.com/pingcap/badger@v1.5.1-0.20220314162537-ab58fbf40580/db.go:1039 +0x105
+created by github.com/pingcap/badger.Open
+	/Users/cs/code/goread/pkg/mod/github.com/pingcap/badger@v1.5.1-0.20220314162537-ab58fbf40580/db.go:328 +0xf5c
+
+goroutine 103 [select]:
+github.com/pingcap/badger/epoch.(*ResourceManager).collectLoop(0x0?, 0xc00069dda0)
+	/Users/cs/code/goread/pkg/mod/github.com/pingcap/badger@v1.5.1-0.20220314162537-ab58fbf40580/epoch/manager.go:101 +0xd3
+created by github.com/pingcap/badger/epoch.NewResourceManager
+	/Users/cs/code/goread/pkg/mod/github.com/pingcap/badger@v1.5.1-0.20220314162537-ab58fbf40580/epoch/manager.go:79 +0xdd
+
+goroutine 114 [select]:
+github.com/pingcap/badger.Open.func4()
+	/Users/cs/code/goread/pkg/mod/github.com/pingcap/badger@v1.5.1-0.20220314162537-ab58fbf40580/db.go:342 +0x155
+created by github.com/pingcap/badger.Open
+	/Users/cs/code/goread/pkg/mod/github.com/pingcap/badger@v1.5.1-0.20220314162537-ab58fbf40580/db.go:339 +0x11f8
+
+goroutine 88 [select]:
+github.com/pingcap/badger.(*levelsController).runWorker(0xc000f94000, 0xc000132240, 0x0)
+	/Users/cs/code/goread/pkg/mod/github.com/pingcap/badger@v1.5.1-0.20220314162537-ab58fbf40580/levels.go:212 +0x1fb
+created by github.com/pingcap/badger.(*levelsController).startCompact
+	/Users/cs/code/goread/pkg/mod/github.com/pingcap/badger@v1.5.1-0.20220314162537-ab58fbf40580/levels.go:180 +0x65
+
+goroutine 89 [chan receive]:
+github.com/pingcap/badger.(*DB).runFlushMemTable(0xc00045f680, 0x0?)
+	/Users/cs/code/goread/pkg/mod/github.com/pingcap/badger@v1.5.1-0.20220314162537-ab58fbf40580/db.go:920 +0xdd
+created by github.com/pingcap/badger.Open
+	/Users/cs/code/goread/pkg/mod/github.com/pingcap/badger@v1.5.1-0.20220314162537-ab58fbf40580/db.go:361 +0x158d
+
+goroutine 95 [chan receive]:
+github.com/pingcap/badger.(*writeWorker).runMergeLSM(0xc000a160c0?, 0xc0001324e0?)
+	/Users/cs/code/goread/pkg/mod/github.com/pingcap/badger@v1.5.1-0.20220314162537-ab58fbf40580/writer.go:154 +0x9b
+created by github.com/pingcap/badger.startWriteWorker
+	/Users/cs/code/goread/pkg/mod/github.com/pingcap/badger@v1.5.1-0.20220314162537-ab58fbf40580/writer.go:66 +0x2a5
+
+goroutine 94 [chan receive, locked to thread]:
+github.com/pingcap/badger.(*writeWorker).runWriteLSM(0xc000a161c0, 0x0?)
+	/Users/cs/code/goread/pkg/mod/github.com/pingcap/badger@v1.5.1-0.20220314162537-ab58fbf40580/writer.go:141 +0x15e
+created by github.com/pingcap/badger.startWriteWorker
+	/Users/cs/code/goread/pkg/mod/github.com/pingcap/badger@v1.5.1-0.20220314162537-ab58fbf40580/writer.go:65 +0x24d
+
+goroutine 93 [select]:
+github.com/pingcap/badger.(*writeWorker).runWriteVLog(0xc000a161c0, 0xc000132570)
+	/Users/cs/code/goread/pkg/mod/github.com/pingcap/badger@v1.5.1-0.20220314162537-ab58fbf40580/writer.go:94 +0x137
+created by github.com/pingcap/badger.startWriteWorker
+	/Users/cs/code/goread/pkg/mod/github.com/pingcap/badger@v1.5.1-0.20220314162537-ab58fbf40580/writer.go:64 +0x1f9
+
+goroutine 96 [select]:
+github.com/pingcap/tidb/store/mockstore/unistore/tikv.writeDBWorker.run({0xc0006a89c0?, 0xc00090d000?})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/store/mockstore/unistore/tikv/write.go:96 +0x145
+created by github.com/pingcap/tidb/store/mockstore/unistore/tikv.(*dbWriter).Open
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/store/mockstore/unistore/tikv/write.go:199 +0xc5
+
+goroutine 97 [select]:
+github.com/pingcap/tidb/store/mockstore/unistore/tikv.writeLockWorker.run({0xc0006a8a20?, 0xc00090d000?})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/store/mockstore/unistore/tikv/write.go:148 +0x15f
+created by github.com/pingcap/tidb/store/mockstore/unistore/tikv.(*dbWriter).Open
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/store/mockstore/unistore/tikv/write.go:206 +0x159
+
+goroutine 130 [select]:
+github.com/pingcap/tidb/store/mockstore/unistore/tikv.(*MVCCStore).runUpdateSafePointLoop(0xc000a67780)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/store/mockstore/unistore/tikv/mvcc.go:1742 +0x217
+created by github.com/pingcap/tidb/store/mockstore/unistore/tikv.NewMVCCStore
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/store/mockstore/unistore/tikv/mvcc.go:87 +0x337
+
+goroutine 131 [select]:
+github.com/pingcap/tidb/store/mockstore/unistore/tikv.(*MVCCStore).StartDeadlockDetection.func1()
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/store/mockstore/unistore/tikv/mvcc.go:1415 +0x7b
+created by github.com/pingcap/tidb/store/mockstore/unistore/tikv.(*MVCCStore).StartDeadlockDetection
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/store/mockstore/unistore/tikv/mvcc.go:1413 +0xb6
+
+goroutine 132 [select]:
+github.com/tikv/client-go/v2/oracle/oracles.(*pdOracle).updateTS(0xc000a58770, {0x76bdd68, 0xc000124010}, 0x0?)
+	/Users/cs/code/goread/pkg/mod/github.com/tikv/client-go/v2@v2.0.1-0.20220923061703-33efe476e022/oracle/oracles/pd.go:229 +0x128
+created by github.com/tikv/client-go/v2/oracle/oracles.NewPdOracle
+	/Users/cs/code/goread/pkg/mod/github.com/tikv/client-go/v2@v2.0.1-0.20220923061703-33efe476e022/oracle/oracles/pd.go:77 +0x119
+
+goroutine 133 [select]:
+github.com/tikv/client-go/v2/internal/locate.(*RegionCache).asyncCheckAndResolveLoop(0xc000a1cdd0, 0x0?)
+	/Users/cs/code/goread/pkg/mod/github.com/tikv/client-go/v2@v2.0.1-0.20220923061703-33efe476e022/internal/locate/region_cache.go:448 +0xea
+created by github.com/tikv/client-go/v2/internal/locate.NewRegionCache
+	/Users/cs/code/goread/pkg/mod/github.com/tikv/client-go/v2@v2.0.1-0.20220923061703-33efe476e022/internal/locate/region_cache.go:419 +0x2e6
+
+goroutine 134 [select]:
+github.com/tikv/client-go/v2/tikv.(*KVStore).runSafePointChecker(0xc000f18000)
+	/Users/cs/code/goread/pkg/mod/github.com/tikv/client-go/v2@v2.0.1-0.20220923061703-33efe476e022/tikv/kv.go:234 +0x12b
+created by github.com/tikv/client-go/v2/tikv.NewKVStore
+	/Users/cs/code/goread/pkg/mod/github.com/tikv/client-go/v2@v2.0.1-0.20220923061703-33efe476e022/tikv/kv.go:189 +0x416
+
+goroutine 135 [select]:
+github.com/tikv/client-go/v2/tikv.(*KVStore).safeTSUpdater(0xc000f18000)
+	/Users/cs/code/goread/pkg/mod/github.com/tikv/client-go/v2@v2.0.1-0.20220923061703-33efe476e022/tikv/kv.go:530 +0x1ed
+created by github.com/tikv/client-go/v2/tikv.NewKVStore
+	/Users/cs/code/goread/pkg/mod/github.com/tikv/client-go/v2@v2.0.1-0.20220923061703-33efe476e022/tikv/kv.go:190 +0x456
+
+goroutine 136 [select]:
+github.com/dgraph-io/ristretto.(*lfuPolicy).processItems(0xc00090d4c0)
+	/Users/cs/code/goread/pkg/mod/github.com/dgraph-io/ristretto@v0.1.1-0.20220403145359-8e850b710d6d/policy.go:67 +0x91
+created by github.com/dgraph-io/ristretto.newPolicy
+	/Users/cs/code/goread/pkg/mod/github.com/dgraph-io/ristretto@v0.1.1-0.20220403145359-8e850b710d6d/policy.go:51 +0x156
+
+goroutine 137 [select]:
+github.com/dgraph-io/ristretto.(*Cache).processItems(0xc000a588c0)
+	/Users/cs/code/goread/pkg/mod/github.com/dgraph-io/ristretto@v0.1.1-0.20220403145359-8e850b710d6d/cache.go:476 +0x18a
+created by github.com/dgraph-io/ristretto.NewCache
+	/Users/cs/code/goread/pkg/mod/github.com/dgraph-io/ristretto@v0.1.1-0.20220403145359-8e850b710d6d/cache.go:213 +0x776
+
+goroutine 4096 [semacquire]:
+sync.runtime_SemacquireMutex(0xc000c8f200?, 0x0?, 0xc0007c6220?)
+	/usr/local/go/src/runtime/sema.go:77 +0x25
+sync.(*Mutex).lockSlow(0xc0004a43e0)
+	/usr/local/go/src/sync/mutex.go:171 +0x165
+sync.(*Mutex).Lock(...)
+	/usr/local/go/src/sync/mutex.go:90
+github.com/pingcap/tidb/executor.(*CacheExecutorManager).GetCacheExecutorByDigest(0x76f6d20?, {0xc0007c62b8?, 0x20?})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/cache_executor.go:176 +0x74
+github.com/pingcap/tidb/executor.(*executorBuilder).build(0xc0058f9a80, {0x76e0e70?, 0xc005cc2240?})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/builder.go:168 +0x13a
+github.com/pingcap/tidb/executor.(*executorBuilder).buildHashJoin(0xc0058f9a80, 0xc005c8ab40)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/builder.go:1408 +0xee
+github.com/pingcap/tidb/executor.(*executorBuilder).build(0xc0058f9a80, {0x76e0ee8?, 0xc005c8ab40?})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/builder.go:271 +0x16b1
+github.com/pingcap/tidb/executor.(*executorBuilder).buildSort(0xc0058f9a80, 0xc005b0f5e0)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/builder.go:2017 +0x7d
+github.com/pingcap/tidb/executor.(*executorBuilder).build(0xc0058f9a80, {0x76e1848?, 0xc005b0f5e0?})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/builder.go:261 +0x15d4
+github.com/pingcap/tidb/executor.(*executorBuilder).buildProjection(0xc0058f9a80, 0xc005caa0f0)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/builder.go:1655 +0x7d
+github.com/pingcap/tidb/executor.(*executorBuilder).build(0xc0058f9a80, {0x76e1500?, 0xc005caa0f0?})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/builder.go:287 +0x1585
+github.com/pingcap/tidb/executor.(*ExecStmt).buildExecutor(0xc005caa1e0)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/adapter.go:972 +0x1d9
+github.com/pingcap/tidb/executor.(*ExecStmt).Exec(0xc005caa1e0, {0x76bddd8, 0xc005d16900})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/executor/adapter.go:511 +0x6e5
+github.com/pingcap/tidb/session.runStmt({0x76bddd8, 0xc005cb4990}, 0xc006922280, {0x76cd520, 0xc005caa1e0?})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/session/session.go:2298 +0x565
+github.com/pingcap/tidb/session.(*session).ExecuteStmt(0xc006922280, {0x76bddd8, 0xc005cb4990}, {0x76d6240?, 0xc005c8f7a0})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/session/session.go:2162 +0xad8
+github.com/pingcap/tidb/session.(*session).ExecuteInternal(0xc006922280, {0x76bddd8, 0xc005cb4990}, {0xc004a62240, 0xbf}, {0x0, 0x0, 0x0})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/session/session.go:1654 +0x3f2
+github.com/pingcap/tidb/ddl.(*session).execute(0xc007802310, {0x76bdd68, 0xc000124008}, {0xc004a62240, 0xbf}, {0x6fabeac, 0xf})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/ddl.go:1679 +0x1af
+github.com/pingcap/tidb/ddl.(*ddl).getJob(0xc007b47e80, 0xc0cd0bbd2a848198?, 0x0, 0xc0007c7b68)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/job_table.go:98 +0x159
+github.com/pingcap/tidb/ddl.(*ddl).getGeneralJob(0xc0007c7c08?, 0x405939c?)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/job_table.go:128 +0x45
+github.com/pingcap/tidb/ddl.(*ddl).loadDDLJobAndRun(0xc007b47e80, 0xc0007c7db8?, 0xc00740df50, 0xc0007c7e48)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/job_table.go:210 +0x16d
+github.com/pingcap/tidb/ddl.(*ddl).startDispatchLoop(0xc007b47e80)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/job_table.go:194 +0x6e5
+github.com/pingcap/tidb/util.(*WaitGroupWrapper).Run.func1()
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/wait_group_wrapper.go:33 +0x5a
+created by github.com/pingcap/tidb/util.(*WaitGroupWrapper).Run
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/wait_group_wrapper.go:31 +0x85
+
+goroutine 4253 [select]:
+github.com/pingcap/tidb/statistics/handle.(*Handle).drainColTask(0xc005bb6d80, 0xc00593b0e0)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle_hist.go:393 +0xe5
+github.com/pingcap/tidb/statistics/handle.(*Handle).HandleOneTask(0xc005801f54?, 0xc0005c6360?, 0xc00593a418?, {0x34680008, 0xc0075ff180}, 0xc00593a3c0?)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle_hist.go:203 +0xc7
+github.com/pingcap/tidb/statistics/handle.(*Handle).SubLoadWorker(0xc005bb6d80, {0x7729a68?, 0xc0075ff180}, 0x5c75d86?, 0xc006f91a00?)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle_hist.go:179 +0x11b
+created by github.com/pingcap/tidb/domain.(*Domain).StartLoadStatsSubWorkers
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1623 +0x173
+
+goroutine 4283 [select]:
+github.com/pingcap/tidb/domain.(*Domain).LoadSysVarCacheLoop.func1()
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1331 +0x145
+created by github.com/pingcap/tidb/domain.(*Domain).LoadSysVarCacheLoop
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1322 +0x172
+
+goroutine 4049 [select]:
+github.com/pingcap/tidb/domain.(*Domain).handleEvolvePlanTasksLoop.func1()
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1454 +0x107
+created by github.com/pingcap/tidb/domain.(*Domain).handleEvolvePlanTasksLoop
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1447 +0xe5
+
+goroutine 4094 [select]:
+github.com/pingcap/tidb/ddl.(*ddl).limitDDLJobs(0xc007b47e80)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/ddl_worker.go:278 +0x13d
+github.com/pingcap/tidb/util.(*WaitGroupWrapper).Run.func1()
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/wait_group_wrapper.go:33 +0x5a
+created by github.com/pingcap/tidb/util.(*WaitGroupWrapper).Run
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/wait_group_wrapper.go:31 +0x85
+
+goroutine 4228 [select]:
+github.com/pingcap/tidb/domain.(*Domain).loadSchemaInLoop(0xc006e28160, {0x76bdd30, 0xc006f4a000}, 0xc005806fb8?)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:741 +0x1b7
+created by github.com/pingcap/tidb/domain.(*Domain).Init
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1031 +0xefc
+
+goroutine 4255 [select]:
+github.com/pingcap/tidb/statistics/handle.(*Handle).drainColTask(0xc005bb6d80, 0xc00593b0e0)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle_hist.go:393 +0xe5
+github.com/pingcap/tidb/statistics/handle.(*Handle).HandleOneTask(0x5ee3240?, 0xc0075de2a0?, 0x0?, {0x34680008, 0xc0075ff680}, 0x0?)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle_hist.go:203 +0xc7
+github.com/pingcap/tidb/statistics/handle.(*Handle).SubLoadWorker(0xc005bb6d80, {0x7729a68?, 0xc0075ff680}, 0xc005bb6c30?, 0xc005807fb8?)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle_hist.go:179 +0x11b
+created by github.com/pingcap/tidb/domain.(*Domain).StartLoadStatsSubWorkers
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1623 +0x173
+
+goroutine 4307 [select]:
+github.com/pingcap/tidb/domain.(*Domain).LoadSigningCertLoop.func1()
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1904 +0xc5
+created by github.com/pingcap/tidb/domain.(*Domain).LoadSigningCertLoop
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1897 +0x6c
+
+goroutine 4232 [select]:
+github.com/pingcap/tidb/domain.(*Domain).globalConfigSyncerKeeper(0xc006e28160)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:582 +0xf5
+created by github.com/pingcap/tidb/domain.(*Domain).Init
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1037 +0x103c
+
+goroutine 4996 [IO wait]:
+internal/poll.runtime_pollWait(0x33778f68, 0x72)
+	/usr/local/go/src/runtime/netpoll.go:305 +0x89
+internal/poll.(*pollDesc).wait(0xc005de6180?, 0xc005df2dc1?, 0x0)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0x32
+internal/poll.(*pollDesc).waitRead(...)
+	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Read(0xc005de6180, {0xc005df2dc1, 0x1, 0x1})
+	/usr/local/go/src/internal/poll/fd_unix.go:167 +0x25a
+net.(*netFD).Read(0xc005de6180, {0xc005df2dc1?, 0x0?, 0x1?})
+	/usr/local/go/src/net/fd_posix.go:55 +0x29
+net.(*conn).Read(0xc0006a2830, {0xc005df2dc1?, 0xc005bdb2c0?, 0x0?})
+	/usr/local/go/src/net/net.go:183 +0x45
+net/http.(*connReader).backgroundRead(0xc005df2db0)
+	/usr/local/go/src/net/http/server.go:678 +0x3f
+created by net/http.(*connReader).startBackgroundRead
+	/usr/local/go/src/net/http/server.go:674 +0xca
+
+goroutine 4229 [select]:
+github.com/pingcap/tidb/domain.(*Domain).mdlCheckLoop(0xc006e28160)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:658 +0xea
+github.com/pingcap/tidb/util.(*WaitGroupWrapper).Run.func1()
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/wait_group_wrapper.go:33 +0x5a
+created by github.com/pingcap/tidb/util.(*WaitGroupWrapper).Run
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/wait_group_wrapper.go:31 +0x85
+
+goroutine 4226 [select]:
+github.com/pingcap/tidb/ddl.(*worker).start(0xc006e5e580, 0xc0067b7980)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/ddl_worker.go:194 +0x31b
+created by github.com/pingcap/tidb/ddl.(*ddl).prepareWorkers4legacyDDL
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/ddl.go:637 +0x22e
+
+goroutine 4095 [select]:
+github.com/pingcap/tidb/ddl.(*delRange).startEmulator(0xc007300c00)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/delete_range.go:160 +0x125
+created by github.com/pingcap/tidb/ddl.(*delRange).start
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/delete_range.go:142 +0x6d
+
+goroutine 4097 [select]:
+github.com/pingcap/tidb/ddl.(*worker).start(0xc006e5e500, 0xc0067b7980)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/ddl_worker.go:194 +0x31b
+created by github.com/pingcap/tidb/ddl.(*ddl).prepareWorkers4legacyDDL
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/ddl.go:637 +0x22e
+
+goroutine 4231 [select]:
+github.com/pingcap/tidb/domain.(*Domain).infoSyncerKeeper(0xc006e28160)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:559 +0x165
+created by github.com/pingcap/tidb/domain.(*Domain).Init
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1036 +0xff8
+
+goroutine 4048 [select]:
+github.com/pingcap/tidb/domain.(*Domain).globalBindHandleWorkerLoop.func1()
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1416 +0x16f
+created by github.com/pingcap/tidb/domain.(*Domain).globalBindHandleWorkerLoop
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1403 +0xad
+
+goroutine 4234 [select]:
+github.com/pingcap/tidb/domain.(*Domain).closestReplicaReadCheckLoop(0xc006e28160, {0x76bdd30?, 0xc006f4a000?}, {0x76f52f8, 0xc0009bc7c0})
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1091 +0x2ed
+created by github.com/pingcap/tidb/domain.(*Domain).Init
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1044 +0x1172
+
+goroutine 4233 [select]:
+github.com/pingcap/tidb/domain.(*Domain).topologySyncerKeeper(0xc006e28160)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:605 +0x165
+created by github.com/pingcap/tidb/domain.(*Domain).Init
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1040 +0x109d
+
+goroutine 4248 [select]:
+github.com/pingcap/tidb/domain.(*Domain).LoadPrivilegeLoop.func1()
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1281 +0x145
+created by github.com/pingcap/tidb/domain.(*Domain).LoadPrivilegeLoop
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1272 +0x24c
+
+goroutine 4227 [select]:
+github.com/pingcap/tidb/ddl.(*ddl).PollTiFlashRoutine(0xc007b47e80)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/ddl/ddl_tiflash_api.go:697 +0x29f
+github.com/pingcap/tidb/util.(*WaitGroupWrapper).Run.func1()
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/wait_group_wrapper.go:33 +0x5a
+created by github.com/pingcap/tidb/util.(*WaitGroupWrapper).Run
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/util/wait_group_wrapper.go:31 +0x85
+
+goroutine 4256 [select]:
+github.com/pingcap/tidb/statistics/handle.(*Handle).drainColTask(0xc005bb6d80, 0xc00593b0e0)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle_hist.go:393 +0xe5
+github.com/pingcap/tidb/statistics/handle.(*Handle).HandleOneTask(0x4?, 0x9ab2b78?, 0x0?, {0x34680008, 0xc0075ff900}, 0x0?)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle_hist.go:203 +0xc7
+github.com/pingcap/tidb/statistics/handle.(*Handle).SubLoadWorker(0xc005bb6d80, {0x7729a68?, 0xc0075ff900}, 0x5c75d86?, 0xc00586b640?)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle_hist.go:179 +0x11b
+created by github.com/pingcap/tidb/domain.(*Domain).StartLoadStatsSubWorkers
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1623 +0x173
+
+goroutine 4230 [select]:
+github.com/pingcap/tidb/domain.(*Domain).topNSlowQueryLoop(0xc006e28160)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:527 +0x194
+created by github.com/pingcap/tidb/domain.(*Domain).Init
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1035 +0xfb3
+
+goroutine 4306 [select]:
+github.com/pingcap/tidb/domain.(*Domain).DumpFileGcCheckerLoop.func1()
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1539 +0xf6
+created by github.com/pingcap/tidb/domain.(*Domain).DumpFileGcCheckerLoop
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1530 +0x6c
+
+goroutine 4257 [select]:
+github.com/pingcap/tidb/statistics/handle.(*Handle).drainColTask(0xc005bb6d80, 0xc00593b0e0)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle_hist.go:393 +0xe5
+github.com/pingcap/tidb/statistics/handle.(*Handle).HandleOneTask(0x0?, 0x9ab2b78?, 0x0?, {0x34680008, 0xc0075ffb80}, 0x0?)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle_hist.go:203 +0xc7
+github.com/pingcap/tidb/statistics/handle.(*Handle).SubLoadWorker(0xc005bb6d80, {0x7729a68?, 0xc0075ffb80}, 0xc005c73530?, 0xc005803fb8?)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle_hist.go:179 +0x11b
+created by github.com/pingcap/tidb/domain.(*Domain).StartLoadStatsSubWorkers
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1623 +0x173
+
+goroutine 4254 [select]:
+github.com/pingcap/tidb/statistics/handle.(*Handle).drainColTask(0xc005bb6d80, 0xc00593b0e0)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle_hist.go:393 +0xe5
+github.com/pingcap/tidb/statistics/handle.(*Handle).HandleOneTask(0x5ee3240?, 0xc0075de480?, 0x0?, {0x34680008, 0xc0075ff400}, 0x0?)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle_hist.go:203 +0xc7
+github.com/pingcap/tidb/statistics/handle.(*Handle).SubLoadWorker(0xc005bb6d80, {0x7729a68?, 0xc0075ff400}, 0xc005bb6d50?, 0xc004cd8fb8?)
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/statistics/handle/handle_hist.go:179 +0x11b
+created by github.com/pingcap/tidb/domain.(*Domain).StartLoadStatsSubWorkers
+	/Users/cs/code/goread/src/github.com/pingcap/tidb/domain/domain.go:1623 +0x173

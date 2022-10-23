@@ -270,6 +270,29 @@ func (e *baseExecutor) Reset() error {
 	return errors.Errorf("Executor_%v doesn't implement reset method", e.id)
 }
 
+func (e *baseExecutor) ResetCtx(ctx sessionctx.Context, p plannercore.PhysicalPlan) error {
+	e.id = p.ID()
+	e.ctx = ctx
+	if ctx.GetSessionVars().StmtCtx.RuntimeStatsColl != nil {
+		if e.id > 0 {
+			e.runtimeStats = &execdetails.BasicRuntimeStats{}
+			e.ctx.GetSessionVars().StmtCtx.RuntimeStatsColl.RegisterStats(e.id, e.runtimeStats)
+		}
+	}
+	planChildren := p.Children()
+	execChildren := e.children
+	if len(planChildren) != len(execChildren) {
+		return errors.Errorf("executor children is %v, but the plan children is %v, plan tp: %v", len(execChildren), len(planChildren), p.TP())
+	}
+	for i, childExec := range execChildren {
+		err := childExec.ResetCtx(ctx, planChildren[i])
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (e *baseExecutor) ResetAndClean() error {
 	for _, child := range e.children {
 		copExec, ok := child.(CopExecutor)
@@ -328,6 +351,7 @@ type Executor interface {
 	Schema() *expression.Schema
 	//CloneState(Executor) error
 	Reset() error
+	ResetCtx(sessionctx.Context, plannercore.PhysicalPlan) error
 }
 
 type CopExecutor interface {
