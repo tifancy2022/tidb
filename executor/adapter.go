@@ -1693,28 +1693,11 @@ func (a *ExecStmt) TryCacheExecutor(succ bool, rs *recordSet) bool {
 	if resultRows > 100 || resultRows == 0 {
 		return false
 	}
-	// unistore doesn't return processkeys info.
-	//execDetail := stmtCtx.GetExecDetails()
-	//if execDetail.ScanDetail == nil || execDetail.ScanDetail.ProcessedKeys < CacheMinProcessKeys {
-	//	return
-	//}
 	var err error
 	rs.executor, _, err = TryCacheAggPlan(physicalPlan, rs.executor)
 	if err != nil {
 		logutil.BgLogger().Error("add stmt cache executor failed", zap.Error(err))
 	}
-	//stmt := &stmtcache.StmtElement{
-	//	SchemaName: sessVars.CurrentDB,
-	//	SQL:        sessVars.StmtCtx.OriginalSQL,
-	//	Params:     sessVars.PreparedParams.String(),
-	//}
-	//digestByte, cached := stmtcache.StmtCache.AddStatement(stmt)
-	//if cached {
-	//	err := StmtCacheExecManager.addStmtCacheExecutor(digestByte, rs.executor, rs)
-	//	if err != nil {
-	//		logutil.BgLogger().Error("add stmt cache executor failed", zap.Error(err))
-	//	}
-	//}
 	return false
 }
 
