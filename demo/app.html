@@ -265,7 +265,7 @@
             onSwitchCache: function () {
                 let self = this;
                 let payload = {
-                    enabled: self.cacheEnabled,
+                    enabled: !self.cacheEnabled,
                 };
                 axios.post('/api/v1/cache', payload)
                     .then(function (response) {
@@ -359,6 +359,7 @@
 
                     self.count = res.data.count;
                     self.latency = res.data.latency / 1000.0;
+                    self.cacheEnabled = res.data.cached;
                 }).catch(err => {
                     console.log("Fetch stats failed", err)
                 })
